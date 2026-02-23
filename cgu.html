@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGU - Conditions Générales d'Utilisation | OceanPhenix</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+        :root {
+            --primary-dark: #0a1929;
+            --secondary-dark: #1e3a5f;
+            --accent-cyan: #00d9ff;
+            --accent-blue: #0095d9;
+            --accent-light-cyan: #5ce1e6;
+            --dark-charcoal: #0d1117;
+            --white: #ffffff;
+            --text-light: #f8f9fa;
+            --text-muted: #c5d0de;
+            --font-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-secondary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius-md: 12px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            background: var(--dark-charcoal);
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-primary);
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        p, li {
+            font-weight: 300;
+        }
+
+        strong {
+            font-weight: 500;
+        }
+
+        .main-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(15, 20, 25, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 180, 216, 0.2);
+            padding: var(--spacing-sm) 0;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-light-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--accent-light-cyan);
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem var(--spacing-lg) 3rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent-cyan);
+        }
+
+        .last-update {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section h2 {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .section h3 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .section p {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section li {
+            margin-bottom: 0.25rem;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: 500;
+        }
+
+        .copyright-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(15, 20, 25, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 180, 216, 0.2);
+            padding: 0.6rem 0;
+        }
+
+        .copyright-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .copyright-content a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            margin: 0 0.5rem;
+            transition: var(--transition-fast);
+        }
+
+        .copyright-content a:hover {
+            color: var(--accent-light-cyan);
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">OceanPhenix</a>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <h1 class="page-title">Conditions Générales d'Utilisation (CGU)</h1>
+        <p class="last-update">Dernière mise à jour : 14 décembre 2025</p>
+
+        <div class="section">
+            <h2>1. Mentions légales et identification de l'éditeur</h2>
+            <h3>1.1 Éditeur du site</h3>
+            <p>Le site <span class="highlight">oceanphenix.fr</span> et ses sous-domaines (ci-après collectivement dénommés "le Site") sont édités par :</p>
+            <ul>
+                <li><strong>Nom :</strong> Stéphane Celton</li>
+                <li><strong>Statut :</strong> Entrepreneur individuel</li>
+                <li><strong>Marque commerciale :</strong> OceanPhenix™</li>
+                <li><strong>Site web professionnel :</strong> <a href="https://stephanecelton.oceanphenix.fr" target="_blank" rel="noopener" class="highlight">stephanecelton.oceanphenix.fr</a></li>
+                <li><strong>Contact professionnel :</strong> <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener" class="highlight">LinkedIn - Stéphane Celton</a></li>
+            </ul>
+
+            <h3>1.2 Hébergement</h3>
+            <p>Le Site est hébergé sur une infrastructure française souveraine chez :</p>
+            <ul>
+                <li><strong>Hébergeur principal :</strong> o2switch SARL</li>
+                <li><strong>Adresse :</strong> 222-224 Boulevard Gustave Flaubert, 63000 Clermont-Ferrand, France</li>
+                <li><strong>Site web :</strong> <a href="https://www.o2switch.fr" target="_blank" rel="noopener" class="highlight">www.o2switch.fr</a></li>
+            </ul>
+
+            <h3>1.3 Directeur de la publication</h3>
+            <p>Le directeur de la publication est <span class="highlight">Stéphane Celton</span>, éditeur du Site.</p>
+        </div>
+
+        <div class="section">
+            <h2>2. Objet et présentation des services</h2>
+            <h3>2.1 Objet du Site</h3>
+            <p><span class="highlight">OceanPhenix™</span> est une plateforme d'innovation technologique et d'idéation spécialisée dans le développement d'outils et de solutions d'intelligence artificielle souverains. Le Site a pour objet de présenter les activités, projets, services et expertises développés dans le cadre de cette initiative entrepreneuriale.</p>
+
+            <h3>2.2 Services et solutions présentés</h3>
+            <p>Le Site présente notamment les services suivants, en phase de développement actif et d'expérimentation :</p>
+            <ul>
+                <li><strong>Solutions d'Intelligence Artificielle :</strong> ChatBots avec architecture RAG (Retrieval-Augmented Generation), interfaces conversationnelles avec LLM locaux (Ollama, Mistral, Qwen)</li>
+                <li><strong>Infrastructure souveraine :</strong> Architecture 100% auto-hébergée garantissant la maîtrise et la confidentialité des données</li>
+                <li><strong>Bases de données vectorielles :</strong> Qdrant pour le stockage et la recherche sémantique</li>
+                <li><strong>Monitoring et observabilité :</strong> Grafana, Prometheus, cAdvisor pour la supervision en temps réel</li>
+                <li><strong>BI et Analytics :</strong> Superset pour l'analyse et la visualisation de données</li>
+                <li><strong>Automatisation :</strong> n8n pour les workflows et l'orchestration</li>
+                <li><strong>Stockage objet :</strong> MinIO S3 compatible</li>
+                <li><strong>Reverse Proxy :</strong> Caddy et Nginx pour la gestion des flux</li>
+            </ul>
+            <p><strong>Important :</strong> Ces services sont en phase d'idéation et de prototypage. Leur disponibilité, fonctionnalités et caractéristiques peuvent évoluer sans préavis dans le cadre de l'amélioration continue et de l'expérimentation.</p>
+        </div>
+
+        <div class="section">
+            <h2>3. Acceptation et opposabilité des CGU</h2>
+            <h3>3.1 Acceptation des conditions</h3>
+            <p>L'accès au Site et son utilisation, quelle qu'elle soit, impliquent l'acceptation pleine, entière et sans réserve des présentes Conditions Générales d'Utilisation (CGU) par l'utilisateur.</p>
+            <p>Si vous n'acceptez pas tout ou partie de ces conditions, vous devez vous abstenir d'utiliser le Site et ses services.</p>
+
+            <h3>3.2 Capacité juridique</h3>
+            <p>L'utilisateur déclare avoir la capacité juridique nécessaire pour accepter les présentes CGU. Si l'utilisateur est mineur ou sous tutelle, il doit obtenir l'autorisation de son représentant légal avant d'utiliser le Site.</p>
+        </div>
+
+        <div class="section">
+            <h2>4. Propriété intellectuelle</h2>
+            <h3>4.1 Marques et signes distinctifs</h3>
+            <p>La marque <span class="highlight">OceanPhenix™</span>, le nom de domaine <span class="highlight">oceanphenix.fr</span>, ainsi que tous les signes distinctifs, logos, éléments graphiques et visuels associés sont la propriété exclusive de Stéphane Celton et sont protégés par les dispositions du Code de la propriété intellectuelle français et les conventions internationales applicables.</p>
+            <p>Toute utilisation, reproduction ou représentation, totale ou partielle, de ces marques et signes distinctifs, sans autorisation écrite expresse et préalable de l'éditeur, est strictement interdite et constituerait une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.</p>
+            
+            <h3>4.2 Droits d'auteur sur les contenus</h3>
+            <p>L'ensemble des contenus présents sur le Site, incluant mais sans s'y limiter : textes, articles, descriptions, photographies, images, graphismes, logos, vidéos, animations, illustrations, éléments sonores, architectures logicielles, codes sources, bases de données, design, maquettes, interfaces, arborescence et structure du Site, sont la propriété exclusive de Stéphane Celton ou font l'objet d'une autorisation d'utilisation, sauf mention contraire explicitement indiquée.</p>
+            <p>Ces contenus sont protégés par les lois françaises et internationales relatives au droit d'auteur et aux droits voisins.</p>
+
+            <h3>4.3 Restrictions et interdictions</h3>
+            <p>Toute reproduction, représentation, modification, publication, adaptation, transmission, exploitation commerciale ou non, distribution, diffusion, rediffusion, utilisation, transformation ou extraction de tout ou partie des éléments du Site, quel que soit le moyen, le support ou le procédé utilisé (manuel, automatisé, par scraping, crawling ou autre), est formellement interdite sans autorisation écrite préalable et expresse de l'éditeur.</p>
+            <p>Sont notamment et expressément interdits :</p>
+            <ul>
+                <li>La copie, reproduction ou duplication des contenus du Site</li>
+                <li>L'extraction ou la réutilisation substantielle des contenus</li>
+                <li>L'utilisation de robots, crawlers, spiders ou autres outils automatisés pour extraire des données</li>
+                <li>La création de liens profonds (deep links) sans autorisation</li>
+                <li>L'intégration du Site ou de ses contenus dans un cadre (framing) externe</li>
+                <li>La décompilation, le reverse engineering ou toute tentative d'accès au code source</li>
+            </ul>
+
+            <h3>4.4 Usage autorisé</h3>
+            <p>L'utilisateur dispose d'un droit de consultation personnel et non exclusif du Site à des fins strictement informatives et non commerciales. Ce droit ne confère aucun droit de propriété intellectuelle à l'utilisateur.</p>
+        </div>
+
+        <div class="section">
+            <h2>5. Modalités d'accès et disponibilité du Site</h2>
+            <h3>5.1 Conditions d'accès</h3>
+            <p>L'accès au Site et à ses contenus informationnels publics est gratuit et libre pour tout utilisateur disposant d'un accès à Internet. Cependant, l'accès à certaines sections, services ou fonctionnalités spécifiques peut être soumis à des conditions particulières, notamment :</p>
+            <ul>
+                <li>Création d'un compte utilisateur avec authentification</li>
+                <li>Acceptation de conditions spécifiques complémentaires</li>
+                <li>Restrictions d'accès pour des raisons de développement, maintenance ou sécurité</li>
+            </ul>
+
+            <h3>5.2 Moyens d'accès et responsabilité de l'utilisateur</h3>
+            <p>L'utilisateur est seul responsable de l'acquisition, de l'installation et du maintien en bon état de fonctionnement du matériel informatique, des logiciels, de la connexion Internet et des équipements nécessaires pour accéder au Site.</p>
+            <p>Les coûts de connexion, d'accès à Internet et d'utilisation du réseau de télécommunication restent exclusivement à la charge de l'utilisateur.</p>
+
+            <h3>5.3 Disponibilité et continuité du service</h3>
+            <p>OceanPhenix™ met en œuvre tous les moyens raisonnables pour assurer une accessibilité optimale du Site 24 heures sur 24, 7 jours sur 7. Toutefois, compte tenu de la nature même d'Internet et de l'infrastructure technique, OceanPhenix™ ne peut garantir une disponibilité absolue et continue du Site.</p>
+            <p>L'accès au Site peut être temporairement interrompu ou suspendu, sans préavis, pour des raisons indépendantes de la volonté de l'éditeur ou pour les besoins de :</p>
+            <ul>
+                <li>Maintenance corrective, préventive ou évolutive</li>
+                <li>Mise à jour ou évolution des services et fonctionnalités</li>
+                <li>Pannes techniques, défaillances matérielles ou logicielles</li>
+                <li>Interruptions ou défaillances des réseaux de télécommunication</li>
+                <li>Mesures de sécurité ou de protection contre des attaques informatiques</li>
+                <li>Événements de force majeure</li>
+            </ul>
+
+            <h3>5.4 Modification et suspension des services</h3>
+            <p>OceanPhenix™ se réserve le droit, à tout moment et sans préavis, de modifier, suspendre temporairement ou définitivement, tout ou partie des fonctionnalités, services ou contenus du Site, sans que sa responsabilité puisse être engagée de ce fait.</p>
+        </div>
+
+        <div class="section">
+            <h2>6. Protection des données personnelles et confidentialité</h2>
+            <h3>6.1 Engagement de confidentialité</h3>
+            <p>OceanPhenix™ accorde une importance particulière à la protection de la vie privée et des données personnelles de ses utilisateurs, conformément au Règlement Général sur la Protection des Données (RGPD - Règlement UE 2016/679) et à la loi Informatique et Libertés n°78-17 du 6 janvier 1978 modifiée.</p>
+
+            <h3>6.2 Données collectées</h3>
+            <p>Le Site ne collecte aucune donnée personnelle identifiable de manière systématique sans consentement explicite. Les données techniques suivantes peuvent être collectées de manière automatique :</p>
+            <ul>
+                <li>Données de navigation et de connexion (logs serveur, adresse IP, type de navigateur, pages visitées)</li>
+                <li>Données d'utilisation et statistiques d'audience agrégées et anonymisées</li>
+            </ul>
+
+            <h3>6.3 Finalités du traitement</h3>
+            <p>Les données collectées sont utilisées exclusivement pour :</p>
+            <ul>
+                <li>Assurer le fonctionnement technique et la sécurité du Site</li>
+                <li>Réaliser des statistiques d'audience anonymisées</li>
+                <li>Améliorer l'expérience utilisateur et les services proposés</li>
+                <li>Prévenir et détecter les tentatives d'attaque ou d'utilisation frauduleuse</li>
+            </ul>
+
+            <h3>6.4 Droits des utilisateurs</h3>
+            <p>Conformément à la réglementation applicable, tout utilisateur dispose des droits suivants concernant ses données personnelles :</p>
+            <ul>
+                <li><strong>Droit d'accès :</strong> obtenir la confirmation du traitement de vos données et y accéder</li>
+                <li><strong>Droit de rectification :</strong> corriger vos données inexactes ou incomplètes</li>
+                <li><strong>Droit à l'effacement :</strong> obtenir la suppression de vos données</li>
+                <li><strong>Droit à la limitation :</strong> limiter le traitement de vos données</li>
+                <li><strong>Droit d'opposition :</strong> vous opposer au traitement de vos données</li>
+                <li><strong>Droit à la portabilité :</strong> recevoir vos données dans un format structuré</li>
+            </ul>
+            <p>Pour exercer ces droits, contactez <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener" class="highlight">Stéphane Celton via LinkedIn</a>.</p>
+
+            <h3>6.5 Cookies</h3>
+            <p>Le Site peut utiliser des cookies strictement nécessaires à son bon fonctionnement technique. Aucun cookie publicitaire ou de tracking tiers n'est utilisé sans le consentement explicite de l'utilisateur.</p>
+        </div>
+
+        <div class="section">
+            <h2>7. Utilisation acceptable et obligations des utilisateurs</h2>
+            <h3>7.1 Comportement responsable</h3>
+            <p>L'utilisateur s'engage à utiliser le Site de manière loyale, raisonnable et conforme aux lois et règlements en vigueur ainsi qu'aux présentes CGU.</p>
+
+            <h3>7.2 Usages interdits</h3>
+            <p>Sont formellement interdits, sans que cette liste soit limitative :</p>
+            <ul>
+                <li>Toute utilisation du Site à des fins illégales, frauduleuses ou contraires aux bonnes mœurs</li>
+                <li>Toute action de nature à perturber, ralentir ou empêcher le fonctionnement normal du Site</li>
+                <li>Toute tentative d'intrusion, de piratage ou de contournement des mesures de sécurité</li>
+                <li>L'utilisation de dispositifs automatisés (robots, crawlers, scrapers) sans autorisation</li>
+                <li>La collecte systématique de données ou de contenus du Site</li>
+                <li>L'usurpation d'identité ou la divulgation de fausses informations</li>
+                <li>La diffusion de virus, malwares ou tout code malveillant</li>
+                <li>Toute action portant atteinte aux droits de propriété intellectuelle</li>
+            </ul>
+
+            <h3>7.3 Sanctions en cas de non-respect</h3>
+            <p>En cas de manquement aux présentes CGU, OceanPhenix™ se réserve le droit de suspendre ou de bloquer l'accès au Site, temporairement ou définitivement, sans préavis ni indemnité, et de prendre toute mesure appropriée, y compris judiciaire.</p>
+        </div>
+
+        <div class="section">
+            <h2>8. Responsabilité et garanties</h2>
+            <h3>8.1 Limitation de responsabilité</h3>
+            <p>OceanPhenix™ s'efforce de fournir sur le Site des informations aussi précises, complètes et actualisées que possible. Toutefois, OceanPhenix™ ne peut garantir l'exactitude, la complétude, l'actualité ou la pertinence des informations diffusées sur le Site.</p>
+            <p>En conséquence, l'utilisateur reconnaît utiliser les informations et services du Site sous sa seule et entière responsabilité, et OceanPhenix™ décline toute responsabilité concernant :</p>
+            <ul>
+                <li>Les erreurs, inexactitudes ou omissions dans les contenus</li>
+                <li>Les dommages directs ou indirects résultant de l'utilisation du Site</li>
+                <li>L'interruption, la suspension ou l'indisponibilité du Site</li>
+                <li>Les dysfonctionnements techniques, défaillances matérielles ou logicielles</li>
+                <li>Les virus, intrusions ou attaques informatiques</li>
+                <li>L'utilisation non conforme du Site par les utilisateurs</li>
+            </ul>
+
+            <h3>8.2 Services en phase de développement</h3>
+            <p>L'utilisateur reconnaît et accepte que les services et fonctionnalités présentés sur le Site sont en phase d'idéation, de prototypage et de développement actif. Ces services sont fournis "en l'état" sans garantie d'aucune sorte, expresse ou implicite.</p>
+
+            <h3>8.3 Liens hypertextes externes</h3>
+            <p>Le Site peut contenir des liens hypertextes vers des sites web externes (notamment LinkedIn, sites partenaires, plateformes de services). Ces liens sont fournis à titre informatif et OceanPhenix™ n'exerce aucun contrôle sur ces sites tiers.</p>
+            <p>OceanPhenix™ décline toute responsabilité quant au contenu, à la disponibilité, à l'exactitude ou aux pratiques de ces sites externes, ainsi qu'aux éventuels dommages résultant de leur consultation.</p>
+
+            <h3>8.4 Force majeure</h3>
+            <p>OceanPhenix™ ne pourra être tenue responsable de tout retard ou inexécution de ses obligations lorsque la cause du retard ou de l'inexécution est liée à un cas de force majeure tel que défini par la jurisprudence française.</p>
+        </div>
+
+        <div class="section">
+            <h2>9. Modification et évolution des CGU</h2>
+            <h3>9.1 Droit de modification</h3>
+            <p>OceanPhenix™ se réserve le droit de modifier, compléter, préciser ou mettre à jour les présentes Conditions Générales d'Utilisation à tout moment, sans préavis, afin de les adapter aux évolutions du Site, des services proposés, de la réglementation applicable ou pour toute autre raison légitime.</p>
+
+            <h3>9.2 Notification et entrée en vigueur</h3>
+            <p>Les modifications apportées aux CGU entrent en vigueur dès leur publication sur le Site. La date de dernière mise à jour est indiquée en haut de la présente page.</p>
+            <p>L'utilisation continue du Site après la publication de modifications constitue l'acceptation des nouvelles conditions par l'utilisateur.</p>
+
+            <h3>9.3 Consultation régulière</h3>
+            <p>Il est fortement conseillé aux utilisateurs de consulter régulièrement la présente page afin de prendre connaissance des éventuelles modifications apportées aux CGU.</p>
+        </div>
+
+        <div class="section">
+            <h2>10. Droit applicable, médiation et règlement des litiges</h2>
+            <h3>10.1 Droit applicable</h3>
+            <p>Les présentes Conditions Générales d'Utilisation sont régies et interprétées conformément au droit français, à l'exclusion de toute autre législation.</p>
+
+            <h3>10.2 Résolution amiable des différends</h3>
+            <p>En cas de différend ou de réclamation concernant l'interprétation, l'exécution ou la validité des présentes CGU ou de l'utilisation du Site, les parties s'engagent à rechercher en priorité une solution amiable avant toute action contentieuse.</p>
+            <p>Toute réclamation doit être adressée par écrit via les coordonnées fournies à l'article 11 des présentes CGU.</p>
+
+            <h3>10.3 Médiation de la consommation</h3>
+            <p>Conformément aux dispositions des articles L.616-1 et R.616-1 du Code de la consommation, dans l'hypothèse où le Site proposerait à l'avenir des services payants aux consommateurs, l'utilisateur aurait la possibilité de recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable du litige qui l'opposerait à OceanPhenix™.</p>
+
+            <h3>10.4 Attribution de juridiction</h3>
+            <p>À défaut de résolution amiable dans un délai raisonnable, tout litige relatif à l'interprétation, l'exécution ou la rupture des présentes CGU sera soumis aux tribunaux français compétents, conformément aux règles de droit commun.</p>
+            <p>Pour les litiges avec des consommateurs au sens du Code de la consommation, les juridictions compétentes sont celles du ressort du domicile du consommateur ou du lieu de la prestation de service.</p>
+        </div>
+
+        <div class="section">
+            <h2>11. Divisibilité des clauses</h2>
+            <p>Si une ou plusieurs stipulations des présentes CGU sont tenues pour non valides ou déclarées comme telles en application d'une loi, d'un règlement ou à la suite d'une décision définitive d'une juridiction compétente, les autres stipulations garderont toute leur force et leur portée, sauf si les clauses invalidées ont un caractère essentiel et déterminant.</p>
+        </div>
+
+        <div class="section">
+            <h2>12. Non-renonciation</h2>
+            <p>Le fait pour OceanPhenix™ de ne pas se prévaloir d'un manquement de l'utilisateur à l'une quelconque des obligations des présentes CGU ne saurait être interprété comme une renonciation à se prévaloir ultérieurement de ce manquement.</p>
+        </div>
+
+        <div class="section">
+            <h2>13. Contact et réclamations</h2>
+            <h3>13.1 Coordonnées de contact</h3>
+            <p>Pour toute question, information complémentaire, réclamation ou exercice de vos droits concernant les présentes Conditions Générales d'Utilisation ou l'utilisation du Site, vous pouvez contacter l'éditeur par les moyens suivants :</p>
+            <ul>
+                <li><strong>Nom :</strong> Stéphane Celton</li>
+                <li><strong>Contact professionnel LinkedIn :</strong> <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener" class="highlight">linkedin.com/in/stephane-celton</a></li>
+                <li><strong>Site web professionnel :</strong> <a href="https://stephanecelton.oceanphenix.fr" target="_blank" rel="noopener" class="highlight">stephanecelton.oceanphenix.fr</a></li>
+            </ul>
+
+            <h3>13.2 Délai de réponse</h3>
+            <p>OceanPhenix™ s'engage à répondre aux demandes légitimes dans les meilleurs délais et, en tout état de cause, dans les délais légalement prévus lorsque la réglementation l'impose (notamment pour l'exercice des droits relatifs aux données personnelles).</p>
+        </div>
+    </div>
+
+    <div class="copyright-bar">
+        <div class="copyright-content">
+            ⚖️ OceanPhenix™ et oceanphenix.fr sont des marques et noms de domaine protégés. Tous droits réservés.
+            <a href="cgu.html">CGU</a>
+        </div>
+    </div>
+</body>
+</html>

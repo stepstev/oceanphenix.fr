@@ -1,0 +1,36 @@
+User-agent: *
+Allow: /
+
+# Sitemap principal
+Sitemap: https://oceanphenix.fr/sitemap.xml
+
+# Optimisation crawl
+Crawl-delay: 1
+
+# Assets publics
+Allow: /Images/
+Allow: /css/
+Allow: /js/
+
+# Fichiers sensibles interdits
+Disallow: /.htaccess
+Disallow: /*.bak
+Disallow: /*.backup
+Disallow: /security.txt
+Disallow: /*.md
+Disallow: /.well-known/
+
+# Pages non indexables
+Disallow: /cgu.html
+Disallow: /maintenance.html
+Disallow: /404.html
+Disallow: /403.html
+Disallow: /500.html
+
+# ==========================================
+# SOUS-DOMAINES (à créer dans chaque racine)
+# ==========================================
+# stephanecelton.oceanphenix.fr/robots.txt
+# site.oceanphenix.fr/robots.txt
+# ia.oceanphenix.fr/robots.txt
+# mba.oceanphenix.fr/robots.txt
