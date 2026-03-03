@@ -1,0 +1,432 @@
+---
+// src/pages/rag-2026.astro — Page démo RAG Platform 2026 Public
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import OceanBackground from '../components/OceanBackground.astro';
+import Footer from '../components/Footer.astro';
+import CopyrightBar from '../components/CopyrightBar.astro';
+---
+
+<BaseLayout
+  title="RAG Platform 2026 — Stack Publique | OceanPhenix"
+  description="Découvrez la stack RAG 2026 publique de Stéphane Celton : architecture modulaire, LLM local Ollama, Qdrant VectorDB, OpenWebUI, FastAPI. Déploiement Docker Compose souverain."
+  lastModified="03/03/2026 12:00"
+>
+  <OceanBackground />
+  <Nav />
+
+  <main class="main-content rag-page">
+
+    <!-- ── HERO ─────────────────────────────────────────── -->
+    <section class="rag-hero">
+      <div class="container">
+        <div class="rag-hero-badge">
+          <span class="section-badge">
+            <i class="fas fa-database"></i> RAG Stack 2026
+          </span>
+          <span class="rag-status-badge rag-status-public">
+            <i class="fab fa-github"></i> Public
+          </span>
+        </div>
+        <h1 class="rag-hero-title">
+          <span class="gradient-text">RAG Platform 2026</span>
+        </h1>
+        <p class="rag-hero-subtitle">
+          Stack RAG modulaire, souveraine et reproductible — déployable en quelques minutes via Docker Compose.
+          LLM local, recherche vectorielle, interface conversationnelle et ingestion de documents.
+        </p>
+        <div class="rag-hero-actions">
+          <a
+            href="https://github.com/stepstev/rag-platform-2026-public"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rag-btn rag-btn-primary"
+          >
+            <i class="fab fa-github"></i> Voir sur GitHub
+          </a>
+          <a
+            href="https://www.youtube.com/watch?v=znjMTwqLq1k"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rag-btn rag-btn-secondary"
+          >
+            <i class="fab fa-youtube"></i> Voir la démo vidéo
+          </a>
+          <a href="/" class="rag-btn rag-btn-ghost">
+            <i class="fas fa-arrow-left"></i> Retour
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DÉMO EMBED ────────────────────────────────────── -->
+    <section class="rag-embed-section">
+      <div class="container">
+        <h2 class="rag-section-title">
+          <i class="fas fa-play-circle icon-accent"></i> Démonstration
+        </h2>
+        <div class="rag-video-wrapper">
+          <iframe
+            src="https://www.youtube.com/embed/znjMTwqLq1k"
+            title="RAG Platform 2026 - Démonstration"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STACK TECHNIQUE ──────────────────────────────── -->
+    <section class="rag-stack-section">
+      <div class="container">
+        <h2 class="rag-section-title">
+          <i class="fas fa-layer-group icon-accent"></i> Stack technique
+        </h2>
+        <div class="rag-stack-grid">
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-robot"></i></div>
+            <h3>LLM Local</h3>
+            <p>Ollama — modèles open-source exécutés localement, sans dépendance cloud.</p>
+            <span class="rag-tech-tag">Ollama</span>
+          </div>
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-search"></i></div>
+            <h3>Recherche Vectorielle</h3>
+            <p>Qdrant VectorDB pour la recherche sémantique sur documents indexés.</p>
+            <span class="rag-tech-tag">Qdrant</span>
+          </div>
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-comments"></i></div>
+            <h3>Interface Chat</h3>
+            <p>OpenWebUI — interface conversationnelle moderne, compatible Ollama.</p>
+            <span class="rag-tech-tag">OpenWebUI</span>
+          </div>
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-bolt"></i></div>
+            <h3>API Backend</h3>
+            <p>FastAPI + LangChain pour l'orchestration RAG et les endpoints REST.</p>
+            <span class="rag-tech-tag">FastAPI</span>
+            <span class="rag-tech-tag">LangChain</span>
+          </div>
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-file-alt"></i></div>
+            <h3>Ingestion Documents</h3>
+            <p>Pipeline d'ingestion PDF, Web et texte avec embeddings locaux.</p>
+            <span class="rag-tech-tag">Embeddings</span>
+            <span class="rag-tech-tag">PDF / Web</span>
+          </div>
+
+          <div class="rag-stack-card">
+            <div class="rag-stack-icon"><i class="fas fa-cubes"></i></div>
+            <h3>Déploiement</h3>
+            <p>Docker Compose — démarrage de toute la stack en une commande.</p>
+            <span class="rag-tech-tag">Docker Compose</span>
+            <span class="rag-tech-tag">PostgreSQL</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── GITHUB EMBED ──────────────────────────────────── -->
+    <section class="rag-github-section">
+      <div class="container">
+        <h2 class="rag-section-title">
+          <i class="fab fa-github icon-accent"></i> Dépôt GitHub
+        </h2>
+        <div class="rag-github-card">
+          <div class="rag-github-header">
+            <i class="fab fa-github rag-github-icon"></i>
+            <div>
+              <h3>stepstev / rag-platform-2026-public</h3>
+              <p>Dépôt public — Architecture RAG souveraine 2026</p>
+            </div>
+          </div>
+          <div class="rag-github-meta">
+            <span><i class="fas fa-star"></i> Open Source</span>
+            <span><i class="fas fa-code-branch"></i> Docker Compose</span>
+            <span><i class="fas fa-shield-alt"></i> Souverain</span>
+            <span><i class="fas fa-unlock"></i> Reproductible</span>
+          </div>
+          <a
+            href="https://github.com/stepstev/rag-platform-2026-public"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rag-btn rag-btn-primary rag-github-cta"
+          >
+            <i class="fab fa-github"></i> Accéder au dépôt complet
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA RETOUR ────────────────────────────────────── -->
+    <section class="rag-back-section">
+      <div class="container">
+        <a href="/" class="rag-btn rag-btn-ghost">
+          <i class="fas fa-arrow-left"></i> Retour à OceanPhenix
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+  <CopyrightBar />
+
+</BaseLayout>
+
+<style>
+  /* ── Page wrapper ──────────────────────────────────────── */
+  .rag-page {
+    padding-top: 5rem;
+  }
+
+  /* ── HERO ──────────────────────────────────────────────── */
+  .rag-hero {
+    padding: var(--spacing-xxl) 0 var(--spacing-xl);
+    text-align: center;
+  }
+  .rag-hero-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+  .rag-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .rag-status-public {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  .rag-hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.15;
+  }
+  .rag-hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto var(--spacing-xl);
+    line-height: 1.7;
+  }
+  .rag-hero-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Boutons ───────────────────────────────────────────── */
+  .rag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-medium);
+    cursor: pointer;
+    border: none;
+  }
+  .rag-btn-primary {
+    background: var(--accent-gradient);
+    color: var(--primary-dark);
+  }
+  .rag-btn-primary:hover {
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+  .rag-btn-secondary {
+    background: rgba(255, 0, 0, 0.12);
+    color: #ff4444;
+    border: 1px solid rgba(255, 68, 68, 0.3);
+  }
+  .rag-btn-secondary:hover {
+    background: rgba(255, 0, 0, 0.2);
+    transform: translateY(-2px);
+  }
+  .rag-btn-ghost {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-muted);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .rag-btn-ghost:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+  }
+
+  /* ── Titres de section ─────────────────────────────────── */
+  .rag-section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  /* ── Vidéo embed ───────────────────────────────────────── */
+  .rag-embed-section {
+    padding: var(--spacing-xl) 0;
+  }
+  .rag-video-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    box-shadow: var(--shadow-glow);
+  }
+  .rag-video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ── Stack cards ───────────────────────────────────────── */
+  .rag-stack-section {
+    padding: var(--spacing-xl) 0;
+  }
+  .rag-stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-md);
+  }
+  .rag-stack-card {
+    background: rgba(30, 58, 95, 0.35);
+    border: 1px solid rgba(0, 217, 255, 0.12);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    transition: var(--transition-medium);
+  }
+  .rag-stack-card:hover {
+    border-color: rgba(0, 217, 255, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 217, 255, 0.1);
+  }
+  .rag-stack-icon {
+    font-size: 1.6rem;
+    color: var(--accent-cyan);
+    margin-bottom: 0.8rem;
+  }
+  .rag-stack-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+  .rag-stack-card p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+  }
+  .rag-tech-tag {
+    display: inline-block;
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--accent-cyan);
+    border: 1px solid rgba(0, 217, 255, 0.25);
+    border-radius: var(--radius-full);
+    padding: 0.2rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-right: 0.3rem;
+    margin-top: 0.2rem;
+  }
+
+  /* ── GitHub card ───────────────────────────────────────── */
+  .rag-github-section {
+    padding: var(--spacing-xl) 0;
+  }
+  .rag-github-card {
+    background: rgba(13, 17, 23, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    max-width: 680px;
+  }
+  .rag-github-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+  .rag-github-icon {
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .rag-github-header h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+  }
+  .rag-github-header p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .rag-github-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  .rag-github-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .rag-github-meta i {
+    color: var(--accent-cyan);
+  }
+  .rag-github-cta {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem;
+    font-size: 0.95rem;
+  }
+
+  /* ── Back section ──────────────────────────────────────── */
+  .rag-back-section {
+    padding: var(--spacing-lg) 0 var(--spacing-xxl);
+  }
+
+  /* ── Container ─────────────────────────────────────────── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+  }
+</style>

@@ -2,6 +2,7 @@
   "name": "oceanphenix-fr",
   "type": "module",
   "version": "1.0.0",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -9,6 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/mdx": "^3.1.9",
     "astro": "^4.16.0"
   }
 }

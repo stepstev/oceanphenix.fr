@@ -127,9 +127,26 @@ push main → deploy.yml → npm run build → GitHub Pages (oceanphenix.fr)
 
 ---
 
+## Licence
+
+> **PROPRIÉTAIRE — TOUS DROITS RÉSERVÉS**
+
+Ce projet est soumis à une licence propriétaire exclusive.  
+**Toute reproduction, copie, imitation ou réutilisation du concept, du design ou du code est strictement interdite** sans autorisation écrite préalable de l'auteur.
+
+Voir le fichier [`LICENSE`](./LICENSE) pour le texte complet.
+
+| Élément | Statut |
+|---|---|
+| Code source | © Stéphane Celton — usage privé uniquement |
+| Concept & design | Protégé — reproduction interdite |
+| Marque OceanPhenix™ | Marque déposée |
+
+---
+
 ## Auteur
 
 **Stéphane Celton**  
 [linkedin.com/in/stephane-celton](https://www.linkedin.com/in/stephane-celton) · [stephanecelton.oceanphenix.fr](https://stephanecelton.oceanphenix.fr)
 
-*© 2026 OceanPhenix™ — Tous droits réservés*
+*© 2025–2026 OceanPhenix™ — Tous droits réservés. Reproduction interdite.*
