@@ -1,29 +1,30 @@
 # =================================================================
 # .htaccess OPTIMISÉ pour OceanPhenix + O2Switch
-# Version: 2.1 - 03/01/2026 - Optimisé compatibilité maximale
+# Version: 3.0 - 03/01/2026 - 100% Compatible O2Switch
 # =================================================================
 
 # Configuration de base O2Switch
 ServerSignature Off
-Options -Indexes -MultiViews +FollowSymLinks
+Options -Indexes +FollowSymLinks
 DirectoryIndex index.html index.htm
 
 # =================================================================
 # SÉCURITÉ RENFORCÉE
 # =================================================================
 
-# Force HTTPS (à activer après installation SSL)
+# Force HTTPS (Méthode O2Switch officielle avec X-Forwarded-Proto)
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
     
+    # Force HTTPS - Méthode O2Switch (prioritaire)
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteCond %{HTTPS} !on
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
     # Redirection www vers non-www (O2Switch compatible)
     RewriteCond %{HTTP_HOST} ^www\.oceanphenix\.fr$ [NC]
     RewriteRule ^(.*)$ https://oceanphenix.fr/$1 [L,R=301]
-    
-    # Force HTTPS (O2Switch SSL)
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
 # Headers de Sécurité
@@ -49,10 +50,10 @@ DirectoryIndex index.html index.htm
     # Permissions-Policy (désactive features non utilisées)
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()"
     
-    # Cross-Origin Policies pour isolation maximale
-    Header always set Cross-Origin-Opener-Policy "same-origin"
-    Header always set Cross-Origin-Resource-Policy "same-origin"
-    Header always set Cross-Origin-Embedder-Policy "require-corp"
+    # Cross-Origin Policies pour isolation maximale (optionnel - peut causer des erreurs)
+    # Header always set Cross-Origin-Opener-Policy "same-origin"
+    # Header always set Cross-Origin-Resource-Policy "same-origin"
+    # Header always set Cross-Origin-Embedder-Policy "require-corp"
 </IfModule>
 
 # Protection fichiers sensibles
@@ -64,10 +65,9 @@ DirectoryIndex index.html index.htm
     Require all denied
 </FilesMatch>
 
-# Blocage bots malveillants
+# Blocage bots malveillants (modéré pour O2switch)
 <IfModule mod_rewrite.c>
-    RewriteCond %{HTTP_USER_AGENT} (nikto|curl|wget|scanner|bot|scraper|sqlmap) [NC,OR]
-    RewriteCond %{HTTP_USER_AGENT} (libwww-perl|python-requests|PhantomJS) [NC]
+    RewriteCond %{HTTP_USER_AGENT} (nikto|sqlmap|masscan) [NC]
     RewriteRule .* - [F,L]
 </IfModule>
 
@@ -154,9 +154,12 @@ DirectoryIndex index.html index.htm
         Header set Cache-Control "public, max-age=2592000, must-revalidate"
     </FilesMatch>
     
-    # HTML - Cache court avec revalidation
+    # HTML - Désactivation complète du cache (serveur + navigateur)
     <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "public, max-age=3600, must-revalidate"
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+        Header unset ETag
     </FilesMatch>
     
     # Fonts
