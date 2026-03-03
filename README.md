@@ -1,248 +1,135 @@
-# 🌊 OceanPhenix
+﻿# OceanPhenix.fr — Site Portfolio Professionnel
 
-[![Sécurité](https://img.shields.io/badge/Sécurité-A+-brightgreen)](https://observatory.mozilla.org/)
-[![Performance](https://img.shields.io/badge/Performance-94%2F100-success)](https://pagespeed.web.dev/)
-[![Hébergement](https://img.shields.io/badge/Hébergement-O2Switch%20🇫🇷-blue)](https://www.o2switch.fr/)
-[![License](https://img.shields.io/badge/License-Proprietary-red)](./cgu.html)
-
-> **Site vitrine professionnel** - Stéphane Celton, Data Product Manager & Innovation Tech
-
-Site web moderne, sécurisé et optimisé présentant mes expertises en Data Product Management, BI, IA et innovation technologique.
-
-🔗 **Site en ligne** : [oceanphenix.fr](https://oceanphenix.fr)
+> **Stéphane Celton** · Data Product Manager · Senior Data Analyst BI · Production Engineer  
+> Site vitrine construit avec **Astro v4** · Hébergé sur **GitHub Pages** · Domaine custom `oceanphenix.fr`
 
 ---
 
-## 🎯 Caractéristiques principales
+## Stack technique
 
-### 🛡️ Sécurité niveau A+
-- ✅ **Headers de sécurité optimisés** (CSP, HSTS, X-Frame-Options)
-- ✅ **security.txt** conforme RFC 9116
-- ✅ **Certificat SSL/TLS** avec HSTS preload
-- ✅ **Score Mozilla Observatory** : A/A+
-- ✅ **Protection anti-hotlinking** et blocage bots malveillants
-
-### ⚡ Performance optimisée
-- ✅ **Score Lighthouse** : 94+/100
-- ✅ **Compression Gzip/Brotli** active
-- ✅ **Cache navigateur** optimisé (images 2 ans, CSS/JS 1 mois)
-- ✅ **CSS critique inline** + lazy loading
-- ✅ **Architecture 100% statique** (HTML/CSS/JS)
-
-### ♿ Accessibilité WCAG AA
-- ✅ **Contrastes conformes** WCAG 2.1 niveau AA
-- ✅ **Navigation clavier** complète
-- ✅ **Structure sémantique** HTML5
-- ✅ **Textes alternatifs** sur toutes les images
-
-### 🇫🇷 Hébergement souverain
-- ✅ **O2Switch France** (Clermont-Ferrand)
-- ✅ **Serveurs Apache 2.4** optimisés
-- ✅ **Support 24/7** en français
-- ✅ **99.9% uptime** garanti
+| Couche | Technologie |
+|--------|-------------|
+| Framework | [Astro v4](https://astro.build) (SSG — Static Site Generation) |
+| CSS | Design tokens + CSS global scopé |
+| JS | Vanilla JS (`public/js/main.js`) |
+| CI/CD | GitHub Actions (`.github/workflows/deploy.yml`) |
+| Hébergement | GitHub Pages |
+| Domaine | `oceanphenix.fr` (DNS via o2switch) |
+| Fonts | IBM Plex Sans + Roboto (Google Fonts) |
+| Icons | Font Awesome 6.5 |
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
-oceanphenix.fr/
-├── index.html                      # Page principale
-├── cgu.html                        # Conditions générales d'utilisation
-├── 404.html                        # Page erreur 404 personnalisée
-├── 403.html                        # Page erreur 403 personnalisée
-├── 500.html                        # Page erreur 500 personnalisée
-├── .htaccess                       # Configuration Apache sécurisée
-├── .htaccess_SECURISE_V3          # Version sécurité A+ (backup)
-├── sitemap.xml                     # Plan du site pour SEO
-├── robots.txt                      # Instructions robots d'indexation
-├── .well-known/
-│   └── security.txt               # Contact sécurité (RFC 9116)
-├── css/
-│   ├── critical.css               # CSS critique inline
-│   └── main.css                   # CSS principal (defer)
-├── js/
-│   └── main.js                    # JavaScript principal
-├── Images/
-│   ├── 2026_.png                  # Carte de vœux 2026
-│   ├── ThinkinG.png               # Background hero
-│   └── logos/                     # Logos et icônes
-└── docs/
-    ├── RAPPORT_SECURITE_O2SWITCH.md    # Audit sécurité complet
-    └── GUIDE_DEPLOIEMENT_O2SWITCH.md   # Guide de déploiement
+src/
+├── components/
+│   ├── Nav.astro              # Navigation fixe
+│   ├── Hero.astro             # Section introduction
+│   ├── Platforms.astro        # 3 cartes (RAG-IA, Portfolio, LinkedIn)
+│   ├── CvSection.astro        # Business card + téléchargement
+│   ├── Footer.astro           # Bio Stéphane Celton
+│   ├── CopyrightBar.astro     # Barre bas de page + heure chargement
+│   ├── WelcomePopup.astro     # Popup 2026 + bouton étoile
+│   ├── OceanBackground.astro  # Fond animé (3 vagues)
+│   └── CguModal.astro         # Modal CGU complète
+├── layouts/
+│   └── BaseLayout.astro       # <head> SEO + imports CSS + wrapper
+├── pages/
+│   ├── index.astro            # Page principale
+│   └── 404.astro              # Erreur 404 personnalisée
+└── styles/
+    ├── tokens.css             # Design tokens — branding OceanPhenix
+    └── global.css             # Reset, layout, composants, animations
+
+public/
+├── Images/                    # Logos, photos
+├── js/main.js                 # JS vanilla (popup, CGU, heure)
+├── robots.txt                 # SEO crawling rules
+├── sitemap.xml                # SEO sitemap
+├── CNAME                      # Domaine custom GitHub Pages
+└── .well-known/security.txt   # Security contact
 ```
 
 ---
 
-## 🚀 Installation & Déploiement
+## Architecture CSS
 
-### Prérequis
-- Serveur web **Apache 2.4+** ou **Nginx**
-- **PHP 8.0+** (optionnel, pour fonctionnalités futures)
-- **Certificat SSL/TLS** actif
-- Modules Apache : `mod_rewrite`, `mod_headers`, `mod_deflate`, `mod_expires`
+Séparation en 2 couches selon les best practices Astro :
 
-### Déploiement O2Switch (recommandé)
+### `src/styles/tokens.css` — Design Tokens (Branding)
 
-1. **Connexion FTP/SFTP**
-   ```bash
-   Hôte: ftp.oceanphenix.fr
-   Port: 22 (SFTP recommandé)
-   ```
+Source de vérité de l'identité visuelle OceanPhenix. Contient **uniquement** les CSS custom properties (`:root`) :
 
-2. **Upload des fichiers**
-   - Uploader tous les fichiers vers `/public_html/` ou `/www/`
-   - Vérifier les permissions (644 pour fichiers, 755 pour dossiers)
+- Couleurs · `--accent-cyan: #00d9ff`, `--primary-dark: #0a1929`…
+- Typographies · `--font-primary`, `--font-secondary`
+- Espacements · `--spacing-xs` → `--spacing-xxl`
+- Radius, ombres, transitions
 
-3. **Configuration SSL**
-   - Activer SSL dans cPanel O2Switch
-   - Vérifier HTTPS forcé via `.htaccess`
+> **Modifier ce fichier pour changer le branding.**
 
-4. **Tests post-déploiement**
-   - ✅ https://oceanphenix.fr (site accessible)
-   - ✅ https://observatory.mozilla.org/ (scan sécurité)
-   - ✅ https://pagespeed.web.dev/ (scan performance)
+### `src/styles/global.css` — Styles Globaux
 
-📖 **Guide complet** : [GUIDE_DEPLOIEMENT_O2SWITCH.md](./GUIDE_DEPLOIEMENT_O2SWITCH.md)
+Reset CSS, animations, layout, styles de tous les composants. Consomme les variables de `tokens.css`.
 
----
+Les deux sont importés dans `BaseLayout.astro` :
 
-## 🔒 Sécurité
-
-### Headers de sécurité implémentés
-
-```apache
-Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com
-X-Frame-Options: DENY
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: geolocation=(), microphone=(), camera=()...
-Cross-Origin-Opener-Policy: same-origin
+```js
+import '../styles/tokens.css';  // Design tokens (branding)
+import '../styles/global.css';  // Styles globaux + composants
 ```
 
-### Fonctionnalités de sécurité
-- 🔐 **HTTPS uniquement** (redirection HTTP → HTTPS)
-- 🔐 **Protection fichiers sensibles** (.htaccess, .env, .git)
-- 🔐 **Anti-hotlinking** images et médias
-- 🔐 **Blocage bots malveillants** (nikto, sqlmap, scrapers)
-- 🔐 **Pages d'erreur personnalisées** (404, 403, 500)
+---
 
-📊 **Rapport de sécurité** : [RAPPORT_SECURITE_O2SWITCH.md](./RAPPORT_SECURITE_O2SWITCH.md)
+## Développement local
+
+```bash
+npm install          # Installer les dépendances
+npm run dev          # Dev server → http://localhost:4321
+npm run build        # Build production → dist/
+npm run preview      # Prévisualiser dist/
+```
 
 ---
 
-## 📈 Performance
+## Déploiement
 
-### Optimisations appliquées
+Automatique à chaque push sur `main` via GitHub Actions :
 
-| Optimisation | Technique | Gain |
-|--------------|-----------|------|
-| **Images** | Cache 2 ans + immutable | -90% requêtes |
-| **CSS/JS** | Cache 1 mois + minification | -60% bande passante |
-| **HTML** | Compression Gzip niveau 6 | -70% taille |
-| **Fonts** | Preconnect + WOFF2 | -500ms chargement |
-| **CDN** | Cloudflare (Font Awesome) | -200ms latence |
+```
+push main → deploy.yml → npm run build → GitHub Pages (oceanphenix.fr)
+```
 
-### Scores actuels
-- 🚀 **Lighthouse Performance** : 94/100
-- 🚀 **First Contentful Paint** : < 1.2s
-- 🚀 **Time to Interactive** : < 2.5s
-- 🚀 **Cumulative Layout Shift** : < 0.1
+**Prérequis GitHub :**
+- Repo public
+- Settings → Pages → Source → **GitHub Actions**
 
----
+**DNS o2switch :**
 
-## 🛠️ Technologies utilisées
-
-### Frontend
-- **HTML5** - Structure sémantique
-- **CSS3** - Variables CSS, Grid, Flexbox
-- **JavaScript ES6+** - Vanilla JS (pas de framework)
-
-### Fonts & Icons
-- **IBM Plex Sans** - Typographie principale
-- **Roboto** - Typographie secondaire
-- **Font Awesome 6.5** - Icônes
-
-### Infrastructure
-- **O2Switch** - Hébergement France
-- **Apache 2.4** - Serveur web
-- **Let's Encrypt** - Certificat SSL/TLS gratuit
+| Type | Nom | Valeur |
+|------|-----|--------|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | stepstev.github.io |
 
 ---
 
-## 📝 Mentions légales
+## Qualité code
 
-### Éditeur du site
-- **Nom** : Stéphane Celton
-- **Marque** : OceanPhenix™
-- **Contact** : [LinkedIn - Stéphane Celton](https://www.linkedin.com/in/stephane-celton)
-
-### Hébergement
-- **Hébergeur** : o2switch SARL
-- **Adresse** : 222-224 Boulevard Gustave Flaubert, 63000 Clermont-Ferrand, France
-- **Site web** : [www.o2switch.fr](https://www.o2switch.fr)
-
-### Propriété intellectuelle
-- **Marque** : OceanPhenix™ est une marque déposée
-- **Domaine** : oceanphenix.fr est un nom de domaine protégé
-- **Contenu** : Tous droits réservés © 2025-2026 Stéphane Celton
-
-📄 **CGU complètes** : [cgu.html](./cgu.html)
+- ✅ Zéro `style=""` inline (Sonar `no-inline-styles`)
+- ✅ Couleurs via variables CSS (pas de valeurs hardcodées)
+- ✅ Séparation design tokens / styles globaux
+- ✅ Assets dans `public/` (chemins `/Images/`, `/js/`)
+- ✅ HTML sémantique, SEO meta complets
 
 ---
 
-## 🔗 Liens utiles
+## Auteur
 
-- 🌐 **Site principal** : [oceanphenix.fr](https://oceanphenix.fr)
-- 👤 **Profil** : [stephanecelton.oceanphenix.fr](https://stephanecelton.oceanphenix.fr)
-- 💼 **LinkedIn** : [linkedin.com/in/stephane-celton](https://www.linkedin.com/in/stephane-celton)
-- 📊 **Dashboard** : [health.oceanphenix.fr](https://health.oceanphenix.fr)
-- 🔒 **Sécurité** : [.well-known/security.txt](https://oceanphenix.fr/.well-known/security.txt)
+**Stéphane Celton**  
+[linkedin.com/in/stephane-celton](https://www.linkedin.com/in/stephane-celton) · [stephanecelton.oceanphenix.fr](https://stephanecelton.oceanphenix.fr)
 
----
-
-## 📞 Support & Contact
-
-### Signaler une vulnérabilité
-Conformément à la politique de divulgation responsable, merci de contacter :
-- 📧 **Contact sécurité** : Voir [security.txt](https://oceanphenix.fr/.well-known/security.txt)
-- 💼 **LinkedIn** : [Stéphane Celton](https://www.linkedin.com/in/stephane-celton)
-
-### Support technique O2Switch
-- 📧 **Email** : support@o2switch.fr
-- 📞 **Téléphone** : +33 4 44 44 60 40
-- ⏰ **Disponibilité** : 24/7
-
----
-
-## 📊 Changelog
-
-### Version 4.0 (2026-02-23)
-- ✨ Architecture 100% statique optimisée
-- 🔒 Sécurité A+ (Mozilla Observatory)
-- 🚀 Performance 94/100 (Lighthouse)
-- 🇫🇷 Migration vers O2Switch France
-- ♿ Conformité WCAG AA
-- 📄 Pages d'erreur personnalisées
-- 📝 CGU complètes
-- 🎨 Popup 2026 festive avec carte de vœux
-
----
-
-## 📜 License
-
-**Propriétaire** - Tous droits réservés © 2025-2026 Stéphane Celton / OceanPhenix™
-
-Ce site et son contenu sont protégés par le droit d'auteur et la propriété intellectuelle. Toute reproduction, même partielle, est strictement interdite sans autorisation écrite préalable.
-
----
-
-<div align="center">
-
-**Développé avec ❤️ en France par Stéphane Celton**
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Stéphane%20Celton-0077B5?logo=linkedin)](https://www.linkedin.com/in/stephane-celton)
-[![Website](https://img.shields.io/badge/Website-oceanphenix.fr-00d9ff)](https://oceanphenix.fr)
-
-</div>
+*© 2026 OceanPhenix™ — Tous droits réservés*
