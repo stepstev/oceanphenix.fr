@@ -1,0 +1,380 @@
+---
+// src/pages/expertises.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OceanBackground from '../components/OceanBackground.astro';
+import Nav from '../components/Nav.astro';
+---
+
+<BaseLayout
+  title="Expertises — Stéphane Celton | Data Product Manager | OceanPhenix"
+  description="Domaines d'intervention : Data Product Management, Business Intelligence, Power BI, Gouvernance Data, Observabilité, Architecture Data. +20 ans en environnements critiques (banque, industrie, énergie)."
+  canonical="https://oceanphenix.fr/expertises"
+>
+  <script type="application/ld+json" slot="head">
+  {JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Stéphane Celton",
+    "url": "https://oceanphenix.fr/expertises",
+    "jobTitle": "Data Product Manager",
+    "knowsAbout": [
+      "Data Product Management","Business Intelligence","Power BI","TMDL","Gouvernance Data","Architecture décisionnelle","Observabilité","MCO","Production IT","Agile","SQL","Python"
+    ]
+  })}
+  </script>
+
+  <OceanBackground />
+  <Nav />
+
+  <main class="exp-main">
+
+    <div class="exp-header">
+      <div class="exp-badge"><i class="fas fa-briefcase"></i> DOMAINES D'INTERVENTION</div>
+      <h1 class="exp-title">Expertises</h1>
+      <p class="exp-tagline">
+        +20 ans d'expérience dans la conception et l'industrialisation de solutions data<br>
+        en environnements critiques — <strong>banque, industrie, énergie</strong>.
+      </p>
+      <a href="https://stephanecelton.oceanphenix.fr/" target="_blank" rel="noopener" class="exp-cta">
+        <i class="fas fa-external-link-alt"></i> Voir le portfolio complet
+      </a>
+    </div>
+
+    <div class="exp-grid">
+
+      <!-- DATA PRODUCT MANAGEMENT -->
+      <div class="exp-card">
+        <div class="exp-card-icon"><i class="fas fa-cubes"></i></div>
+        <h2 class="exp-card-title">Data Product Management</h2>
+        <ul class="exp-list">
+          <li>Cadrage et structuration des usages data</li>
+          <li>Définition et pilotage de la roadmap produit</li>
+          <li>Priorisation orientée valeur métier</li>
+          <li>Ownership fonctionnel des assets data</li>
+          <li>Alignement avec les parties prenantes</li>
+        </ul>
+      </div>
+
+      <!-- BUSINESS INTELLIGENCE -->
+      <div class="exp-card">
+        <div class="exp-card-icon"><i class="fas fa-chart-bar"></i></div>
+        <h2 class="exp-card-title">Business Intelligence &amp; Data Platforms</h2>
+        <ul class="exp-list">
+          <li>Architecture décisionnelle (Lakehouse, DWH)</li>
+          <li>Power BI — modélisation TMDL, DAX avancé</li>
+          <li>Structuration des modèles sémantiques</li>
+          <li>Self-service BI maîtrisé</li>
+          <li>Reporting opérationnel et exécutif</li>
+        </ul>
+      </div>
+
+      <!-- GOUVERNANCE -->
+      <div class="exp-card">
+        <div class="exp-card-icon"><i class="fas fa-shield-alt"></i></div>
+        <h2 class="exp-card-title">Gouvernance &amp; Fiabilité des Données</h2>
+        <ul class="exp-list">
+          <li>Politique qualité des données</li>
+          <li>Indicateurs de fiabilité et traçabilité</li>
+          <li>Documentation des assets (data catalog)</li>
+          <li>Conformité et contrôle de la donnée</li>
+          <li>Stewardship et ownership data</li>
+        </ul>
+      </div>
+
+      <!-- INDUSTRIALISATION -->
+      <div class="exp-card">
+        <div class="exp-card-icon"><i class="fas fa-cogs"></i></div>
+        <h2 class="exp-card-title">Industrialisation &amp; Observabilité</h2>
+        <ul class="exp-list">
+          <li>MCO des plateformes data et BI</li>
+          <li>Monitoring data et indicateurs de production</li>
+          <li>Observabilité des systèmes data</li>
+          <li>Automatisation raisonnée des flux</li>
+          <li>CI/CD appliqué à la data (TMDL, Git)</li>
+        </ul>
+      </div>
+
+      <!-- IA & RAG -->
+      <div class="exp-card exp-card--featured">
+        <div class="exp-card-icon"><i class="fas fa-brain"></i></div>
+        <h2 class="exp-card-title">IA Appliquée &amp; RAG Souverain</h2>
+        <ul class="exp-list">
+          <li>Architecture RAG sur infrastructure souveraine</li>
+          <li>LLM locaux (Ollama, Mistral, LLaMA)</li>
+          <li>Intégration IA dans les processus data</li>
+          <li>Évaluation pragmatique des cas d'usage IA</li>
+          <li>POC et prototypage orienté métier</li>
+        </ul>
+      </div>
+
+      <!-- PILOTAGE -->
+      <div class="exp-card exp-card--featured">
+        <div class="exp-card-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <h2 class="exp-card-title">Pilotage IT &amp; Production</h2>
+        <ul class="exp-list">
+          <li>Production Engineer — systèmes critiques</li>
+          <li>Gestion des incidents et de la continuité</li>
+          <li>Supervision et alerting opérationnel</li>
+          <li>Agile / Scrum — pilotage des livraisons</li>
+          <li>Coordination équipes techniques et MOA</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Environnements sectoriels -->
+    <div class="exp-sectors">
+      <div class="exp-sectors-label"><i class="fas fa-industry"></i> Environnements sectoriels</div>
+      <div class="exp-sectors-list">
+        <span class="exp-sector">🏦 Banque &amp; Assurance</span>
+        <span class="exp-sector">⚡ Énergie</span>
+        <span class="exp-sector">🏭 Industrie</span>
+        <span class="exp-sector">✈️ Aéronautique &amp; Défense</span>
+        <span class="exp-sector">🏥 Santé &amp; Services publics</span>
+      </div>
+    </div>
+
+    <!-- CTA bas de page -->
+    <div class="exp-footer-cta">
+      <a href="/portfolio" class="exp-btn-port"><i class="fas fa-id-badge"></i> Portfolio</a>
+      <a href="/#platforms" class="exp-btn-demo"><i class="fas fa-layer-group"></i> Projets &amp; Démos</a>
+      <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener" class="exp-btn-li"><i class="fab fa-linkedin"></i> LinkedIn</a>
+    </div>
+
+  </main>
+
+</BaseLayout>
+
+<style>
+  .exp-main {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .exp-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+
+  .exp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 217, 255, 0.08);
+    border: 1px solid rgba(0, 217, 255, 0.25);
+    color: #00d9ff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    margin-bottom: 1.2rem;
+  }
+
+  .exp-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d9ff, #5ce1e6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 1rem;
+  }
+
+  .exp-tagline {
+    font-size: 1rem;
+    color: #c5d0de;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .exp-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(0, 217, 255, 0.35);
+    color: #00d9ff;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .exp-cta:hover {
+    background: rgba(0, 217, 255, 0.18);
+    box-shadow: 0 0 16px rgba(0, 217, 255, 0.25);
+  }
+
+  /* Grid */
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.4rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 900px) {
+    .exp-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 580px) {
+    .exp-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Card */
+  .exp-card {
+    background: rgba(10, 25, 41, 0.85);
+    border: 1px solid rgba(0, 217, 255, 0.14);
+    border-radius: 12px;
+    padding: 1.5rem 1.4rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .exp-card:hover {
+    border-color: rgba(0, 217, 255, 0.35);
+    transform: translateY(-3px);
+  }
+
+  .exp-card--featured {
+    border-color: rgba(0, 255, 136, 0.3);
+  }
+
+  .exp-card--featured:hover {
+    border-color: rgba(0, 255, 136, 0.55);
+  }
+
+  .exp-card-icon {
+    font-size: 1.6rem;
+    color: #00d9ff;
+    margin-bottom: 0.8rem;
+  }
+
+  .exp-card--featured .exp-card-icon {
+    color: #00ff88;
+  }
+
+  .exp-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e8f4f8;
+    margin: 0 0 0.9rem;
+    line-height: 1.3;
+  }
+
+  .exp-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .exp-list li {
+    font-size: 0.82rem;
+    color: #a8bfd0;
+    padding-left: 1rem;
+    position: relative;
+    line-height: 1.45;
+  }
+
+  .exp-list li::before {
+    content: "›";
+    position: absolute;
+    left: 0;
+    color: #00d9ff;
+    font-weight: 700;
+  }
+
+  .exp-card--featured .exp-list li::before {
+    color: #00ff88;
+  }
+
+  /* Secteurs */
+  .exp-sectors {
+    background: rgba(10, 25, 41, 0.7);
+    border: 1px solid rgba(0, 217, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.4rem 1.8rem;
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .exp-sectors-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(0, 217, 255, 0.7);
+    margin-bottom: 1rem;
+  }
+
+  .exp-sectors-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+
+  .exp-sector {
+    background: rgba(0, 217, 255, 0.06);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    color: #c5d0de;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.83rem;
+    font-weight: 500;
+  }
+
+  /* Footer CTA */
+  .exp-footer-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .exp-btn-port, .exp-btn-demo, .exp-btn-li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+
+  .exp-btn-port {
+    background: linear-gradient(135deg, #00d9ff, #0095d9);
+    background-color: #0095d9;
+    color: #0a1929;
+  }
+
+  .exp-btn-demo {
+    background: rgba(0, 217, 255, 0.08);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    color: #00d9ff;
+  }
+
+  .exp-btn-li {
+    background: linear-gradient(135deg, #0077b5, #005a8a);
+    background-color: #005a8a;
+    color: #fff;
+  }
+
+  .exp-btn-port:hover, .exp-btn-demo:hover, .exp-btn-li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+</style>

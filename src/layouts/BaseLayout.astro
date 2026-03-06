@@ -7,12 +7,16 @@ export interface Props {
   title?: string;
   description?: string;
   lastModified?: string;
+  canonical?: string;
+  ogImage?: string;
 }
 
 const {
   title = "OceanPhenix 2026 | Stéphane Celton - Data Product Manager & Innovation Tech",
   description = "Stéphane Celton - Data Product Manager certifié, Senior Data Analyst BI, Production Engineer. 15+ ans d'expertise IT, innovation data & IA, solutions métier impactantes.",
   lastModified = "03/03/2026 12:00",
+  canonical,
+  ogImage = "https://oceanphenix.fr/Images/logos/ThinkinGboulversement_50.png",
 } = Astro.props;
 ---
 
@@ -23,14 +27,24 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="robots" content="index, follow" />
   <meta name="last-modified" content={lastModified} />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+  {canonical && <link rel="canonical" href={canonical} />}
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:site_name" content="OceanPhenix" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  {canonical && <meta property="og:url" content={canonical} />}
+  <meta property="og:image" content={ogImage} />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <slot name="head" />
   <link rel="icon" type="image/svg+xml" href="/Images/logos/favicon.svg" />
   <link rel="alternate icon" type="image/png" href="/Images/logos/ThinkinGboulversement_50.png" />
   <link rel="apple-touch-icon" href="/Images/logos/ThinkinGboulversement_50.png" />
