@@ -1598,11 +1598,11 @@
 
         .demo-btn--youtube:hover {
 
-            background: rgba(200, 80, 20, 0.07);
+            background: rgba(200, 80, 20, 0.12);
 
             border-color: rgba(200, 80, 20, 0.7);
 
-            color: #d88060;
+            color: #ffffff;
 
         }
 
@@ -1636,17 +1636,17 @@
 
             border: 1px solid rgba(13, 148, 136, 0.38);
 
-            color: #50a8a4;
+            color: #70c8c4;
 
         }
 
         .demo-btn--project:hover {
 
-            background: rgba(13, 148, 136, 0.07);
+            background: #0a2a27;
 
             border-color: rgba(13, 148, 136, 0.65);
 
-            color: #6dc4bf;
+            color: #ffffff;
 
         }
 
@@ -1658,17 +1658,17 @@
 
             border: 1px solid rgba(0, 149, 217, 0.4);
 
-            color: #5ab4d4;
+            color: #80cceb;
 
         }
 
         .demo-btn--portfolio:hover {
 
-            background: rgba(0, 149, 217, 0.07);
+            background: #0a1e30;
 
             border-color: rgba(0, 149, 217, 0.7);
 
-            color: #80cceb;
+            color: #ffffff;
 
         }
 
@@ -1680,17 +1680,17 @@
 
             border: 1px solid rgba(0, 119, 181, 0.4);
 
-            color: #5aaacb;
+            color: #80c4e0;
 
         }
 
         .demo-btn--linkedin:hover {
 
-            background: rgba(0, 119, 181, 0.07);
+            background: rgba(0, 119, 181, 0.12);
 
             border-color: rgba(0, 119, 181, 0.68);
 
-            color: #80c4e0;
+            color: #ffffff;
 
         }
 
@@ -2708,11 +2708,11 @@
 
         .cv-download-btn:hover {
 
-            background: rgba(100, 130, 160, 0.07);
+            background: #121c28;
 
             border-color: rgba(100, 130, 160, 0.7);
 
-            color: #c5d0de;
+            color: #ffffff;
 
         }
 
@@ -3237,12 +3237,12 @@
 .hero-tagline-env {
     margin-top: 1rem;
     font-size: 0.92rem;
-    color: #a8bfd0;
+    color: #e8f2f8;
     line-height: 1.6;
     padding: 0.65rem 1.2rem;
-    border: 1px solid rgba(0, 217, 255, 0.18);
+    border: 1px solid rgba(0, 149, 217, 0.3);
     border-radius: 8px;
-    background: rgba(0, 217, 255, 0.04);
+    background: rgba(0, 20, 45, 0.6);
     display: inline-block;
 }
 
