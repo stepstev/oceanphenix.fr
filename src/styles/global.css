@@ -2734,6 +2734,120 @@
 
 
 
+        /* Liens sociaux — sous la business card */
+
+        .cv-social-links {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 3rem;
+
+            margin-top: 2.5rem;
+
+            padding-top: 2rem;
+
+            border-top: 1px solid rgba(0, 217, 255, 0.12);
+
+        }
+
+
+
+        .cv-social-link {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 0.6rem;
+
+            text-decoration: none;
+
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+            color: #c5d0de;
+
+        }
+
+
+
+        .cv-social-link i {
+
+            font-size: 3rem;
+
+            transition: transform 0.3s ease;
+
+        }
+
+
+
+        .cv-social-link span {
+
+            font-size: 0.8rem;
+
+            font-weight: 600;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            opacity: 0.75;
+
+            transition: opacity 0.3s ease;
+
+        }
+
+
+
+        .cv-social-link:hover i {
+
+            transform: translateY(-4px) scale(1.12);
+
+        }
+
+
+
+        .cv-social-link:hover span {
+
+            opacity: 1;
+
+        }
+
+
+
+        .cv-social-link--linkedin { color: #5b9fd4; }
+
+        .cv-social-link--linkedin:hover { color: #ffffff; }
+
+
+
+        .cv-social-link--youtube { color: #c0504a; }
+
+        .cv-social-link--youtube:hover { color: #ffffff; }
+
+
+
+        .cv-social-link--portfolio { color: #5ab4d4; }
+
+        .cv-social-link--portfolio:hover { color: #ffffff; }
+
+
+
+        @media (max-width: 480px) {
+
+            .cv-social-links { gap: 1.8rem; }
+
+            .cv-social-link i { font-size: 2.4rem; }
+
+        }
+
+
+
         /* Animations */
 
         @keyframes fadeInUp {
