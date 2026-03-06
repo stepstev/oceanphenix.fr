@@ -448,3 +448,49 @@ document.querySelectorAll('.platform-card[href]').forEach(card => {
 
 })();
 
+// ==========================================
+// Menu hamburger — navigation mobile
+// ==========================================
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        var hamburger = document.getElementById('nav-hamburger');
+        var navLinks  = document.getElementById('nav-links');
+        var overlay   = document.getElementById('nav-overlay');
+
+        if (!hamburger || !navLinks || !overlay) return;
+
+        function openMenu() {
+            hamburger.setAttribute('aria-expanded', 'true');
+            hamburger.classList.add('is-open');
+            navLinks.classList.add('is-open');
+            overlay.classList.add('is-open');
+        }
+
+        function closeMenu() {
+            hamburger.setAttribute('aria-expanded', 'false');
+            hamburger.classList.remove('is-open');
+            navLinks.classList.remove('is-open');
+            overlay.classList.remove('is-open');
+        }
+
+        hamburger.addEventListener('click', function () {
+            if (hamburger.getAttribute('aria-expanded') === 'true') {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+
+        overlay.addEventListener('click', closeMenu);
+
+        navLinks.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeMenu);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeMenu();
+        });
+    });
+})();
+
+
