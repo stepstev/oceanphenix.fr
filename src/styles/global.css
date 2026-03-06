@@ -789,7 +789,6 @@
         }
 
 
-
         .nav-links a {
 
             color: var(--text-muted);
@@ -3374,8 +3373,10 @@
                 border-radius: 6px;
                 cursor: pointer;
                 padding: 6px;
-                z-index: 200;
                 flex-shrink: 0;
+                /* dans la nav (z-index:100), reste toujours au-dessus du panneau */
+                position: relative;
+                z-index: 101;
             }
 
             .hamburger-bar {
@@ -3400,30 +3401,49 @@
                 transform: translateY(-7px) rotate(-45deg);
             }
 
-            /* Menu mobile fermé */
+            /* Overlay — derrière la nav, devant le contenu */
+            .nav-overlay {
+                display: block;
+                visibility: hidden;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.55);
+                z-index: 49;
+                opacity: 0;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+            }
+            .nav-overlay.is-open {
+                visibility: visible;
+                opacity: 1;
+            }
+
+            /* Panneau de menu — z-index < nav (100) pour ne jamais couvrir le bouton */
             .nav-links {
                 display: flex;
                 flex-direction: column;
                 position: fixed;
                 top: 0;
-                right: -100%;
+                right: 0;
                 width: min(280px, 80vw);
-                height: 100dvh;
+                height: 100vh;
                 background: rgba(8, 20, 35, 0.98);
                 -webkit-backdrop-filter: blur(16px);
                 backdrop-filter: blur(16px);
                 border-left: 1px solid rgba(0, 217, 255, 0.15);
-                padding: 5rem 2rem 2rem;
+                padding: 70px 1.5rem 2rem;
                 gap: 0.25rem;
                 list-style: none;
                 align-items: flex-start;
-                z-index: 150;
-                transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                z-index: 50;
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                visibility: hidden;
             }
 
-            /* Menu mobile ouvert */
+            /* Menu ouvert */
             .nav-links.is-open {
-                right: 0;
+                transform: translateX(0);
+                visibility: visible;
             }
 
             .nav-links li {
@@ -3449,18 +3469,6 @@
 
             .nav-links a::after {
                 display: none;
-            }
-
-            /* Overlay sombre */
-            .nav-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.6);
-                z-index: 140;
-            }
-            .nav-overlay.is-open {
-                display: block;
             }
 
 
