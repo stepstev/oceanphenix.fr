@@ -1,7 +1,20 @@
 ﻿# OceanPhenix.fr — Site Portfolio Professionnel
 
-> **OceanPhenix™** · Data Product Management · Business Intelligence · Innovation IA
-> Site vitrine construit avec **Astro v4** · Hébergé sur **GitHub Pages** · Domaine custom `oceanphenix.fr`
+> **OceanPhenix™** · Data Product Management · Business Intelligence · Observabilité · Innovation IA
+
+---
+
+## À propos
+
+**OceanPhenix.fr** est le site de présentation de mon profil et de mes services en tant que **Data Product Manager** orienté **Business Intelligence** et **Observabilité**.
+
+Le site met en avant :
+
+- Mon **parcours** et mes **compétences** en pilotage de produits data, BI et monitoring
+- Mes **domaines d'expertise** : stratégie data, dashboards décisionnels, pipelines d'observabilité, gouvernance des données
+- Mes **services** : conseil, accompagnement et delivery sur les sujets data, BI et observabilité
+
+Construit avec **Astro v4** · Hébergé sur **GitHub Pages** · Domaine custom `oceanphenix.fr`
 
 ---
 
@@ -15,7 +28,7 @@
 | CI/CD | GitHub Actions |
 | Hébergement | GitHub Pages |
 | Domaine | `oceanphenix.fr` |
-| Fonts | IBM Plex Sans + Roboto (Google Fonts) |
+| Fonts | Inter (Google Fonts) |
 | Icons | Font Awesome 6.5 (CDN avec SRI) |
 
 ---
