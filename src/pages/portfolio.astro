@@ -118,12 +118,12 @@ import Nav from '../components/Nav.astro';
     width: 80vw;
     max-height: 85vh;
     background: rgba(10, 18, 32, 0.97);
-    border: 2px solid rgba(0, 217, 255, 0.45);
+    border: 1px solid rgba(0, 180, 216, 0.22);
     border-radius: 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 32px 90px rgba(0,0,0,0.7), 0 0 60px rgba(0, 217, 255, 0.07);
+    box-shadow: 0 32px 90px rgba(0,0,0,0.6), 0 0 40px rgba(0, 180, 216, 0.05);
     animation: pf-in 0.24s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -138,7 +138,7 @@ import Nav from '../components/Nav.astro';
     justify-content: space-between;
     padding: 0.7rem 1.2rem;
     background: rgba(8, 15, 28, 0.98);
-    border-bottom: 1px solid rgba(0, 217, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 180, 216, 0.10);
     flex-shrink: 0;
   }
 
@@ -188,8 +188,8 @@ import Nav from '../components/Nav.astro';
     border-radius: 50%;
     object-fit: cover;
     object-position: center center;
-    border: 2px solid rgba(0, 217, 255, 0.45);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(0, 180, 216, 0.22);
+    box-shadow: 0 0 16px rgba(0, 180, 216, 0.2);
   }
 
   .pf-name {
@@ -296,5 +296,94 @@ import Nav from '../components/Nav.astro';
     color: rgba(197, 208, 222, 0.45);
     font-size: 0.72rem;
     margin-top: -0.4rem;
+  }
+
+  /* ---- Light theme ---- */
+  :global([data-theme="light"]) .pf-backdrop {
+    background: rgba(200, 220, 240, 0.65);
+  }
+  :global([data-theme="light"]) .pf-panel {
+    background: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 100, 160, 0.35);
+    box-shadow: 0 32px 90px rgba(0, 50, 100, 0.25), 0 0 60px rgba(0, 149, 217, 0.06);
+  }
+  :global([data-theme="light"]) .pf-panel-header {
+    background: rgba(240, 248, 255, 0.98);
+    border-bottom-color: rgba(0, 100, 160, 0.12);
+  }
+  :global([data-theme="light"]) .pf-panel-title {
+    color: #1a3a52;
+  }
+  :global([data-theme="light"]) .pf-panel-title i {
+    color: #005f8a;
+  }
+  :global([data-theme="light"]) .pf-btn-close {
+    color: #3a5268;
+    background: rgba(0, 80, 130, 0.06);
+    border-color: rgba(0, 80, 130, 0.15);
+  }
+  :global([data-theme="light"]) .pf-btn-close:hover {
+    background: rgba(255, 60, 60, 0.1);
+    color: #d43030;
+    border-color: rgba(255, 60, 60, 0.25);
+  }
+  :global([data-theme="light"]) .pf-name {
+    background: linear-gradient(135deg, #005f8a, #0095d9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  :global([data-theme="light"]) .pf-role {
+    color: #3a5268;
+  }
+  :global([data-theme="light"]) .pf-bio {
+    color: #4a6378;
+  }
+  :global([data-theme="light"]) .pf-tag {
+    background: rgba(0, 100, 160, 0.06);
+    border-color: rgba(0, 100, 160, 0.25);
+    color: #005f8a;
+  }
+  :global([data-theme="light"]) .pf-hash {
+    color: rgba(0, 95, 138, 0.5);
+  }
+  :global([data-theme="light"]) .pf-hash:hover {
+    color: #005f8a;
+  }
+  :global([data-theme="light"]) .pf-cta {
+    background: linear-gradient(135deg, #0095d9, #005f8a);
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 95, 138, 0.3);
+  }
+  :global([data-theme="light"]) .pf-cta:hover {
+    box-shadow: 0 8px 28px rgba(0, 95, 138, 0.45);
+    color: #ffffff;
+  }
+  :global([data-theme="light"]) .pf-hint {
+    color: rgba(58, 82, 104, 0.5);
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 640px) {
+    .pf-panel {
+      width: 95vw;
+      max-height: 92vh;
+    }
+    .pf-panel-body {
+      padding: 1.5rem 1rem;
+    }
+    .pf-name {
+      font-size: 1.5rem;
+    }
+    .pf-role {
+      font-size: 0.82rem;
+    }
+    .pf-bio {
+      font-size: 0.8rem;
+    }
+    .pf-cta {
+      padding: 0.7rem 1.5rem;
+      font-size: 0.85rem;
+    }
   }
 </style>

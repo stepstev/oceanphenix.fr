@@ -3,6 +3,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import OceanBackground from '../components/OceanBackground.astro';
 import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CopyrightBar from '../components/CopyrightBar.astro';
 import { Icon } from 'astro-icon/components';
 ---
 
@@ -136,6 +138,9 @@ import { Icon } from 'astro-icon/components';
 
   </main>
 
+  <Footer />
+  <CopyrightBar />
+
 </BaseLayout>
 
 <style>
@@ -158,14 +163,14 @@ import { Icon } from 'astro-icon/components';
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    background: rgba(0, 217, 255, 0.07);
-    border: 1px solid rgba(0, 217, 255, 0.22);
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.18);
     color: #00d9ff;
-    font-size: 0.68rem;
+    font-size: 0.70rem;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    padding: 0.4rem 1rem;
+    padding: 0.4rem 1.1rem;
     border-radius: 50px;
     margin-bottom: 1.2rem;
   }
@@ -256,12 +261,13 @@ import { Icon } from 'astro-icon/components';
   /* Card */
   .exp-card {
     background: rgba(10, 25, 41, 0.85);
-    border: 3px solid rgba(0, 217, 255, 0.55);
+    border: 1px solid rgba(0, 180, 216, 0.18);
     border-radius: 12px;
     padding: 1.6rem 1.4rem;
     transition: border-color 0.2s, transform 0.22s, box-shadow 0.22s;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   }
 
   .exp-card::before {
@@ -270,7 +276,7 @@ import { Icon } from 'astro-icon/components';
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 2px;
     background: linear-gradient(90deg, #ff7a1a, #f97316, #ffad6b);
     transform: scaleX(0);
     transform-origin: left;
@@ -284,16 +290,18 @@ import { Icon } from 'astro-icon/components';
   }
 
   .exp-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+    border-color: rgba(0, 180, 216, 0.35);
   }
 
   .exp-card--featured {
-    border-color: rgba(0, 149, 217, 0.55);
+    border-color: rgba(0, 149, 217, 0.25);
   }
 
   .exp-card--featured:hover {
-    box-shadow: 0 12px 32px rgba(0, 100, 160, 0.18);
+    box-shadow: 0 8px 28px rgba(0, 80, 160, 0.18);
+    border-color: rgba(0, 149, 217, 0.42);
   }
 
   /* Icon wrapper */
@@ -371,8 +379,8 @@ import { Icon } from 'astro-icon/components';
   }
 
   .exp-sectors {
-    background: rgba(10, 25, 41, 0.7);
-    border: 1px solid rgba(0, 217, 255, 0.12);
+    background: rgba(10, 25, 41, 0.6);
+    border: 1px solid rgba(0, 180, 216, 0.10);
     border-radius: 14px;
     padding: 1.4rem 1.8rem;
     margin-bottom: 3rem;
@@ -408,8 +416,8 @@ import { Icon } from 'astro-icon/components';
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(0, 217, 255, 0.05);
-    border: 1px solid rgba(0, 217, 255, 0.18);
+    background: rgba(0, 217, 255, 0.04);
+    border: 1px solid rgba(0, 180, 216, 0.14);
     color: #c5d0de;
     padding: 0.38rem 0.9rem;
     border-radius: 50px;
@@ -458,21 +466,23 @@ import { Icon } from 'astro-icon/components';
   }
 
   :global([data-theme="light"]) .exp-card {
-    background: rgba(255, 255, 255, 0.88);
-    border-color: rgba(0, 100, 160, 0.35);
-    box-shadow: 0 2px 14px rgba(0, 80, 130, 0.07);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(10, 24, 44, 0.10);
+    box-shadow: 0 2px 12px rgba(0, 80, 130, 0.06);
   }
 
   :global([data-theme="light"]) .exp-card:hover {
-    box-shadow: 0 8px 28px rgba(0, 80, 130, 0.18);
+    box-shadow: 0 8px 24px rgba(0, 80, 130, 0.12);
+    border-color: rgba(10, 24, 44, 0.18);
   }
 
   :global([data-theme="light"]) .exp-card--featured {
-    border-color: rgba(0, 100, 160, 0.45);
+    border-color: rgba(10, 24, 44, 0.14);
   }
 
   :global([data-theme="light"]) .exp-card--featured:hover {
-    box-shadow: 0 12px 32px rgba(0, 80, 130, 0.22);
+    box-shadow: 0 8px 28px rgba(0, 80, 130, 0.14);
+    border-color: rgba(10, 24, 44, 0.22);
   }
 
   :global([data-theme="light"]) .exp-card-icon-wrap {

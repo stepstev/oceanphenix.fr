@@ -1,6 +1,30 @@
 // OceanPhenix - Main JavaScript
 
 // ==========================================
+// External links → centered popup window (80%)
+// ==========================================
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (e) {
+            var link = e.target.closest('a[target="_blank"]');
+            if (!link || link.hasAttribute('download')) return;
+
+            e.preventDefault();
+            var w = Math.round(window.screen.width * 0.6);
+            var h = Math.round(window.screen.height * 0.6);
+            var left = Math.round((window.screen.width - w) / 2);
+            var top = Math.round((window.screen.height - h) / 2);
+            window.open(
+                link.href,
+                '_blank',
+                'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top +
+                ',menubar=no,toolbar=no,location=yes,status=no,scrollbars=yes,resizable=yes'
+            );
+        });
+    });
+})();
+
+// ==========================================
 // Theme Toggle — Dark / Light
 // ==========================================
 (function () {
