@@ -32,17 +32,17 @@
     const html = document.documentElement;
 
     function applyTheme(theme) {
-        if (theme === 'light') {
-            html.dataset.theme = 'light';
-        } else {
+        if (theme === 'dark') {
             delete html.dataset.theme;
+        } else {
+            html.dataset.theme = 'light';
         }
         localStorage.setItem(STORAGE_KEY, theme);
     }
 
     // Apply saved theme (anti-FOUC backup — also handled inline in <head>)
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'light') html.dataset.theme = 'light';
+    if (saved !== 'dark') html.dataset.theme = 'light';
 
     document.addEventListener('DOMContentLoaded', function () {
         const btn = document.getElementById('theme-toggle');
