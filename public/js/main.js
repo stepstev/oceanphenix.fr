@@ -152,7 +152,7 @@ window.addEventListener('scroll', () => {
 
 
 
-// Ensure external links open properly (O2switch compatible)
+// Ensure external links open properly
 
 document.querySelectorAll('.platform-card[href]').forEach(card => {
 
@@ -255,16 +255,8 @@ document.querySelectorAll('.platform-card[href]').forEach(card => {
 
 
 // ==========================================
-
-// Simplification des liens - Compatible O2Switch
-
-// Tous les liens externes s'ouvrent maintenant directement avec target="_blank"
-
-// Plus besoin de JavaScript complexe pour gérer les popups
-
+// Liens externes
 // ==========================================
-
-
 
 // ==========================================
 
