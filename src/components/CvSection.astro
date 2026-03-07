@@ -1,15 +1,17 @@
 ---
 // src/components/CvSection.astro
+import { Icon } from 'astro-icon/components';
 ---
 
 <section class="cv-section" id="cv">
   <div class="container">
     <div class="section-header">
       <span class="section-badge">
-        <i class="fas fa-id-card"></i> BUSINESS CARD
+        <Icon name="lucide:contact" class="section-badge-icon" />
+        BUSINESS CARD
       </span>
       <h2 class="section-title fw-light">
-        <i class="fas fa-award icon-accent"></i>
+        <Icon name="lucide:award" class="icon-accent section-title-icon" />
         <span class="gradient-text">Carte de Visite Professionnelle</span>
       </h2>
     </div>
@@ -19,7 +21,7 @@
       </div>
       <div class="cv-download-container">
         <a href="/Images/cvise.png" class="cv-download-btn" download="BusinessCard_Stephane_Celton.png">
-          <i class="fas fa-download"></i>
+          <Icon name="lucide:download" class="cv-download-icon" />
           Télécharger la Business Card
         </a>
       </div>
@@ -27,15 +29,15 @@
 
     <div class="cv-social-links">
       <a href="https://www.linkedin.com/company/oceanphenix/" target="_blank" rel="noopener noreferrer" class="cv-social-link cv-social-link--linkedin" aria-label="LinkedIn OceanPhenix">
-        <i class="fab fa-linkedin"></i>
+        <Icon name="lucide:linkedin" class="cv-social-icon" />
         <span>LinkedIn</span>
       </a>
       <a href="https://www.youtube.com/@DiscoveryITDATA" target="_blank" rel="noopener noreferrer" class="cv-social-link cv-social-link--youtube" aria-label="YouTube DiscoveryITDATA">
-        <i class="fab fa-youtube"></i>
+        <Icon name="lucide:youtube" class="cv-social-icon" />
         <span>YouTube</span>
       </a>
       <a href="https://stephanecelton.oceanphenix.fr/" target="_blank" rel="noopener noreferrer" class="cv-social-link cv-social-link--portfolio" aria-label="Portfolio Stéphane Celton">
-        <i class="fas fa-globe"></i>
+        <Icon name="lucide:globe" class="cv-social-icon" />
         <span>Portfolio</span>
       </a>
     </div>

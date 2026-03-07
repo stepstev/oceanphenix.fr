@@ -1,19 +1,21 @@
 ---
 // src/components/Platforms.astro
+import { Icon } from 'astro-icon/components';
 ---
 
 <section class="platforms-section" id="platforms">
   <div class="container">
     <div class="section-header">
       <span class="section-badge">
-        <i class="fas fa-rocket"></i> Écosystème
+        <Icon name="lucide:rocket" class="section-badge-icon" />
+        Écosystème
       </span>
       <h2 class="section-title fw-light">
-        <i class="fas fa-layer-group icon-accent"></i>
-        <span class="gradient-text">Plateformes</span>
+        <Icon name="lucide:layers" class="icon-accent section-title-icon" />
+        <span class="gradient-text">Projets &amp; Réalisations Data</span>
       </h2>
       <p class="section-subtitle">
-        Découvrez mon Parcours, Quelques projets, initiatives récentes ( 2025 - 2026 ) ou publications...
+        Portfolio, quelques projets, initiatives récentes (2025-2026) et publications.
       </p>
     </div>
 
@@ -22,10 +24,10 @@
       <!-- 1 — Portfolio -->
       <div class="platform-card platform-card-featured">
         <div class="platform-header">
-          <i class="platform-icon fas fa-user-circle"></i>
+          <Icon name="lucide:user-round" class="platform-icon" />
           <span class="platform-badge">Portfolio</span>
         </div>
-        <h3 class="platform-title">Profil Professionnel</h3>
+        <h3 class="platform-title">Portfolio &amp; Parcours</h3>
         <p class="platform-description">
           CV interactif — 15+ ans IT, certifications et vidéo de présentation. Expertise en Data Product Management, BI/Analytics et Production Engineering.
         </p>
@@ -40,7 +42,8 @@
         </div>
         <div class="demo-buttons">
           <a href="https://stephanecelton.oceanphenix.fr/" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--portfolio">
-            <i class="fas fa-globe"></i> Portfolio Interactif
+            <Icon name="lucide:globe" class="demo-btn-icon" />
+            Portfolio Interactif
           </a>
         </div>
       </div>
@@ -48,10 +51,10 @@
       <!-- 2 — Power BI & TMDL -->
       <div class="platform-card">
         <div class="platform-header">
-          <i class="platform-icon fas fa-chart-bar"></i>
+          <Icon name="lucide:bar-chart-3" class="platform-icon" />
           <span class="platform-badge">Power BI &amp; TMDL</span>
         </div>
-        <h3 class="platform-title">Power BI &amp; Tabular Model Definition Language</h3>
+        <h3 class="platform-title">Démonstration technique</h3>
         <p class="platform-description">
           Modélisation sémantique avec TMDL — format texte natif de Power BI pour versionner et collaborer sur les modèles tabulaires. Bonnes pratiques DAX, Git et CI/CD sur les Semantic Models.
         </p>
@@ -66,7 +69,8 @@
         </div>
         <div class="demo-buttons">
           <a href="https://www.youtube.com/watch?v=PgZ0SzRMvmw&t=4s" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--youtube">
-            <i class="fab fa-youtube"></i> Démo TMDL
+            <Icon name="lucide:youtube" class="demo-btn-icon" />
+            Démo TMDL
           </a>
         </div>
       </div>
@@ -74,10 +78,10 @@
       <!-- 3 — Publications LinkedIn -->
       <div class="platform-card">
         <div class="platform-header">
-          <i class="platform-icon fab fa-linkedin"></i>
+          <Icon name="lucide:linkedin" class="platform-icon" />
           <span class="platform-badge">Publications</span>
         </div>
-        <h3 class="platform-title">Publications LinkedIn</h3>
+        <h3 class="platform-title">Articles &amp; Retours d'expérience</h3>
         <p class="platform-description">
           Articles et retours d'expérience sur la data, l'IA souveraine, le Data Product Management et la Business Intelligence.
         </p>
@@ -90,7 +94,8 @@
         </div>
         <div class="demo-buttons">
           <a href="https://www.linkedin.com/in/stephane-celton/recent-activity/all/" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--linkedin">
-            <i class="fab fa-linkedin"></i> Articles &amp; Insights
+            <Icon name="lucide:linkedin" class="demo-btn-icon" />
+            Articles &amp; Insights
           </a>
         </div>
       </div>
@@ -99,7 +104,7 @@
       <div class="platform-card">
         <span class="new-badge new-badge--orange">2025</span>
         <div class="platform-header">
-          <i class="platform-icon fas fa-brain"></i>
+          <Icon name="lucide:cpu" class="platform-icon" />
           <span class="platform-badge">IA Souveraine 2025</span>
         </div>
         <h3 class="platform-title">RAG-IA Souveraine V10 - 2025</h3>
@@ -120,10 +125,12 @@
         </div>
         <div class="demo-buttons">
           <a href="https://www.youtube.com/watch?v=SQF49Uw_7gk" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--youtube">
-            <i class="fab fa-youtube"></i> Démo RAG
+            <Icon name="lucide:youtube" class="demo-btn-icon" />
+            Démo RAG
           </a>
           <a href="https://github.com/stepstev/oceanphenix-IA-souveraine-v10_2026_DOCS" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--github">
-            <i class="fab fa-github"></i> Docs Souveraine
+            <Icon name="lucide:github" class="demo-btn-icon" />
+            Docs Souveraine
           </a>
         </div>
       </div>
@@ -132,7 +139,7 @@
       <div class="platform-card platform-card-featured">
         <span class="new-badge">2026</span>
         <div class="platform-header">
-          <i class="platform-icon fas fa-database"></i>
+          <Icon name="lucide:database" class="platform-icon" />
           <span class="platform-badge">RAG Stack 2026</span>
         </div>
         <h3 class="platform-title">RAG Platform 2026 — Stack Publique</h3>
@@ -151,10 +158,12 @@
         </div>
         <div class="demo-buttons">
           <a href="https://www.youtube.com/watch?v=znjMTwqLq1k" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--youtube">
-            <i class="fab fa-youtube"></i> Démo Stack
+            <Icon name="lucide:youtube" class="demo-btn-icon" />
+            Démo Stack
           </a>
           <a href="https://github.com/stepstev/rag-platform-2026-public" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--github">
-            <i class="fab fa-github"></i> Code Source
+            <Icon name="lucide:github" class="demo-btn-icon" />
+            Code Source
           </a>
         </div>
       </div>
@@ -162,7 +171,7 @@
       <!-- 6 — GitHub Open Source -->
       <div class="platform-card platform-card-featured">
         <div class="platform-header">
-          <i class="platform-icon fab fa-github"></i>
+          <Icon name="lucide:github" class="platform-icon" />
           <span class="platform-badge">Open Source</span>
         </div>
         <h3 class="platform-title">GitHub — Projets &amp; Contributions</h3>
@@ -180,7 +189,8 @@
         </div>
         <div class="demo-buttons">
           <a href="https://github.com/stepstev" target="_blank" rel="noopener noreferrer" class="demo-btn demo-btn--github">
-            <i class="fab fa-github"></i> Voir le profil GitHub
+            <Icon name="lucide:github" class="demo-btn-icon" />
+            Voir le profil GitHub
           </a>
         </div>
       </div>

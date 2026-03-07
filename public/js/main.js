@@ -1,172 +1,38 @@
 // OceanPhenix - Main JavaScript
 
-
-
 // ==========================================
-
-// Welcome Popup 2026 Animation
-
+// Theme Toggle — Dark / Light
 // ==========================================
+(function () {
+    const STORAGE_KEY = 'op-theme';
+    const html = document.documentElement;
 
-(function() {
-
-    // Wait for DOM to be fully loaded
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-        const popup = document.getElementById('welcome-popup');
-
-        const closeBtn = document.getElementById('popup-close');
-
-        const relaunchBtn = document.getElementById('popup-relaunch');
-
-        
-
-        // Check if popup has already been shown in this session
-
-        const popupShown = sessionStorage.getItem('welcomePopupShown');
-
-        
-
-        // Show popup function
-
-        function showPopup() {
-
-            if (popup) {
-
-                popup.classList.add('active');
-
-                document.body.style.overflow = 'hidden'; // Prevent scrolling
-
-                if (relaunchBtn) {
-
-                    relaunchBtn.classList.remove('visible');
-
-                }
-
-            }
-
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            html.dataset.theme = 'light';
+        } else {
+            delete html.dataset.theme;
         }
+        localStorage.setItem(STORAGE_KEY, theme);
+    }
 
-        
+    // Apply saved theme (anti-FOUC backup — also handled inline in <head>)
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'light') html.dataset.theme = 'light';
 
-        // Close popup function
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('theme-toggle');
+        if (!btn) return;
 
-        function closePopup() {
-
-            if (popup) {
-
-                popup.classList.remove('active');
-
-                document.body.style.overflow = 'auto'; // Re-enable scrolling
-
-                // Show relaunch button after closing
-
-                if (relaunchBtn) {
-
-                    setTimeout(function() {
-
-                        relaunchBtn.classList.add('visible');
-
-                    }, 500);
-
-                }
-
-            }
-
-        }
-
-        
-
-        // Show popup on first load
-
-        if (!popupShown && popup) {
-
-            setTimeout(function() {
-
-                showPopup();
-
-            }, 500); // Delay of 500ms for smooth appearance
-
-            
-
-            // Mark popup as shown in session storage
-
-            sessionStorage.setItem('welcomePopupShown', 'true');
-
-        } else if (relaunchBtn) {
-
-            // If already shown, display relaunch button
-
-            setTimeout(function() {
-
-                relaunchBtn.classList.add('visible');
-
-            }, 1000);
-
-        }
-
-        
-
-        // Close on button click
-
-        if (closeBtn) {
-
-            closeBtn.addEventListener('click', closePopup);
-
-        }
-
-        
-
-        // Relaunch popup on button click
-
-        if (relaunchBtn) {
-
-            relaunchBtn.addEventListener('click', function() {
-
-                showPopup();
-
-            });
-
-        }
-
-        
-
-        // Close on overlay click (outside popup)
-
-        if (popup) {
-
-            popup.addEventListener('click', function(e) {
-
-                if (e.target === popup) {
-
-                    closePopup();
-
-                }
-
-            });
-
-        }
-
-        
-
-        // Close on Escape key
-
-        document.addEventListener('keydown', function(e) {
-
-            if (e.key === 'Escape' && popup?.classList?.contains('active')) {
-
-                closePopup();
-
-            }
-
+        btn.addEventListener('click', function () {
+            const current = html.dataset.theme;
+            applyTheme(current === 'light' ? 'dark' : 'light');
         });
-
     });
-
 })();
 
 
+// ==========================================
 
 // Smooth scroll for all anchor links
 
@@ -396,7 +262,7 @@ document.querySelectorAll('.platform-card[href]').forEach(card => {
 
             const metaLastModified = document.querySelector('meta[name="last-modified"]');
 
-            if (metaLastModified && metaLastModified.getAttribute('content')) {
+            if (metaLastModified?.getAttribute('content')) {
 
                 // Utilise la date définie dans la meta (à mettre à jour à chaque déploiement)
 
@@ -453,9 +319,9 @@ document.querySelectorAll('.platform-card[href]').forEach(card => {
 // ==========================================
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
-        var hamburger = document.getElementById('nav-hamburger');
-        var navLinks  = document.getElementById('nav-links');
-        var overlay   = document.getElementById('nav-overlay');
+        const hamburger = document.getElementById('nav-hamburger');
+        const navLinks  = document.getElementById('nav-links');
+        const overlay   = document.getElementById('nav-overlay');
 
         if (!hamburger || !navLinks || !overlay) return;
 

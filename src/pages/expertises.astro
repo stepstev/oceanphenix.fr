@@ -3,6 +3,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import OceanBackground from '../components/OceanBackground.astro';
 import Nav from '../components/Nav.astro';
+import { Icon } from 'astro-icon/components';
 ---
 
 <BaseLayout
@@ -29,14 +30,16 @@ import Nav from '../components/Nav.astro';
   <main class="exp-main">
 
     <div class="exp-header">
-      <div class="exp-badge"><i class="fas fa-briefcase"></i> DOMAINES D'INTERVENTION</div>
+      <div class="exp-badge">
+        DOMAINES D'INTERVENTION
+      </div>
       <h1 class="exp-title">Expertises</h1>
       <p class="exp-tagline">
-        +20 ans d'expérience dans la conception et l'industrialisation de solutions data<br>
-        en environnements critiques — <strong>banque, industrie, énergie</strong>.
+        Parcours en conception Ingénierie de Production, industrialisation de solutions data<br>
+        au sein d'environnements exigeants : <strong>banque, industrie, énergie</strong>.
       </p>
       <a href="https://stephanecelton.oceanphenix.fr/" target="_blank" rel="noopener" class="exp-cta">
-        <i class="fas fa-external-link-alt"></i> Voir le portfolio complet
+        Voir le portfolio complet
       </a>
     </div>
 
@@ -44,8 +47,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- DATA PRODUCT MANAGEMENT -->
       <div class="exp-card">
-        <div class="exp-card-icon"><i class="fas fa-cubes"></i></div>
-        <h2 class="exp-card-title">Data Product Management</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-layer-group exp-title-icon"></i>Data Product Management</h2>
         <ul class="exp-list">
           <li>Cadrage et structuration des usages data</li>
           <li>Définition et pilotage de la roadmap produit</li>
@@ -57,8 +59,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- BUSINESS INTELLIGENCE -->
       <div class="exp-card">
-        <div class="exp-card-icon"><i class="fas fa-chart-bar"></i></div>
-        <h2 class="exp-card-title">Business Intelligence &amp; Data Platforms</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-chart-column exp-title-icon"></i>Business Intelligence &amp; Data Platforms</h2>
         <ul class="exp-list">
           <li>Architecture décisionnelle (Lakehouse, DWH)</li>
           <li>Power BI — modélisation TMDL, DAX avancé</li>
@@ -70,8 +71,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- GOUVERNANCE -->
       <div class="exp-card">
-        <div class="exp-card-icon"><i class="fas fa-shield-alt"></i></div>
-        <h2 class="exp-card-title">Gouvernance &amp; Fiabilité des Données</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-shield-halved exp-title-icon"></i>Gouvernance &amp; Fiabilité des Données</h2>
         <ul class="exp-list">
           <li>Politique qualité des données</li>
           <li>Indicateurs de fiabilité et traçabilité</li>
@@ -83,8 +83,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- INDUSTRIALISATION -->
       <div class="exp-card">
-        <div class="exp-card-icon"><i class="fas fa-cogs"></i></div>
-        <h2 class="exp-card-title">Industrialisation &amp; Observabilité</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-gears exp-title-icon"></i>Industrialisation &amp; Observabilité</h2>
         <ul class="exp-list">
           <li>MCO des plateformes data et BI</li>
           <li>Monitoring data et indicateurs de production</li>
@@ -96,8 +95,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- IA & RAG -->
       <div class="exp-card exp-card--featured">
-        <div class="exp-card-icon"><i class="fas fa-brain"></i></div>
-        <h2 class="exp-card-title">IA Appliquée &amp; RAG Souverain</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-brain exp-title-icon"></i>IA Appliquée &amp; RAG Souverain</h2>
         <ul class="exp-list">
           <li>Architecture RAG sur infrastructure souveraine</li>
           <li>LLM locaux (Ollama, Mistral, LLaMA)</li>
@@ -109,8 +107,7 @@ import Nav from '../components/Nav.astro';
 
       <!-- PILOTAGE -->
       <div class="exp-card exp-card--featured">
-        <div class="exp-card-icon"><i class="fas fa-tachometer-alt"></i></div>
-        <h2 class="exp-card-title">Pilotage IT &amp; Production</h2>
+        <h2 class="exp-card-title"><i class="fa-solid fa-gauge-high exp-title-icon"></i>Pilotage IT &amp; Production</h2>
         <ul class="exp-list">
           <li>Production Engineer — systèmes critiques</li>
           <li>Gestion des incidents et de la continuité</li>
@@ -124,22 +121,18 @@ import Nav from '../components/Nav.astro';
 
     <!-- Environnements sectoriels -->
     <div class="exp-sectors">
-      <div class="exp-sectors-label"><i class="fas fa-industry"></i> Environnements sectoriels</div>
+      <div class="exp-sectors-label">
+        Environnements sectoriels
+      </div>
       <div class="exp-sectors-list">
-        <span class="exp-sector">🏦 Banque &amp; Assurance</span>
-        <span class="exp-sector">⚡ Énergie</span>
-        <span class="exp-sector">🏭 Industrie</span>
-        <span class="exp-sector">✈️ Aéronautique &amp; Défense</span>
-        <span class="exp-sector">🏥 Santé &amp; Services publics</span>
+        <span class="exp-sector">Banque &amp; Assurance</span>
+        <span class="exp-sector">Énergie</span>
+        <span class="exp-sector">Industrie</span>
+        <span class="exp-sector">Aéronautique &amp; Défense</span>
+        <span class="exp-sector">Santé &amp; Services publics</span>
       </div>
     </div>
 
-    <!-- CTA bas de page -->
-    <div class="exp-footer-cta">
-      <a href="/portfolio" class="exp-btn-port"><i class="fas fa-id-badge"></i> Portfolio</a>
-      <a href="/#platforms" class="exp-btn-demo"><i class="fas fa-layer-group"></i> Projets &amp; Démos</a>
-      <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener" class="exp-btn-li"><i class="fab fa-linkedin"></i> LinkedIn</a>
-    </div>
 
   </main>
 
@@ -164,11 +157,11 @@ import Nav from '../components/Nav.astro';
   .exp-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(0, 217, 255, 0.08);
-    border: 1px solid rgba(0, 217, 255, 0.25);
+    gap: 0.45rem;
+    background: rgba(0, 217, 255, 0.07);
+    border: 1px solid rgba(0, 217, 255, 0.22);
     color: #00d9ff;
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -177,18 +170,23 @@ import Nav from '../components/Nav.astro';
     margin-bottom: 1.2rem;
   }
 
+  .exp-badge-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    stroke-width: 2.2;
+  }
+
   .exp-title {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 700;
-    background: linear-gradient(135deg, #00d9ff, #5ce1e6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #c5d0de;
+    -webkit-text-fill-color: #c5d0de;
+    letter-spacing: -0.5px;
     margin: 0 0 1rem;
   }
 
   .exp-tagline {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: #c5d0de;
     line-height: 1.7;
     margin-bottom: 1.5rem;
@@ -197,8 +195,8 @@ import Nav from '../components/Nav.astro';
   .exp-cta {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(0, 217, 255, 0.1);
+    gap: 0.45rem;
+    background: transparent;
     border: 1px solid rgba(0, 217, 255, 0.35);
     color: #00d9ff;
     padding: 0.55rem 1.4rem;
@@ -207,11 +205,36 @@ import Nav from '../components/Nav.astro';
     font-weight: 600;
     text-decoration: none;
     transition: background 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+
+  .exp-cta::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.85;
+    animation: btn-dot-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    pointer-events: none;
   }
 
   .exp-cta:hover {
-    background: rgba(0, 217, 255, 0.18);
-    box-shadow: 0 0 16px rgba(0, 217, 255, 0.25);
+    background: rgba(0, 217, 255, 0.1);
+    box-shadow: 0 0 16px rgba(0, 217, 255, 0.2);
+  }
+  .exp-cta:hover::after {
+    opacity: 0;
+    animation: none;
+  }
+
+  .exp-cta-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    stroke-width: 2.2;
   }
 
   /* Grid */
@@ -233,41 +256,89 @@ import Nav from '../components/Nav.astro';
   /* Card */
   .exp-card {
     background: rgba(10, 25, 41, 0.85);
-    border: 1px solid rgba(0, 217, 255, 0.14);
+    border: 3px solid rgba(0, 217, 255, 0.55);
     border-radius: 12px;
-    padding: 1.5rem 1.4rem;
-    transition: border-color 0.2s, transform 0.2s;
+    padding: 1.6rem 1.4rem;
+    transition: border-color 0.2s, transform 0.22s, box-shadow 0.22s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff7a1a, #f97316, #ffad6b);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .exp-card:hover::before {
+    transform: scaleX(1);
   }
 
   .exp-card:hover {
-    border-color: rgba(0, 217, 255, 0.35);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   }
 
   .exp-card--featured {
-    border-color: rgba(0, 255, 136, 0.3);
+    border-color: rgba(0, 149, 217, 0.55);
   }
 
   .exp-card--featured:hover {
-    border-color: rgba(0, 255, 136, 0.55);
+    box-shadow: 0 12px 32px rgba(0, 100, 160, 0.18);
+  }
+
+  /* Icon wrapper */
+  .exp-card-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    background: rgba(0, 217, 255, 0.08);
+    border: 1px solid rgba(0, 217, 255, 0.18);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    color: #00d9ff;
+  }
+
+  .exp-card--featured .exp-card-icon-wrap {
+    background: rgba(92, 225, 230, 0.08);
+    border-color: rgba(92, 225, 230, 0.22);
+    color: #5ce1e6;
   }
 
   .exp-card-icon {
-    font-size: 1.6rem;
-    color: #00d9ff;
-    margin-bottom: 0.8rem;
-  }
-
-  .exp-card--featured .exp-card-icon {
-    color: #00ff88;
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke-width: 1.8;
   }
 
   .exp-card-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #e8f4f8;
+    display: flex;
+    align-items: center;
+    gap: 0.70rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f8f9fa;
     margin: 0 0 0.9rem;
     line-height: 1.3;
+  }
+
+  .exp-title-icon {
+    font-size: 1.8rem;
+    color: var(--accent-cyan, #00d9ff);
+    flex-shrink: 0;
+    opacity: 1;
+    line-height: 1;
   }
 
   .exp-list {
@@ -280,11 +351,11 @@ import Nav from '../components/Nav.astro';
   }
 
   .exp-list li {
-    font-size: 0.82rem;
+    font-size: 0.875rem;
     color: #a8bfd0;
     padding-left: 1rem;
     position: relative;
-    line-height: 1.45;
+    line-height: 1.5;
   }
 
   .exp-list li::before {
@@ -296,85 +367,166 @@ import Nav from '../components/Nav.astro';
   }
 
   .exp-card--featured .exp-list li::before {
-    color: #00ff88;
+    color: #5ce1e6;
   }
 
-  /* Secteurs */
   .exp-sectors {
     background: rgba(10, 25, 41, 0.7);
-    border: 1px solid rgba(0, 217, 255, 0.15);
-    border-radius: 12px;
+    border: 1px solid rgba(0, 217, 255, 0.12);
+    border-radius: 14px;
     padding: 1.4rem 1.8rem;
     margin-bottom: 3rem;
     text-align: center;
   }
 
   .exp-sectors-label {
-    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(0, 217, 255, 0.7);
-    margin-bottom: 1rem;
+    color: rgba(0, 217, 255, 0.65);
+    margin-bottom: 1.1rem;
+  }
+
+  .exp-sectors-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+    stroke-width: 2;
   }
 
   .exp-sectors-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.8rem;
+    gap: 0.75rem;
     justify-content: center;
   }
 
   .exp-sector {
-    background: rgba(0, 217, 255, 0.06);
-    border: 1px solid rgba(0, 217, 255, 0.2);
-    color: #c5d0de;
-    padding: 0.4rem 1rem;
-    border-radius: 50px;
-    font-size: 0.83rem;
-    font-weight: 500;
-  }
-
-  /* Footer CTA */
-  .exp-footer-cta {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .exp-btn-port, .exp-btn-demo, .exp-btn-li {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.4rem;
+    gap: 0.4rem;
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid rgba(0, 217, 255, 0.18);
+    color: #c5d0de;
+    padding: 0.38rem 0.9rem;
     border-radius: 50px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .exp-sector:hover {
+    border-color: rgba(0, 217, 255, 0.35);
+    color: #e8f4f8;
+  }
+
+  .exp-sector-icon {
+    width: 0.85rem;
+    height: 0.85rem;
+    stroke-width: 2;
+    color: rgba(0, 217, 255, 0.55);
+  }
+
+  /* ── Light theme overrides ── */
+  :global([data-theme="light"]) .exp-badge {
+    background: rgba(0, 119, 168, 0.08);
+    border-color: rgba(0, 119, 168, 0.32);
+    color: #005f8a;
+  }
+
+  :global([data-theme="light"]) .exp-title {
+    color: #005f8a;
+    -webkit-text-fill-color: #005f8a;
     font-weight: 600;
-    text-decoration: none;
-    transition: transform 0.18s, box-shadow 0.18s;
   }
 
-  .exp-btn-port {
-    background: linear-gradient(135deg, #00d9ff, #0095d9);
-    background-color: #0095d9;
-    color: #0a1929;
+  :global([data-theme="light"]) .exp-tagline {
+    color: #3a5268;
   }
 
-  .exp-btn-demo {
-    background: rgba(0, 217, 255, 0.08);
-    border: 1px solid rgba(0, 217, 255, 0.3);
-    color: #00d9ff;
+  :global([data-theme="light"]) .exp-cta {
+    border-color: rgba(0, 100, 160, 0.35);
+    color: #005f8a;
   }
 
-  .exp-btn-li {
-    background: linear-gradient(135deg, #0077b5, #005a8a);
-    background-color: #005a8a;
-    color: #fff;
+  :global([data-theme="light"]) .exp-cta:hover {
+    background: rgba(0, 100, 160, 0.07);
+    box-shadow: 0 0 14px rgba(0, 100, 160, 0.18);
   }
 
-  .exp-btn-port:hover, .exp-btn-demo:hover, .exp-btn-li:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  :global([data-theme="light"]) .exp-card {
+    background: rgba(255, 255, 255, 0.88);
+    border-color: rgba(0, 100, 160, 0.35);
+    box-shadow: 0 2px 14px rgba(0, 80, 130, 0.07);
   }
+
+  :global([data-theme="light"]) .exp-card:hover {
+    box-shadow: 0 8px 28px rgba(0, 80, 130, 0.18);
+  }
+
+  :global([data-theme="light"]) .exp-card--featured {
+    border-color: rgba(0, 100, 160, 0.45);
+  }
+
+  :global([data-theme="light"]) .exp-card--featured:hover {
+    box-shadow: 0 12px 32px rgba(0, 80, 130, 0.22);
+  }
+
+  :global([data-theme="light"]) .exp-card-icon-wrap {
+    background: rgba(0, 119, 168, 0.08);
+    border-color: rgba(0, 119, 168, 0.22);
+    color: #0077a8;
+  }
+
+  :global([data-theme="light"]) .exp-card--featured .exp-card-icon-wrap {
+    background: rgba(0, 149, 201, 0.08);
+    border-color: rgba(0, 149, 201, 0.24);
+    color: #0095c9;
+  }
+
+  :global([data-theme="light"]) .exp-card-title {
+    color: #0d1b2a;
+  }
+
+  :global([data-theme="light"]) .exp-list li {
+    color: #3a5268;
+  }
+
+  :global([data-theme="light"]) .exp-list li::before {
+    color: #0077a8;
+  }
+
+  :global([data-theme="light"]) .exp-card--featured .exp-list li::before {
+    color: #0095c9;
+  }
+
+  :global([data-theme="light"]) .exp-sectors {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(0, 100, 160, 0.15);
+  }
+
+  :global([data-theme="light"]) .exp-sectors-label {
+    color: rgba(0, 95, 138, 0.75);
+  }
+
+  :global([data-theme="light"]) .exp-sector {
+    background: rgba(0, 100, 160, 0.06);
+    border-color: rgba(0, 100, 160, 0.2);
+    color: #3a5268;
+  }
+
+  :global([data-theme="light"]) .exp-sector:hover {
+    color: #0d1b2a;
+    border-color: rgba(0, 100, 160, 0.42);
+  }
+
+  :global([data-theme="light"]) .exp-btn-demo {
+    background: rgba(0, 100, 160, 0.07);
+    border-color: rgba(0, 100, 160, 0.28);
+    color: #005f8a;
+  }
+
 </style>

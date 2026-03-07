@@ -53,9 +53,10 @@ import Nav from '../components/Nav.astro';
         <h1 class="pf-name">Stéphane Celton</h1>
         <p class="pf-role">Data Product Manager · Business Intelligence · Gouvernance Data</p>
         <p class="pf-bio">
-          15+ ans d'expérience dans la mise en place de solutions décisionnelles et de plateformes data
-          dans des environnements IT critiques (banque, industrie, énergie).<br />
-          Expert en Power BI, gouvernance des données, MCO et pilotage de production IT.
+          Expérience dans la mise en place de solutions décisionnelles et de plateformes data
+          au sein d'environnements IT exigeants (banque, industrie, énergie).<br />
+          Interventions autour de Power BI, de la gouvernance des données,
+          du MCO et du pilotage de la production IT.
         </p>
 
         <div class="pf-tags">
@@ -117,7 +118,7 @@ import Nav from '../components/Nav.astro';
     width: 80vw;
     max-height: 85vh;
     background: rgba(10, 18, 32, 0.97);
-    border: 1px solid rgba(0, 217, 255, 0.28);
+    border: 2px solid rgba(0, 217, 255, 0.45);
     border-radius: 16px;
     overflow: hidden;
     display: flex;
@@ -265,11 +266,28 @@ import Nav from '../components/Nav.astro';
     border-radius: 50px;
     box-shadow: 0 4px 20px rgba(0, 217, 255, 0.35);
     transition: all 0.22s;
+    position: relative;
+  }
+  .pf-cta::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    animation: btn-dot-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    pointer-events: none;
   }
   .pf-cta:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 28px rgba(0, 217, 255, 0.5);
     color: #0a1929;
+  }
+  .pf-cta:hover::after {
+    opacity: 0;
+    animation: none;
   }
   .pf-cta-arrow { transition: transform 0.22s; }
   .pf-cta:hover .pf-cta-arrow { transform: translateX(4px); }

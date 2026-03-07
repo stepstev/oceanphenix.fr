@@ -20,28 +20,39 @@
       <span class="logo-brand">OceanPhenix <sup>™</sup></span><span class="logo-sub">— OceanP consulting</span>
     </a>
 
-    <!-- Bouton hamburger -->
-    <button class="nav-hamburger" id="nav-hamburger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-mobile">
-      <span class="hamburger-bar"></span>
-      <span class="hamburger-bar"></span>
-      <span class="hamburger-bar"></span>
-    </button>
-
     <ul class="nav-links" id="nav-links">
       <li><a href="/#home"><i class="fas fa-home"></i> Accueil</a></li>
       <li><a href="/expertises"><i class="fas fa-briefcase"></i> Expertises</a></li>
-      <li><a href="/#platforms"><i class="fas fa-layer-group"></i> Plateformes</a></li>
-      <li>
-        <a href="/portfolio">
-          <i class="fas fa-id-badge"></i> Portfolio
-        </a>
-      </li>
+      <li><a href="/#platforms"><i class="fas fa-chart-bar"></i> Data BI &amp; AI</a></li>
       <li>
         <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener">
           <i class="fab fa-linkedin"></i> LinkedIn
         </a>
       </li>
     </ul>
+
+    <!-- Right controls: theme toggle + hamburger -->
+    <div class="nav-controls">
+      <!-- Theme toggle: moon (dark) / sun (light) -->
+      <button class="theme-toggle" id="theme-toggle" aria-label="Basculer le thème clair / sombre" title="Thème clair / sombre">
+        <!-- Moon — visible in dark mode -->
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <!-- Sun — visible in light mode -->
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- Hamburger (mobile only) -->
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-mobile">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
   </div>
 </nav>
 

@@ -46,6 +46,10 @@ const {
   <meta name="twitter:image" content={ogImage} />
   <slot name="head" />
   <link rel="icon" type="image/svg+xml" href="/Images/logos/favicon.svg" />
+  <!-- Anti-FOUC: apply saved theme before first paint -->
+  <script is:inline>
+    (function(){var t=localStorage.getItem('op-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');}());
+  </script>
   <link rel="alternate icon" type="image/png" href="/Images/logos/ThinkinGboulversement_50.png" />
   <link rel="apple-touch-icon" href="/Images/logos/ThinkinGboulversement_50.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
