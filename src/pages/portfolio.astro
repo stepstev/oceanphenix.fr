@@ -118,12 +118,12 @@ import Nav from '../components/Nav.astro';
     width: 80vw;
     max-height: 85vh;
     background: rgba(10, 18, 32, 0.97);
-    border: 1px solid rgba(0, 180, 216, 0.22);
+    border: 1px solid rgba(62, 148, 180, 0.22);
     border-radius: 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 32px 90px rgba(0,0,0,0.6), 0 0 40px rgba(0, 180, 216, 0.05);
+    box-shadow: 0 32px 90px rgba(0,0,0,0.6), 0 0 40px rgba(62, 148, 180, 0.05);
     animation: pf-in 0.24s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -138,7 +138,7 @@ import Nav from '../components/Nav.astro';
     justify-content: space-between;
     padding: 0.7rem 1.2rem;
     background: rgba(8, 15, 28, 0.98);
-    border-bottom: 1px solid rgba(0, 180, 216, 0.10);
+    border-bottom: 1px solid rgba(62, 148, 180, 0.10);
     flex-shrink: 0;
   }
 
@@ -146,15 +146,15 @@ import Nav from '../components/Nav.astro';
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #8ecfdb;
+    color: #7ab5c0;
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.3px;
   }
-  .pf-panel-title i { color: #00d9ff; }
+  .pf-panel-title i { color: #4db8d4; }
 
   .pf-btn-close {
-    color: #8ecfdb;
+    color: #7ab5c0;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px;
@@ -164,7 +164,7 @@ import Nav from '../components/Nav.astro';
     text-decoration: none;
     transition: all 0.16s;
   }
-  .pf-btn-close:hover { background: rgba(255,60,60,0.15); color: #ff6b6b; border-color: rgba(255,60,60,0.3); }
+  .pf-btn-close:hover { background: rgba(180, 90, 90,0.15); color: #c07070; border-color: rgba(180, 90, 90,0.3); }
 
   .pf-panel-body {
     flex: 1;
@@ -188,14 +188,14 @@ import Nav from '../components/Nav.astro';
     border-radius: 50%;
     object-fit: cover;
     object-position: center center;
-    border: 1px solid rgba(0, 180, 216, 0.22);
-    box-shadow: 0 0 16px rgba(0, 180, 216, 0.2);
+    border: 1px solid rgba(62, 148, 180, 0.22);
+    box-shadow: 0 0 16px rgba(62, 148, 180, 0.2);
   }
 
   .pf-name {
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #00d9ff, #5ce1e6);
+    background: linear-gradient(135deg, #4db8d4, #5ce1e6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -203,14 +203,14 @@ import Nav from '../components/Nav.astro';
   }
 
   .pf-role {
-    color: #8ecfdb;
+    color: #7ab5c0;
     font-size: 0.95rem;
     font-weight: 400;
     letter-spacing: 0.3px;
   }
 
   .pf-bio {
-    color: #c5d0de;
+    color: #8fa3b8;
     font-size: 0.88rem;
     line-height: 1.6;
     max-width: 560px;
@@ -229,9 +229,9 @@ import Nav from '../components/Nav.astro';
     border-radius: 4px;
     font-size: 0.73rem;
     font-weight: 500;
-    background: rgba(139, 92, 246, 0.08);
-    border: 1px solid rgba(139, 92, 246, 0.28);
-    color: #b8a4e8;
+    background: rgba(130, 110, 180, 0.08);
+    border: 1px solid rgba(130, 110, 180, 0.28);
+    color: #9a90c0;
   }
 
   .pf-hashtags {
@@ -245,12 +245,12 @@ import Nav from '../components/Nav.astro';
   .pf-hash {
     font-size: 0.72rem;
     font-weight: 600;
-    color: rgba(0, 217, 255, 0.55);
+    color: rgba(77, 184, 212, 0.55);
     letter-spacing: 0.1px;
     transition: color 0.16s;
     cursor: default;
   }
-  .pf-hash:hover { color: #00d9ff; }
+  .pf-hash:hover { color: #4db8d4; }
 
   .pf-cta {
     display: inline-flex;
@@ -258,13 +258,13 @@ import Nav from '../components/Nav.astro';
     gap: 0.6rem;
     margin-top: 0.5rem;
     padding: 0.8rem 2rem;
-    background: linear-gradient(135deg, #00d9ff, #0095d9);
+    background: linear-gradient(135deg, #4db8d4, #0095d9);
     color: #0a1929;
     font-weight: 700;
     font-size: 0.95rem;
     text-decoration: none;
     border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 217, 255, 0.35);
+    box-shadow: 0 4px 20px rgba(77, 184, 212, 0.35);
     transition: all 0.22s;
     position: relative;
   }
@@ -282,7 +282,7 @@ import Nav from '../components/Nav.astro';
   }
   .pf-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(0, 217, 255, 0.5);
+    box-shadow: 0 8px 28px rgba(77, 184, 212, 0.5);
     color: #0a1929;
   }
   .pf-cta:hover::after {
@@ -304,54 +304,54 @@ import Nav from '../components/Nav.astro';
   }
   :global([data-theme="light"]) .pf-panel {
     background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 100, 160, 0.35);
+    border-color: rgba(26, 100, 140, 0.35);
     box-shadow: 0 32px 90px rgba(0, 50, 100, 0.25), 0 0 60px rgba(0, 149, 217, 0.06);
   }
   :global([data-theme="light"]) .pf-panel-header {
     background: rgba(240, 248, 255, 0.98);
-    border-bottom-color: rgba(0, 100, 160, 0.12);
+    border-bottom-color: rgba(26, 100, 140, 0.12);
   }
   :global([data-theme="light"]) .pf-panel-title {
-    color: #1a3a52;
+    color: #2a4560;
   }
   :global([data-theme="light"]) .pf-panel-title i {
-    color: #005f8a;
+    color: #1a6580;
   }
   :global([data-theme="light"]) .pf-btn-close {
-    color: #3a5268;
+    color: #4a6275;
     background: rgba(0, 80, 130, 0.06);
     border-color: rgba(0, 80, 130, 0.15);
   }
   :global([data-theme="light"]) .pf-btn-close:hover {
-    background: rgba(255, 60, 60, 0.1);
-    color: #d43030;
-    border-color: rgba(255, 60, 60, 0.25);
+    background: rgba(180, 90, 90, 0.1);
+    color: #a85050;
+    border-color: rgba(180, 90, 90, 0.25);
   }
   :global([data-theme="light"]) .pf-name {
-    background: linear-gradient(135deg, #005f8a, #0095d9);
+    background: linear-gradient(135deg, #1a6580, #0095d9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   :global([data-theme="light"]) .pf-role {
-    color: #3a5268;
+    color: #4a6275;
   }
   :global([data-theme="light"]) .pf-bio {
-    color: #4a6378;
+    color: #4a6275;
   }
   :global([data-theme="light"]) .pf-tag {
-    background: rgba(0, 100, 160, 0.06);
-    border-color: rgba(0, 100, 160, 0.25);
-    color: #005f8a;
+    background: rgba(26, 100, 140, 0.06);
+    border-color: rgba(26, 100, 140, 0.25);
+    color: #1a6580;
   }
   :global([data-theme="light"]) .pf-hash {
     color: rgba(0, 95, 138, 0.5);
   }
   :global([data-theme="light"]) .pf-hash:hover {
-    color: #005f8a;
+    color: #1a6580;
   }
   :global([data-theme="light"]) .pf-cta {
-    background: linear-gradient(135deg, #0095d9, #005f8a);
+    background: linear-gradient(135deg, #0095d9, #1a6580);
     color: #ffffff;
     box-shadow: 0 4px 20px rgba(0, 95, 138, 0.3);
   }

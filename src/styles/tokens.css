@@ -5,25 +5,36 @@
    ============================================================ */
 
 :root {
-  /* ── Brand Colors ─────────────────────────────────────── */
-  --primary-dark:       #0a1929;
-  --secondary-dark:     #1e3a5f;
-  --accent-cyan:        #00d9ff;
-  --accent-blue:        #0095d9;
-  --accent-light-cyan:  #5ce1e6;
-  --dark-charcoal:      #0d1117;
-  --white:              #ffffff;
-  --text-light:         #f8f9fa;
-  --text-muted:         #c5d0de;
+  /* ── Brand Colors (desaturated) ────────────────────────── */
+  --primary-dark:       #0b1a2e;
+  --secondary-dark:     #1a3352;
+  --accent-cyan:        #4db8d4;
+  --accent-blue:        #2d8bb5;
+  --accent-light-cyan:  #6ec5d6;
+  --dark-charcoal:      #0e1319;
+  --white:              #f4f6f8;
+  --text-light:         #e8ecf0;
+  --text-muted:         #8fa3b8;
+  --accent-orange:      #d4845a;
 
   /* ── Gradients ────────────────────────────────────────── */
   --primary-gradient: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
   --accent-gradient:  linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-  --ocean-gradient:   linear-gradient(135deg, #023e8a, #0077b6, #00b4d8, #90e0ef);
+  --ocean-gradient:   linear-gradient(135deg, #0c3d6e, #1a6d96, #3ea8c4, #7dcde0);
 
   /* ── Typography ───────────────────────────────────────── */
-  --font-primary:   'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-secondary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-primary:   'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* ── Type Scale ────────────────────────────────────────── */
+  --text-xs:    0.75rem;
+  --text-sm:    0.875rem;
+  --text-base:  1rem;
+  --text-lg:    1.125rem;
+  --text-xl:    1.5rem;
+  --text-2xl:   1.875rem;
+  --text-3xl:   2.25rem;
+  --text-4xl:   3rem;
 
   /* ── Spacing ──────────────────────────────────────────── */
   --spacing-xs:  0.5rem;
@@ -44,7 +55,7 @@
   --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-lg:   0 16px 48px rgba(0, 0, 0, 0.15);
-  --shadow-glow: 0 0 30px rgba(0, 180, 216, 0.4);
+  --shadow-glow: 0 0 30px rgba(0, 120, 160, 0.15);
 
   /* ── Transitions ──────────────────────────────────────── */
   --transition-fast:   0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -59,24 +70,25 @@
   color-scheme: light;
 
   /* ── Brand Colors (light) ─────────────────────────────── */
-  --primary-dark:       #ddeef9;
-  --secondary-dark:     #c2e0f4;
-  --dark-charcoal:      #eaf4fb;
-  --white:              #0d1b2a;
-  --text-light:         #0d1b2a;
-  --text-muted:         #3a5268;
-  --accent-cyan:        #0077a8;
-  --accent-blue:        #005b8a;
-  --accent-light-cyan:  #0095c9;
+  --primary-dark:       #eaf1f7;
+  --secondary-dark:     #d8e6f0;
+  --dark-charcoal:      #f0f5f9;
+  --white:              #1a2535;
+  --text-light:         #1a2535;
+  --text-muted:         #4a6275;
+  --accent-cyan:        #1a7fa0;
+  --accent-blue:        #15658a;
+  --accent-light-cyan:  #258fa8;
+  --accent-orange:      #b06830;
 
   /* ── Gradients (light) ────────────────────────────────── */
-  --primary-gradient: linear-gradient(135deg, #ddeef9, #c2e0f4);
-  --accent-gradient:  linear-gradient(135deg, #0077a8, #005b8a);
-  --ocean-gradient:   linear-gradient(135deg, #b8ddf4, #90cce8, #68bce0, #48afd8);
+  --primary-gradient: linear-gradient(135deg, #eaf1f7, #d8e6f0);
+  --accent-gradient:  linear-gradient(135deg, #1a7fa0, #15658a);
+  --ocean-gradient:   linear-gradient(135deg, #c0dbed, #a0cce0, #80bcd5, #60accb);
 
-  /* ── Shadows (light) — multi-layer for depth & premium feel ── */
-  --shadow-sm:   0 1px 2px rgba(0, 50, 100, 0.04), 0 2px 8px rgba(0, 50, 100, 0.07);
-  --shadow-md:   0 2px 6px rgba(0, 50, 100, 0.06), 0 8px 28px rgba(0, 50, 100, 0.10);
-  --shadow-lg:   0 6px 18px rgba(0, 50, 100, 0.09), 0 20px 52px rgba(0, 50, 100, 0.12);
-  --shadow-glow: 0 0 24px rgba(0, 100, 160, 0.20), 0 0 6px rgba(0, 100, 160, 0.10);
+  /* ── Shadows (light) ──────────────────────────────────── */
+  --shadow-sm:   0 1px 2px rgba(0, 30, 60, 0.04), 0 2px 8px rgba(0, 30, 60, 0.06);
+  --shadow-md:   0 2px 6px rgba(0, 30, 60, 0.05), 0 8px 28px rgba(0, 30, 60, 0.08);
+  --shadow-lg:   0 6px 18px rgba(0, 30, 60, 0.07), 0 20px 52px rgba(0, 30, 60, 0.10);
+  --shadow-glow: 0 0 20px rgba(0, 80, 120, 0.10);
 }
