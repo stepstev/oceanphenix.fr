@@ -127,11 +127,11 @@ import { Icon } from 'astro-icon/components';
         Environnements sectoriels
       </div>
       <div class="exp-sectors-list">
-        <span class="exp-sector">Banque &amp; Assurance</span>
-        <span class="exp-sector">Énergie</span>
-        <span class="exp-sector">Industrie</span>
-        <span class="exp-sector">Aéronautique &amp; Défense</span>
-        <span class="exp-sector">Santé &amp; Services publics</span>
+        <span class="exp-sector"><i class="fa-solid fa-building-columns"></i> Banque &amp; Assurance</span>
+        <span class="exp-sector"><i class="fa-solid fa-bolt"></i> Énergie</span>
+        <span class="exp-sector"><i class="fa-solid fa-industry"></i> Industrie</span>
+        <span class="exp-sector"><i class="fa-solid fa-jet-fighter"></i> Aéronautique &amp; Défense</span>
+        <span class="exp-sector"><i class="fa-solid fa-hospital"></i> Santé &amp; Services publics</span>
       </div>
     </div>
 
@@ -415,7 +415,7 @@ import { Icon } from 'astro-icon/components';
   .exp-sector {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     background: rgba(77, 184, 212, 0.04);
     border: 1px solid rgba(62, 148, 180, 0.14);
     color: #8fa3b8;
@@ -424,6 +424,16 @@ import { Icon } from 'astro-icon/components';
     font-size: 0.82rem;
     font-weight: 500;
     transition: border-color 0.2s, color 0.2s;
+  }
+
+  .exp-sector i {
+    font-size: 0.85rem;
+    color: #4db8d4;
+    transition: color 0.2s;
+  }
+
+  .exp-sector:hover i {
+    color: #6dd4ec;
   }
 
   .exp-sector:hover {
@@ -528,9 +538,17 @@ import { Icon } from 'astro-icon/components';
     color: #4a6275;
   }
 
+  :global([data-theme="light"]) .exp-sector i {
+    color: rgba(26, 100, 140, 0.55);
+  }
+
   :global([data-theme="light"]) .exp-sector:hover {
     color: #1a2535;
     border-color: rgba(26, 100, 140, 0.42);
+  }
+
+  :global([data-theme="light"]) .exp-sector:hover i {
+    color: rgba(26, 100, 140, 0.85);
   }
 
   :global([data-theme="light"]) .exp-btn-demo {
