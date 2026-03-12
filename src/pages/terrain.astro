@@ -139,6 +139,11 @@ const projet = etapesData.projet;
           <span class="legend-item"><span class="legend-dot legend-dot--actuel"></span> Position actuelle</span>
           <span class="legend-item"><span class="legend-dot legend-dot--planifie"></span> Étape planifiée</span>
           <span class="legend-item"><span class="legend-dot legend-dot--visite"></span> Étape visitée</span>
+          <label class="legend-item legend-toggle" title="Afficher/masquer les espaces de coworking">
+            <i class="fas fa-flag" style="color:#d4845a;"></i> Coworking
+            <input type="checkbox" id="cw-toggle" checked />
+            <span class="legend-switch"></span>
+          </label>
         </div>
       </div>
     </section>
@@ -470,7 +475,7 @@ const projet = etapesData.projet;
 
       var colors = {
         actuel: '#f59e0b',
-        planifie: '#4db8d4',
+        planifie: '#1a6b8a',
         visite: '#22c55e',
         depart: '#f59e0b',
       };
@@ -536,19 +541,61 @@ const projet = etapesData.projet;
             marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
           }
 
-          routeCoords.push([etape.lat, etape.lng]);
+          routeCoords.push({ lat: etape.lat, lng: etape.lng, statut: etape.statut });
         });
 
-        if (routeCoords.length > 1) {
-          L.polyline(routeCoords, {
-            color: '#4db8d4',
+        // Draw segmented route: green solid for realized, dark blue dashed for planned
+        for (var i = 0; i < routeCoords.length - 1; i++) {
+          var from = routeCoords[i];
+          var to = routeCoords[i + 1];
+          var realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
+                         (to.statut === 'visite' || to.statut === 'actuel');
+          L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+            color: realized ? '#22c55e' : '#1a6b8a',
             weight: opts.compact ? 2 : 2.5,
-            opacity: 0.5,
-            dashArray: '8, 8',
+            opacity: realized ? 0.8 : 0.5,
+            dashArray: realized ? null : '8, 8',
           }).addTo(map);
         }
 
         return map;
+      }
+
+      // ---- Helper: add coworking flag markers ----
+      function addCoworkingMarkers(map, compact) {
+        // Remove existing coworking markers
+        if (map._cwMarkers) {
+          map._cwMarkers.forEach(function(m) { map.removeLayer(m); });
+        }
+        map._cwMarkers = [];
+        var CW_KEY = 'op-terrain-coworking';
+        try {
+          var raw = localStorage.getItem(CW_KEY);
+          if (!raw) return;
+          var cwList = JSON.parse(raw);
+          cwList.forEach(function(cw) {
+            if (!cw.visible || !cw.lat || !cw.lng) return;
+            var flagIcon = L.divIcon({
+              className: 'cw-flag-marker',
+              html: '<i class="fas fa-flag" style="color:#d4845a;font-size:' + (compact ? '14px' : '18px') + ';filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));"></i>',
+              iconSize: compact ? [14, 14] : [18, 18],
+              iconAnchor: compact ? [2, 14] : [3, 18],
+            });
+            var m = L.marker([cw.lat, cw.lng], { icon: flagIcon }).addTo(map);
+            if (!compact) {
+              var popup = '<div style="font-family:Inter,sans-serif;min-width:180px;">' +
+                '<strong style="font-size:13px;color:#0b1a2e;">' + (cw.nom || '') + '</strong>' +
+                '<br><span style="color:#666;font-size:12px;"><i class="fas fa-map-marker-alt"></i> ' + (cw.ville || '') + '</span>';
+              if (cw.adresse) popup += '<br><span style="color:#888;font-size:11px;">' + cw.adresse + '</span>';
+              if (cw.url) popup += '<br><a href="' + cw.url + '" target="_blank" rel="noopener" style="font-size:11px;">Site web</a>';
+              popup += '</div>';
+              m.bindPopup(popup);
+            } else {
+              m.bindTooltip(cw.nom || 'Coworking', { permanent: false, direction: 'top' });
+            }
+            map._cwMarkers.push(m);
+          });
+        } catch(e) { /* skip */ }
       }
 
       // ---- Load GPX tracks from public/gpx/ directory ----
@@ -594,7 +641,22 @@ const projet = etapesData.projet;
         compact: false,
       });
       if (mainMap) loadGpxTracks(mainMap);
+      if (mainMap) addCoworkingMarkers(mainMap, false);
       window._terrainMainMap = mainMap;
+
+      // Toggle coworking flags
+      var cwToggle = document.getElementById('cw-toggle');
+      if (cwToggle) {
+        cwToggle.addEventListener('change', function() {
+          var show = cwToggle.checked;
+          [mainMap, dashMap].forEach(function(map) {
+            if (!map || !map._cwMarkers) return;
+            map._cwMarkers.forEach(function(m) {
+              if (show) { m.addTo(map); } else { map.removeLayer(m); }
+            });
+          });
+        });
+      }
 
       // ---- 2. Dashboard compact map ----
       var dashMap = initTerrainMap('tdash-map', {
@@ -604,6 +666,7 @@ const projet = etapesData.projet;
         zoomControl: false,
       });
       window._terrainDashMap = dashMap;
+      if (dashMap) addCoworkingMarkers(dashMap, true);
     });
   </script>
 
@@ -698,14 +761,16 @@ const projet = etapesData.projet;
         // --- Update Leaflet map markers if maps exist ---
         if (etapes.length && window._terrainMainMap) {
           rebuildMapMarkers(window._terrainMainMap, etapes, false);
+          addCwFlags(window._terrainMainMap, false);
         }
         if (etapes.length && window._terrainDashMap) {
           rebuildMapMarkers(window._terrainDashMap, etapes, true);
+          addCwFlags(window._terrainDashMap, true);
         }
       }
 
       function rebuildMapMarkers(map, etapes, compact) {
-        var colors = { actuel: '#f59e0b', planifie: '#4db8d4', visite: '#22c55e', depart: '#f59e0b' };
+        var colors = { actuel: '#f59e0b', planifie: '#1a6b8a', visite: '#22c55e', depart: '#f59e0b' };
         // Remove existing markers and polylines
         map.eachLayer(function (layer) {
           if (layer instanceof L.CircleMarker || layer instanceof L.Polyline) {
@@ -739,11 +804,19 @@ const projet = etapesData.projet;
           } else {
             marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
           }
-          routeCoords.push([etape.lat, etape.lng]);
+          routeCoords.push({ lat: etape.lat, lng: etape.lng, statut: etape.statut });
         });
-        if (routeCoords.length > 1) {
-          L.polyline(routeCoords, {
-            color: '#4db8d4', weight: compact ? 2 : 2.5, opacity: 0.5, dashArray: '8, 8',
+        // Draw segmented route: green solid for realized, dark blue dashed for planned
+        for (var i = 0; i < routeCoords.length - 1; i++) {
+          var from = routeCoords[i];
+          var to = routeCoords[i + 1];
+          var realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
+                         (to.statut === 'visite' || to.statut === 'actuel');
+          L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+            color: realized ? '#22c55e' : '#1a6b8a',
+            weight: compact ? 2 : 2.5,
+            opacity: realized ? 0.8 : 0.5,
+            dashArray: realized ? null : '8, 8',
           }).addTo(map);
         }
       }
@@ -754,6 +827,46 @@ const projet = etapesData.projet;
           var raw = localStorage.getItem(STORAGE_KEY);
           if (raw) applyLiveData(JSON.parse(raw));
         } catch (e) { /* invalid JSON, skip */ }
+        // Also refresh coworking flags
+        addCwFlags(window._terrainMainMap, false);
+        addCwFlags(window._terrainDashMap, true);
+      }
+
+      // Helper to reload coworking flags (uses function from outer scope via window)
+      function addCwFlags(map, compact) {
+        if (!map || !map._cwMarkers && !window.L) return;
+        // Remove existing
+        if (map._cwMarkers) {
+          map._cwMarkers.forEach(function(m) { map.removeLayer(m); });
+        }
+        map._cwMarkers = [];
+        try {
+          var raw = localStorage.getItem('op-terrain-coworking');
+          if (!raw) return;
+          var cwList = JSON.parse(raw);
+          cwList.forEach(function(cw) {
+            if (!cw.visible || !cw.lat || !cw.lng) return;
+            var flagIcon = L.divIcon({
+              className: 'cw-flag-marker',
+              html: '<i class="fas fa-flag" style="color:#d4845a;font-size:' + (compact ? '14px' : '18px') + ';filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));"></i>',
+              iconSize: compact ? [14, 14] : [18, 18],
+              iconAnchor: compact ? [2, 14] : [3, 18],
+            });
+            var m = L.marker([cw.lat, cw.lng], { icon: flagIcon }).addTo(map);
+            if (!compact) {
+              var popup = '<div style="font-family:Inter,sans-serif;min-width:180px;">' +
+                '<strong style="font-size:13px;color:#0b1a2e;">' + (cw.nom || '') + '</strong>' +
+                '<br><span style="color:#666;font-size:12px;"><i class="fas fa-map-marker-alt"></i> ' + (cw.ville || '') + '</span>';
+              if (cw.adresse) popup += '<br><span style="color:#888;font-size:11px;">' + cw.adresse + '</span>';
+              if (cw.url) popup += '<br><a href="' + cw.url + '" target="_blank" rel="noopener" style="font-size:11px;">Site web</a>';
+              popup += '</div>';
+              m.bindPopup(popup);
+            } else {
+              m.bindTooltip(cw.nom || 'Coworking', { permanent: false, direction: 'top' });
+            }
+            map._cwMarkers.push(m);
+          });
+        } catch(e) { /* skip */ }
       }
 
       // Run on DOM ready
@@ -767,6 +880,10 @@ const projet = etapesData.projet;
       window.addEventListener('storage', function (e) {
         if (e.key === STORAGE_KEY && e.newValue) {
           try { applyLiveData(JSON.parse(e.newValue)); } catch (err) { /* skip */ }
+        }
+        if (e.key === 'op-terrain-coworking') {
+          addCwFlags(window._terrainMainMap, false);
+          addCwFlags(window._terrainDashMap, true);
         }
       });
     })();

@@ -75,6 +75,12 @@ import etapesData from '../data/terrain-etapes.json';
         <button class="admin-tab" data-tab="preview">
           <i class="fas fa-eye"></i> Aperçu
         </button>
+        <button class="admin-tab" data-tab="villes">
+          <i class="fas fa-map-pin"></i> Villes France
+        </button>
+        <button class="admin-tab" data-tab="coworking">
+          <i class="fas fa-building"></i> Coworking
+        </button>
       </div>
 
       <!-- ============================== -->
@@ -163,7 +169,28 @@ import etapesData from '../data/terrain-etapes.json';
         <div class="admin-card">
           <h2><i class="fas fa-map-marked-alt"></i> Gestion des étapes</h2>
           <p class="admin-hint">Cliquez sur une étape pour la modifier. Changez le statut pour marquer une étape comme visitée.</p>
-          <div id="etapes-list" class="admin-etapes-list"></div>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="etape-add-btn" class="admin-btn admin-btn--primary">
+              <i class="fas fa-plus"></i> Nouvelle étape
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="etapes-table" class="admin-etapes-table">
+              <thead>
+                <tr>
+                  <th style="width:40px;">#</th>
+                  <th>Ville</th>
+                  <th>Région</th>
+                  <th style="text-align:center;">Km</th>
+                  <th style="text-align:center;">Statut</th>
+                  <th style="text-align:center;">Lat</th>
+                  <th style="text-align:center;">Lng</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="etapes-list"></tbody>
+            </table>
+          </div>
           <div id="etape-editor" class="admin-etape-editor" style="display:none;">
             <h3 id="etape-editor-title">Modifier l'étape</h3>
             <input type="hidden" id="etape-edit-id" />
@@ -373,6 +400,109 @@ import etapesData from '../data/terrain-etapes.json';
         </div>
       </div>
 
+      <!-- ============================== -->
+      <!-- TAB: Villes de France            -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-villes">
+        <div class="admin-card">
+          <h2><i class="fas fa-map-pin"></i> Coordonnées des grandes villes de France</h2>
+          <p class="admin-hint">Recherchez une ville puis cliquez sur <strong>Copier</strong> pour récupérer ses coordonnées.</p>
+          <input type="text" id="villes-search" placeholder="Rechercher une ville…" style="width:100%;padding:10px 14px;margin-bottom:16px;border-radius:8px;border:1px solid #333;background:#181e26;color:#e0e0e0;font-size:1rem;" />
+          <div style="overflow-x:auto;">
+            <table id="villes-table" style="width:100%;border-collapse:collapse;font-size:0.95rem;">
+              <thead>
+                <tr style="background:#1a2030;">
+                  <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #4db8d4;color:#4db8d4;">Ville</th>
+                  <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #4db8d4;color:#4db8d4;">Région</th>
+                  <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Latitude</th>
+                  <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Longitude</th>
+                  <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="villes-tbody"></tbody>
+            </table>
+          </div>
+          <p id="villes-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Coworking                  -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-coworking">
+        <div class="admin-card">
+          <h2><i class="fas fa-building"></i> Espaces de coworking</h2>
+          <p class="admin-hint">Gérez les espaces de coworking. Ils apparaissent comme <i class="fas fa-flag"></i> drapeaux sur la carte terrain.</p>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="cw-add-btn" class="admin-btn admin-btn--primary">
+              <i class="fas fa-plus"></i> Nouveau coworking
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-etapes-table" id="cw-table">
+              <thead>
+                <tr>
+                  <th style="width:35px;">#</th>
+                  <th>Nom</th>
+                  <th>Ville</th>
+                  <th style="text-align:center;">Lat</th>
+                  <th style="text-align:center;">Lng</th>
+                  <th style="text-align:center;">Carte</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="cw-tbody"></tbody>
+            </table>
+          </div>
+          <p id="cw-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+          <div id="cw-editor" style="display:none;margin-top:1rem;" class="admin-etape-editor">
+            <h3 id="cw-editor-title">Nouveau coworking</h3>
+            <input type="hidden" id="cw-edit-idx" value="-1" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom de l'espace</label>
+                <input type="text" id="cw-edit-nom" placeholder="WeWork, La Cordée…" />
+              </div>
+              <div class="admin-form-group">
+                <label>Ville</label>
+                <input type="text" id="cw-edit-ville" placeholder="Lyon, Paris…" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Adresse</label>
+                <input type="text" id="cw-edit-adresse" placeholder="12 Rue de la Paix" />
+              </div>
+              <div class="admin-form-group">
+                <label>Site web</label>
+                <input type="url" id="cw-edit-url" placeholder="https://…" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Latitude</label>
+                <input type="number" id="cw-edit-lat" step="0.0001" />
+              </div>
+              <div class="admin-form-group">
+                <label>Longitude</label>
+                <input type="number" id="cw-edit-lng" step="0.0001" />
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label><input type="checkbox" id="cw-edit-visible" checked /> Afficher sur la carte terrain</label>
+            </div>
+            <div class="admin-form-actions">
+              <button id="cw-save-btn" class="admin-btn admin-btn--primary">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="cw-cancel-btn" class="admin-btn admin-btn--outline">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -568,7 +698,259 @@ import etapesData from '../data/terrain-etapes.json';
         if (target) target.classList.add('admin-tab-content--active');
         if (tab.getAttribute('data-tab') === 'preview') renderPreview();
         if (tab.getAttribute('data-tab') === 'gpx' && !gpxMap) initGpxMap();
+        if (tab.getAttribute('data-tab') === 'villes' && !villesRendered) renderVilles('');
+        if (tab.getAttribute('data-tab') === 'coworking') renderCoworking();
       });
+    });
+
+    // ---- Villes de France ----
+    var VILLES_FR = [
+      {v:'Paris',r:'Île-de-France',lat:48.8566,lng:2.3522},
+      {v:'Marseille',r:'Provence-Alpes-Côte d\'Azur',lat:43.2965,lng:5.3698},
+      {v:'Lyon',r:'Auvergne-Rhône-Alpes',lat:45.7640,lng:4.8357},
+      {v:'Toulouse',r:'Occitanie',lat:43.6047,lng:1.4442},
+      {v:'Nice',r:'Provence-Alpes-Côte d\'Azur',lat:43.7102,lng:7.2620},
+      {v:'Nantes',r:'Pays de la Loire',lat:47.2184,lng:-1.5536},
+      {v:'Strasbourg',r:'Grand Est',lat:48.5734,lng:7.7521},
+      {v:'Montpellier',r:'Occitanie',lat:43.6108,lng:3.8767},
+      {v:'Bordeaux',r:'Nouvelle-Aquitaine',lat:44.8378,lng:-0.5792},
+      {v:'Lille',r:'Hauts-de-France',lat:50.6292,lng:3.0573},
+      {v:'Rennes',r:'Bretagne',lat:48.1173,lng:-1.6778},
+      {v:'Reims',r:'Grand Est',lat:49.2583,lng:3.2794},
+      {v:'Saint-Étienne',r:'Auvergne-Rhône-Alpes',lat:45.4397,lng:4.3872},
+      {v:'Le Havre',r:'Normandie',lat:49.4944,lng:0.1079},
+      {v:'Toulon',r:'Provence-Alpes-Côte d\'Azur',lat:43.1242,lng:5.9280},
+      {v:'Grenoble',r:'Auvergne-Rhône-Alpes',lat:45.1885,lng:5.7245},
+      {v:'Dijon',r:'Bourgogne-Franche-Comté',lat:47.3220,lng:5.0415},
+      {v:'Angers',r:'Pays de la Loire',lat:47.4784,lng:-0.5632},
+      {v:'Nîmes',r:'Occitanie',lat:43.8367,lng:4.3601},
+      {v:'Villeurbanne',r:'Auvergne-Rhône-Alpes',lat:45.7667,lng:4.8799},
+      {v:'Clermont-Ferrand',r:'Auvergne-Rhône-Alpes',lat:45.7772,lng:3.0870},
+      {v:'Aix-en-Provence',r:'Provence-Alpes-Côte d\'Azur',lat:43.5297,lng:5.4474},
+      {v:'Brest',r:'Bretagne',lat:48.3904,lng:-4.4861},
+      {v:'Tours',r:'Centre-Val de Loire',lat:47.3941,lng:0.6848},
+      {v:'Limoges',r:'Nouvelle-Aquitaine',lat:45.8336,lng:1.2611},
+      {v:'Amiens',r:'Hauts-de-France',lat:49.8941,lng:2.2958},
+      {v:'Perpignan',r:'Occitanie',lat:42.6986,lng:2.8956},
+      {v:'Metz',r:'Grand Est',lat:49.1193,lng:6.1757},
+      {v:'Besançon',r:'Bourgogne-Franche-Comté',lat:47.2378,lng:6.0241},
+      {v:'Orléans',r:'Centre-Val de Loire',lat:47.9029,lng:1.9093},
+      {v:'Rouen',r:'Normandie',lat:49.4432,lng:1.0999},
+      {v:'Mulhouse',r:'Grand Est',lat:47.7508,lng:7.3359},
+      {v:'Caen',r:'Normandie',lat:49.1829,lng:-0.3707},
+      {v:'Nancy',r:'Grand Est',lat:48.6921,lng:6.1844},
+      {v:'Argenteuil',r:'Île-de-France',lat:48.9472,lng:2.2467},
+      {v:'Saint-Denis',r:'Île-de-France',lat:48.9362,lng:2.3574},
+      {v:'Montreuil',r:'Île-de-France',lat:48.8634,lng:2.4484},
+      {v:'Pau',r:'Nouvelle-Aquitaine',lat:43.2951,lng:-0.3708},
+      {v:'Calais',r:'Hauts-de-France',lat:50.9513,lng:1.8587},
+      {v:'Dunkerque',r:'Hauts-de-France',lat:51.0343,lng:2.3768},
+      {v:'La Rochelle',r:'Nouvelle-Aquitaine',lat:46.1603,lng:-1.1511},
+      {v:'Avignon',r:'Provence-Alpes-Côte d\'Azur',lat:43.9493,lng:4.8055},
+      {v:'Poitiers',r:'Nouvelle-Aquitaine',lat:46.5802,lng:0.3404},
+      {v:'Antibes',r:'Provence-Alpes-Côte d\'Azur',lat:43.5808,lng:7.1239},
+      {v:'Cannes',r:'Provence-Alpes-Côte d\'Azur',lat:43.5528,lng:7.0174},
+      {v:'Béziers',r:'Occitanie',lat:43.3448,lng:3.2150},
+      {v:'Versailles',r:'Île-de-France',lat:48.8014,lng:2.1301},
+      {v:'Le Mans',r:'Pays de la Loire',lat:48.0061,lng:0.1996},
+      {v:'Ajaccio',r:'Corse',lat:41.9192,lng:8.7386},
+      {v:'Bastia',r:'Corse',lat:42.6977,lng:9.4529},
+      {v:'Bayonne',r:'Nouvelle-Aquitaine',lat:43.4929,lng:-1.4748},
+      {v:'Boulogne-sur-Mer',r:'Hauts-de-France',lat:50.7264,lng:1.6147},
+      {v:'Bourges',r:'Centre-Val de Loire',lat:47.0810,lng:2.3988},
+      {v:'Brive-la-Gaillarde',r:'Nouvelle-Aquitaine',lat:45.1587,lng:1.5321},
+      {v:'Chambéry',r:'Auvergne-Rhône-Alpes',lat:45.5646,lng:5.9178},
+      {v:'Chartres',r:'Centre-Val de Loire',lat:48.4561,lng:1.4832},
+      {v:'Colmar',r:'Grand Est',lat:48.0794,lng:7.3584},
+      {v:'Épinal',r:'Grand Est',lat:48.1727,lng:6.4511},
+      {v:'Évreux',r:'Normandie',lat:49.0270,lng:1.1508},
+      {v:'La Roche-sur-Yon',r:'Pays de la Loire',lat:46.6706,lng:-1.4269},
+      {v:'Laval',r:'Pays de la Loire',lat:48.0735,lng:-0.7714},
+      {v:'Lorient',r:'Bretagne',lat:47.7482,lng:-3.3702},
+      {v:'Quimper',r:'Bretagne',lat:47.9960,lng:-4.0958},
+      {v:'Sophia Antipolis',r:'Provence-Alpes-Côte d\'Azur',lat:43.6163,lng:7.0554},
+      {v:'Saint-Malo',r:'Bretagne',lat:48.6493,lng:-1.9990},
+      {v:'Saint-Nazaire',r:'Pays de la Loire',lat:47.2736,lng:-2.2137},
+      {v:'Tarbes',r:'Occitanie',lat:43.2328,lng:0.0781},
+      {v:'Troyes',r:'Grand Est',lat:48.2973,lng:4.0744},
+      {v:'Valence',r:'Auvergne-Rhône-Alpes',lat:44.9334,lng:4.8924},
+      {v:'Vannes',r:'Bretagne',lat:47.6559,lng:-2.7600}
+    ];
+
+    var villesRendered = false;
+    function renderVilles(filter) {
+      var tbody = document.getElementById('villes-tbody');
+      var count = document.getElementById('villes-count');
+      if (!tbody) return;
+      var q = (filter || '').toLowerCase().trim();
+      var filtered = q ? VILLES_FR.filter(function(c) {
+        return c.v.toLowerCase().indexOf(q) !== -1 || c.r.toLowerCase().indexOf(q) !== -1;
+      }) : VILLES_FR;
+      var html = '';
+      filtered.forEach(function(c) {
+        html += '<tr style="border-bottom:1px solid #262d38;">';
+        html += '<td style="padding:8px 12px;font-weight:600;">' + c.v + '</td>';
+        html += '<td style="padding:8px 12px;color:#aaa;">' + c.r + '</td>';
+        html += '<td style="padding:8px 12px;text-align:center;font-family:monospace;">' + c.lat.toFixed(4) + '</td>';
+        html += '<td style="padding:8px 12px;text-align:center;font-family:monospace;">' + c.lng.toFixed(4) + '</td>';
+        html += '<td style="padding:8px 12px;text-align:center;">';
+        html += '<button class="admin-btn admin-btn--primary" style="padding:4px 10px;font-size:0.8rem;" data-copy-coords="' + c.lat + ',' + c.lng + '" title="Copier lat,lng">';
+        html += '<i class="fas fa-copy"></i> Copier</button></td>';
+        html += '</tr>';
+      });
+      tbody.innerHTML = html;
+      count.textContent = filtered.length + ' ville(s) affichée(s) sur ' + VILLES_FR.length;
+      // attach copy handlers
+      tbody.querySelectorAll('[data-copy-coords]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var coords = btn.getAttribute('data-copy-coords');
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(coords).then(function() {
+              btn.innerHTML = '<i class="fas fa-check"></i> Copié!';
+              setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 1500);
+            });
+          } else {
+            window.prompt('Coordonnées :', coords);
+          }
+        });
+      });
+      villesRendered = true;
+    }
+
+    document.getElementById('villes-search').addEventListener('input', function() {
+      renderVilles(this.value);
+    });
+
+    // ---- Coworking CRUD ----
+    var CW_KEY = 'op-terrain-coworking';
+    var cwData = [];
+
+    function loadCoworking() {
+      try { var raw = localStorage.getItem(CW_KEY); if (raw) cwData = JSON.parse(raw); } catch(e) { cwData = []; }
+    }
+    function saveCoworking() {
+      localStorage.setItem(CW_KEY, JSON.stringify(cwData));
+      showToast('Coworking sauvegardé');
+    }
+
+    function renderCoworking() {
+      var tbody = document.getElementById('cw-tbody');
+      var count = document.getElementById('cw-count');
+      if (!tbody) return;
+      var html = '';
+      cwData.forEach(function(cw, idx) {
+        html += '<tr>';
+        html += '<td style="text-align:center;font-weight:700;color:#d4845a;">' + (idx + 1) + '</td>';
+        html += '<td style="font-weight:600;">' + (cw.nom || '') + '</td>';
+        html += '<td style="color:#9ab0c4;">' + (cw.ville || '') + '</td>';
+        html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (cw.lat || '') + '</td>';
+        html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (cw.lng || '') + '</td>';
+        html += '<td style="text-align:center;">' + (cw.visible !== false ? '<i class="fas fa-flag" style="color:#d4845a;"></i>' : '<i class="fas fa-eye-slash" style="color:#666;"></i>') + '</td>';
+        html += '<td style="text-align:center;white-space:nowrap;">';
+        html += '<button class="admin-btn admin-btn--sm" data-cw-edit="' + idx + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
+        html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-cw-del="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';
+        html += '</td></tr>';
+      });
+      tbody.innerHTML = html;
+      count.textContent = cwData.length + ' espace(s) de coworking';
+      tbody.querySelectorAll('[data-cw-edit]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          openCwEditor(parseInt(btn.getAttribute('data-cw-edit')));
+        });
+      });
+      tbody.querySelectorAll('[data-cw-del]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-cw-del'));
+          var nom = cwData[idx] ? cwData[idx].nom : '';
+          if (confirm('Supprimer "' + nom + '" ?')) {
+            cwData.splice(idx, 1);
+            saveCoworking();
+            renderCoworking();
+          }
+        });
+      });
+    }
+
+    function openCwEditor(idx) {
+      var editor = document.getElementById('cw-editor');
+      var cw = idx >= 0 ? cwData[idx] : null;
+      document.getElementById('cw-edit-idx').value = idx;
+      document.getElementById('cw-editor-title').textContent = cw ? 'Modifier : ' + cw.nom : 'Nouveau coworking';
+      document.getElementById('cw-edit-nom').value = cw ? cw.nom || '' : '';
+      document.getElementById('cw-edit-ville').value = cw ? cw.ville || '' : '';
+      document.getElementById('cw-edit-adresse').value = cw ? cw.adresse || '' : '';
+      document.getElementById('cw-edit-url').value = cw ? cw.url || '' : '';
+      document.getElementById('cw-edit-lat').value = cw ? cw.lat || '' : '';
+      document.getElementById('cw-edit-lng').value = cw ? cw.lng || '' : '';
+      document.getElementById('cw-edit-visible').checked = cw ? cw.visible !== false : true;
+      editor.style.display = 'block';
+      editor.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.getElementById('cw-add-btn').addEventListener('click', function() {
+      openCwEditor(-1);
+    });
+
+    document.getElementById('cw-save-btn').addEventListener('click', function() {
+      var idx = parseInt(document.getElementById('cw-edit-idx').value);
+      var nom = document.getElementById('cw-edit-nom').value.trim();
+      if (!nom) { alert('Le nom est obligatoire'); return; }
+      var obj = {
+        nom: nom,
+        ville: document.getElementById('cw-edit-ville').value.trim(),
+        adresse: document.getElementById('cw-edit-adresse').value.trim(),
+        url: document.getElementById('cw-edit-url').value.trim(),
+        lat: parseFloat(document.getElementById('cw-edit-lat').value) || 0,
+        lng: parseFloat(document.getElementById('cw-edit-lng').value) || 0,
+        visible: document.getElementById('cw-edit-visible').checked
+      };
+      if (idx >= 0 && idx < cwData.length) {
+        Object.assign(cwData[idx], obj);
+        showToast('Coworking modifié');
+      } else {
+        cwData.push(obj);
+        showToast('Coworking ajouté');
+      }
+      saveCoworking();
+      document.getElementById('cw-editor').style.display = 'none';
+      renderCoworking();
+    });
+
+    document.getElementById('cw-cancel-btn').addEventListener('click', function() {
+      document.getElementById('cw-editor').style.display = 'none';
+    });
+
+    // Load coworking on init
+    loadCoworking();
+    // Pre-populate with common French coworking spaces if empty
+    if (cwData.length === 0) {
+      cwData = [
+        {nom:'Station F',ville:'Paris',adresse:'5 Parvis Alan Turing, 75013',lat:48.8341,lng:2.3716,visible:true,url:'https://stationf.co'},
+        {nom:'La Cordée Liberté',ville:'Lyon',adresse:'2 Rue de Condé, 69002',lat:45.7580,lng:4.8320,visible:true,url:'https://www.la-cordee.net'},
+        {nom:'WeWork La Fayette',ville:'Paris',adresse:'33 Rue La Fayette, 75009',lat:48.8748,lng:2.3493,visible:true,url:'https://www.wework.com'},
+        {nom:'La Cantine',ville:'Toulouse',adresse:'27 Rue d\'Aubuisson, 31000',lat:43.6060,lng:1.4500,visible:true,url:''},
+        {nom:'Le Wagon',ville:'Marseille',adresse:'Place de la Joliette, 13002',lat:43.3049,lng:5.3652,visible:true,url:'https://www.lewagon.com'},
+        {nom:'La Ruche',ville:'Bordeaux',adresse:'3 Rue du Chai des Farines, 33000',lat:44.8396,lng:-0.5710,visible:true,url:'https://la-ruche.net'},
+        {nom:'Le Palace',ville:'Nantes',adresse:'4 Rue Voltaire, 44000',lat:47.2140,lng:-1.5564,visible:true,url:''},
+        {nom:'La Plage Digitale',ville:'Strasbourg',adresse:'13 Rue Jacques Peirotes, 67000',lat:48.5818,lng:7.7365,visible:true,url:''},
+        {nom:'Le 144 Coworking',ville:'Rennes',adresse:'144 Rue de Chateaugiron, 35000',lat:48.0930,lng:-1.6490,visible:true,url:''},
+        {nom:'La French Tech',ville:'Nice',adresse:'61 Rte de Grenoble, 06200',lat:43.6835,lng:7.2050,visible:true,url:''},
+        {nom:'Blue Coworking',ville:'Montpellier',adresse:'296 Avenue du Maréchal Leclerc, 34000',lat:43.6056,lng:3.8760,visible:true,url:''},
+        {nom:'Now Coworking',ville:'Lille',adresse:'1 Place Nelson Mandela, 59000',lat:50.6356,lng:3.0653,visible:true,url:'https://now-coworking.com'},
+        {nom:'SophiaTech',ville:'Sophia Antipolis',adresse:'450 Route des Chappes, 06410',lat:43.6163,lng:7.0554,visible:true,url:''},
+        {nom:'Le 107',ville:'Grenoble',adresse:'107 Avenue de la République, 38000',lat:45.1812,lng:5.7245,visible:true,url:''},
+        {nom:'La Miel',ville:'Dijon',adresse:'10 Rue de Soissons, 21000',lat:47.3210,lng:5.0400,visible:true,url:''},
+        {nom:'Le Connecteur',ville:'Biarritz',adresse:'20 Av. Edouard VII, 64200',lat:43.4832,lng:-1.5586,visible:true,url:''},
+        {nom:'La Coque',ville:'Reims',adresse:'3 Rue de Caron, 51100',lat:49.2500,lng:3.2900,visible:true,url:''},
+        {nom:'Anticafé',ville:'Paris',adresse:'79 Rue Quincampoix, 75003',lat:48.8622,lng:2.3515,visible:true,url:'https://www.anticafe.eu'},
+        {nom:'Le Lawo',ville:'Caen',adresse:'12 Rue Basse, 14000',lat:49.1826,lng:-0.3710,visible:true,url:''},
+        {nom:'La Fabrique',ville:'Angers',adresse:'2 Quai Monge, 49000',lat:47.4710,lng:-0.5530,visible:true,url:''}
+      ];
+      saveCoworking();
+    }
+
+    document.getElementById('villes-search').addEventListener('input', function() {
+      renderVilles(this.value);
     });
 
     // ---- Init ----
@@ -673,66 +1055,109 @@ import etapesData from '../data/terrain-etapes.json';
     function renderEtapes() {
       var list = document.getElementById('etapes-list');
       list.innerHTML = '';
-      data.etapes.forEach(function(etape) {
-        var statusClass = 'admin-etape--' + etape.statut;
-        var statusIcons = { planifie: 'fa-circle', actuel: 'fa-location-dot', visite: 'fa-check-circle' };
-        var statusLabels = { planifie: 'Planifié', actuel: 'Actuel', visite: 'Visité' };
-        var div = document.createElement('div');
-        div.className = 'admin-etape-item ' + statusClass;
-        div.innerHTML =
-          '<div class="admin-etape-num">' + etape.id + '</div>' +
-          '<div class="admin-etape-info">' +
-          '<strong>' + etape.ville + '</strong>' +
-          '<span>' + etape.region + ' — ' + etape.distanceDepuisDepart + ' km</span>' +
-          '</div>' +
-          '<div class="admin-etape-status">' +
-          '<i class="fas ' + (statusIcons[etape.statut] || 'fa-circle') + '"></i> ' +
-          (statusLabels[etape.statut] || etape.statut) +
-          '</div>' +
-          '<button class="admin-btn admin-btn--sm" data-edit="' + etape.id + '">' +
-          '<i class="fas fa-pen"></i>' +
-          '</button>';
-        list.appendChild(div);
+      var statusIcons = { planifie: 'fa-circle', actuel: 'fa-location-dot', visite: 'fa-check-circle' };
+      var statusLabels = { planifie: 'Planifié', actuel: 'Actuel', visite: 'Visité' };
+      var statusColors = { planifie: '#1a6b8a', actuel: '#f59e0b', visite: '#22c55e' };
+      var html = '';
+      data.etapes.forEach(function(etape, idx) {
+        var sc = statusColors[etape.statut] || '#1a6b8a';
+        html += '<tr>';
+        html += '<td style="text-align:center;font-weight:700;color:' + sc + ';">' + etape.id + '</td>';
+        html += '<td style="font-weight:600;">' + etape.ville + '</td>';
+        html += '<td style="color:#9ab0c4;">' + (etape.region || '') + '</td>';
+        html += '<td style="text-align:center;">' + (etape.distanceDepuisDepart || 0) + '</td>';
+        html += '<td style="text-align:center;white-space:nowrap;"><i class="fas ' + (statusIcons[etape.statut] || 'fa-circle') + '" style="color:' + sc + ';"></i> <span style="color:' + sc + ';font-weight:600;">' + (statusLabels[etape.statut] || etape.statut) + '</span></td>';
+        html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lat || '') + '</td>';
+        html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lng || '') + '</td>';
+        html += '<td style="text-align:center;white-space:nowrap;">';
+        html += '<button class="admin-btn admin-btn--sm" data-edit="' + etape.id + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
+        html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-etape="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';
+        html += '</td></tr>';
       });
+      list.innerHTML = html;
       list.querySelectorAll('[data-edit]').forEach(function(btn) {
         btn.addEventListener('click', function() {
           openEtapeEditor(parseInt(btn.getAttribute('data-edit')));
         });
       });
+      list.querySelectorAll('[data-del-etape]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-del-etape'));
+          var ville = data.etapes[idx] ? data.etapes[idx].ville : '';
+          if (confirm('Supprimer l\'étape "' + ville + '" ?')) {
+            data.etapes.splice(idx, 1);
+            data.etapes.forEach(function(e, i) { e.id = i + 1; });
+            renderEtapes();
+            saveData();
+            showToast('Étape supprimée');
+          }
+        });
+      });
     }
 
     function openEtapeEditor(id) {
-      var etape = data.etapes.find(function(e) { return e.id === id; });
-      if (!etape) return;
+      var etape = id ? data.etapes.find(function(e) { return e.id === id; }) : null;
       document.getElementById('etape-editor').style.display = 'block';
-      document.getElementById('etape-editor-title').textContent = 'Modifier — ' + etape.ville;
-      document.getElementById('etape-edit-id').value = etape.id;
-      document.getElementById('etape-edit-ville').value = etape.ville;
-      document.getElementById('etape-edit-region').value = etape.region;
-      document.getElementById('etape-edit-statut').value = etape.statut;
-      document.getElementById('etape-edit-dist').value = etape.distanceDepuisDepart;
-      document.getElementById('etape-edit-lat').value = etape.lat;
-      document.getElementById('etape-edit-lng').value = etape.lng;
-      document.getElementById('etape-edit-date').value = etape.dateEstimee;
-      document.getElementById('etape-edit-desc').value = etape.description;
+      if (etape) {
+        document.getElementById('etape-editor-title').textContent = 'Modifier — ' + etape.ville;
+        document.getElementById('etape-edit-id').value = etape.id;
+        document.getElementById('etape-edit-ville').value = etape.ville;
+        document.getElementById('etape-edit-region').value = etape.region;
+        document.getElementById('etape-edit-statut').value = etape.statut;
+        document.getElementById('etape-edit-dist').value = etape.distanceDepuisDepart;
+        document.getElementById('etape-edit-lat').value = etape.lat;
+        document.getElementById('etape-edit-lng').value = etape.lng;
+        document.getElementById('etape-edit-date').value = etape.dateEstimee;
+        document.getElementById('etape-edit-desc').value = etape.description;
+      } else {
+        document.getElementById('etape-editor-title').textContent = 'Nouvelle étape';
+        document.getElementById('etape-edit-id').value = '0';
+        document.getElementById('etape-edit-ville').value = '';
+        document.getElementById('etape-edit-region').value = '';
+        document.getElementById('etape-edit-statut').value = 'planifie';
+        document.getElementById('etape-edit-dist').value = '';
+        document.getElementById('etape-edit-lat').value = '';
+        document.getElementById('etape-edit-lng').value = '';
+        document.getElementById('etape-edit-date').value = '';
+        document.getElementById('etape-edit-desc').value = '';
+      }
+      document.getElementById('etape-editor').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    document.getElementById('etape-add-btn').addEventListener('click', function() {
+      openEtapeEditor(0);
+    });
 
     document.getElementById('etape-save-btn').addEventListener('click', function() {
       var id = parseInt(document.getElementById('etape-edit-id').value);
-      var etape = data.etapes.find(function(e) { return e.id === id; });
-      if (!etape) return;
-      etape.ville = document.getElementById('etape-edit-ville').value;
-      etape.region = document.getElementById('etape-edit-region').value;
-      etape.statut = document.getElementById('etape-edit-statut').value;
-      etape.distanceDepuisDepart = parseInt(document.getElementById('etape-edit-dist').value) || 0;
-      etape.lat = parseFloat(document.getElementById('etape-edit-lat').value) || 0;
-      etape.lng = parseFloat(document.getElementById('etape-edit-lng').value) || 0;
-      etape.dateEstimee = document.getElementById('etape-edit-date').value;
-      etape.description = document.getElementById('etape-edit-desc').value;
+      var ville = document.getElementById('etape-edit-ville').value.trim();
+      if (!ville) { showToast('Le nom de la ville est obligatoire'); return; }
+      var fields = {
+        ville: ville,
+        region: document.getElementById('etape-edit-region').value.trim(),
+        statut: document.getElementById('etape-edit-statut').value,
+        distanceDepuisDepart: parseInt(document.getElementById('etape-edit-dist').value) || 0,
+        lat: parseFloat(document.getElementById('etape-edit-lat').value) || 0,
+        lng: parseFloat(document.getElementById('etape-edit-lng').value) || 0,
+        dateEstimee: document.getElementById('etape-edit-date').value,
+        description: document.getElementById('etape-edit-desc').value.trim(),
+      };
+      if (id === 0) {
+        // New étape
+        var newId = data.etapes.length > 0 ? Math.max.apply(null, data.etapes.map(function(e){ return e.id; })) + 1 : 1;
+        fields.id = newId;
+        fields.type = 'etape';
+        data.etapes.push(fields);
+        showToast('Nouvelle étape ajoutée : ' + ville);
+      } else {
+        var etape = data.etapes.find(function(e) { return e.id === id; });
+        if (!etape) return;
+        Object.assign(etape, fields);
+        showToast('Étape mise à jour');
+      }
       document.getElementById('etape-editor').style.display = 'none';
       renderEtapes();
       saveData();
-      showToast('Étape mise à jour');
     });
 
     document.getElementById('etape-cancel-btn').addEventListener('click', function() {
@@ -1342,70 +1767,36 @@ import etapesData from '../data/terrain-etapes.json';
     flex-wrap: wrap;
   }
 
-  /* Étapes list */
-  .admin-etapes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+  /* Étapes table */
+  .admin-etapes-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
   }
 
-  .admin-etape-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.6rem 0.8rem;
-    background: rgba(20, 32, 56, 0.5);
-    border: 1px solid rgba(45, 130, 170, 0.08);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-  }
-
-  .admin-etape-item:hover {
-    border-color: rgba(45, 130, 170, 0.2);
-  }
-
-  .admin-etape-num {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(77, 184, 212, 0.15);
+  .admin-etapes-table thead th {
+    padding: 8px 10px;
+    text-align: left;
     color: var(--accent-cyan);
-    font-size: var(--text-xs);
+    border-bottom: 2px solid rgba(77, 184, 212, 0.25);
+    font-size: 0.8rem;
     font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .admin-etape-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .admin-etape-info strong {
-    display: block;
-    font-size: var(--text-sm);
-    color: var(--white);
-  }
-
-  .admin-etape-info span {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-  }
-
-  .admin-etape-status {
-    font-size: var(--text-xs);
-    font-weight: 600;
-    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     white-space: nowrap;
   }
 
-  .admin-etape--actuel .admin-etape-status { color: #f59e0b; }
-  .admin-etape--visite .admin-etape-status { color: #22c55e; }
-  .admin-etape--actuel .admin-etape-num { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-  .admin-etape--visite .admin-etape-num { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+  .admin-etapes-table tbody td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(77, 184, 212, 0.06);
+    vertical-align: middle;
+  }
+
+  .admin-etapes-table tbody tr:hover {
+    background: rgba(77, 184, 212, 0.06);
+  }
+
+
 
   .admin-etape-editor {
     background: rgba(20, 32, 56, 0.7);
@@ -1642,13 +2033,16 @@ import etapesData from '../data/terrain-etapes.json';
   /* Light theme */
   :global([data-theme="light"]) .admin-auth-card,
   :global([data-theme="light"]) .admin-card,
-  :global([data-theme="light"]) .admin-etape-item,
   :global([data-theme="light"]) .admin-journal-item,
   :global([data-theme="light"]) .admin-gpx-item,
   :global([data-theme="light"]) .admin-gpx-info,
   :global([data-theme="light"]) .admin-etape-editor {
     background: rgba(255, 255, 255, 0.85);
     border-color: rgba(10, 24, 44, 0.1);
+  }
+
+  :global([data-theme="light"]) .admin-etapes-table tbody tr:hover {
+    background: rgba(77, 184, 212, 0.08);
   }
 
   :global([data-theme="light"]) .admin-form-group input,
