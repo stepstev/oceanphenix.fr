@@ -44,10 +44,10 @@ ErrorDocument 404 /404.html
   Header unset Strict-Transport-Security
   Header always unset Strict-Transport-Security
 
-  # Content Security Policy — notre propre CSP complète
+  # Content Security Policy — scripts externes uniquement (pas d'inline)
   Header set Content-Security-Policy "\
 default-src 'self'; \
-script-src 'self' 'unsafe-inline' https://giscus.app; \
+script-src 'self' https://giscus.app; \
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; \
 font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; \
 img-src 'self' data: https:; \
