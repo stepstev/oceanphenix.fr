@@ -11,6 +11,7 @@ import etapesData from '../data/terrain-etapes.json';
   description="Interface d'administration du parcours terrain"
   lastModified="12/03/2026 12:00"
 >
+  <link slot="head" rel="stylesheet" href="/lib/leaflet.min.css" />
   <OceanBackground />
   <Nav />
 
@@ -508,21 +509,11 @@ import etapesData from '../data/terrain-etapes.json';
 
   <CopyrightBar />
 
-  <!-- Leaflet for GPX map -->
-  <link
-    rel="stylesheet"
-    href="/lib/leaflet.min.css"
-  />
+  <!-- Leaflet JS (self-hosted) -->
+  <script src="/lib/leaflet.min.js" is:inline></script>
 
   <!-- Admin JS -->
   <script is:inline define:vars={{ etapesData }}>
-  // Load Leaflet JS dynamically (Astro strips external is:inline scripts)
-  (function() {
-    var s = document.createElement('script');
-    s.src = '/lib/leaflet.min.js';
-    document.head.appendChild(s);
-  })();
-
   (function() {
     'use strict';
 

@@ -21,6 +21,7 @@ const projet = etapesData.projet;
   description="Parcours à vélo à travers la France pour rencontrer les entreprises, comprendre leurs besoins data réels et faciliter les échanges entre entreprises et freelances / consultants."
   lastModified="12/03/2026 12:00"
 >
+  <link slot="head" rel="stylesheet" href="/lib/leaflet.min.css" />
   <OceanBackground />
   <Nav />
 
@@ -465,22 +466,11 @@ const projet = etapesData.projet;
   <CopyrightBar />
   <CguModal />
 
-  <!-- Leaflet CSS & JS (self-hosted) -->
-  <link
-    rel="stylesheet"
-    href="/lib/leaflet.min.css"
-  />
+  <!-- Leaflet JS (self-hosted) -->
+  <script src="/lib/leaflet.min.js" is:inline></script>
 
   <!-- Carte Leaflet init -->
   <script is:inline define:vars={{ etapes, position }}>
-    // Load Leaflet JS dynamically
-    (function() {
-      var s = document.createElement('script');
-      s.src = '/lib/leaflet.min.js';
-      s.onload = function() { _initTerrainMaps(); };
-      document.head.appendChild(s);
-    })();
-
     function _initTerrainMaps() {
       if (typeof L === 'undefined') {
         setTimeout(_initTerrainMaps, 100);
@@ -731,6 +721,9 @@ const projet = etapesData.projet;
         if (dashMap) dashMap.invalidateSize();
       }, 200);
     }
+
+    // Init maps (Leaflet JS loaded via preceding script tag)
+    _initTerrainMaps();
   </script>
 
   <!-- Live-update: reads admin data from localStorage + cross-tab sync -->
