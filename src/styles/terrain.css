@@ -2,6 +2,108 @@
 /* TERRAIN PAGE — Styles          */
 /* ============================== */
 
+/* Auth */
+.terrain-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.terrain-auth-card {
+  background: rgba(12, 20, 36, 0.92);
+  border: 1px solid rgba(45, 130, 170, 0.15);
+  border-radius: var(--radius-lg, 16px);
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.terrain-auth-card h1 {
+  font-size: var(--text-xl, 1.5rem);
+  color: var(--white, #fff);
+  margin-bottom: 0.5rem;
+}
+
+.terrain-auth-card h1 i {
+  color: var(--accent-cyan, #2d82aa);
+}
+
+.terrain-auth-card p {
+  color: var(--text-muted, #8899aa);
+  font-size: var(--text-sm, 0.875rem);
+  margin-bottom: 1.5rem;
+}
+
+.terrain-auth-form-group {
+  margin-bottom: 0.75rem;
+}
+
+.terrain-auth-form-group input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid rgba(45, 130, 170, 0.2);
+  border-radius: var(--radius-md, 8px);
+  background: rgba(10, 20, 40, 0.5);
+  color: var(--white, #e8eef4);
+  font-size: var(--text-base, 1rem);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.terrain-auth-form-group input:focus {
+  border-color: var(--accent-cyan, #2d82aa);
+}
+
+.terrain-captcha-group {
+  margin-top: 0.25rem;
+}
+
+.terrain-captcha-question {
+  display: block;
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: var(--accent-cyan, #2d82aa);
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.02em;
+}
+
+.terrain-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border: 1px solid var(--accent-cyan, #2d82aa);
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--accent-cyan, #2d82aa);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.terrain-auth-btn:hover {
+  background: var(--accent-cyan, #2d82aa);
+  color: #fff;
+}
+
+.terrain-auth-error {
+  color: #f87171;
+  font-size: var(--text-sm, 0.875rem);
+  margin-top: 0.75rem;
+}
+
+:global([data-theme="light"]) .terrain-auth-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(10, 24, 44, 0.1);
+}
+
 /* Hero */
 .terrain-hero {
   min-height: 65vh;
@@ -320,6 +422,14 @@
 
 .legend-toggle input:checked + .legend-switch {
   background: #d4845a;
+}
+
+#cyclosm-toggle:checked + .legend-switch {
+  background: #2ea043;
+}
+
+#waymarked-toggle:checked + .legend-switch {
+  background: #e04040;
 }
 
 .legend-toggle input:checked + .legend-switch::after {

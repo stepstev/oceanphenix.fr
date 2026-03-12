@@ -4,7 +4,7 @@
     "porteur": "Stéphane Celton",
     "role": "Data Product Manager",
     "avatar": "/Images/moi_detour.png",
-    "structure": "Leades.fr (administratif)",
+    "structure": "OceanPhenix",
     "transport": "Vélo",
     "annee": 2026,
     "description": "Parcours à vélo à travers la France pour aller à la rencontre des entreprises, comprendre leurs besoins réels autour de la data, identifier leurs pain points et faciliter les échanges entre entreprises et freelances / consultants.",
@@ -210,7 +210,7 @@
     {
       "date": "2026-03-12",
       "titre": "Lancement du projet",
-      "contenu": "Création de la page dédiée sur OceanPhenix.fr. Début de la planification de l'itinéraire et des premiers contacts avec les entreprises locales. Structure administrative via Leades.fr. Recherche de sponsors en cours.",
+      "contenu": "Création de la page dédiée sur OceanPhenix.fr. Début de la planification de l'itinéraire et des premiers contacts avec les entreprises locales. Recherche de sponsors en cours.",
       "ville": "Fontenay-lès-Briis",
       "tags": ["lancement", "planification", "sponsors"]
     }

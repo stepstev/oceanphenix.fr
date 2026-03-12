@@ -113,8 +113,7 @@ const projet = etapesData.projet;
         <div class="terrain-vision-admin">
           <p>
             <i class="fas fa-file-contract"></i>
-            Gestion administrative via <strong><a href="https://leades.fr" target="_blank" rel="noopener">Leades.fr</a></strong>
-            — Recherche continue de sponsors pour soutenir le projet.
+            Recherche continue de sponsors pour soutenir le projet.
           </p>
         </div>
       </div>
@@ -144,6 +143,17 @@ const projet = etapesData.projet;
             <input type="checkbox" id="cw-toggle" checked />
             <span class="legend-switch"></span>
           </label>
+          <label class="legend-item legend-toggle" title="Afficher/masquer pistes cyclables &amp; voies vertes">
+            <i class="fas fa-bicycle" style="color:#2ea043;"></i> Pistes cyclables
+            <input type="checkbox" id="cyclosm-toggle" checked />
+            <span class="legend-switch"></span>
+          </label>
+          <label class="legend-item legend-toggle" title="Afficher/masquer routes vélo nationales">
+            <i class="fas fa-route" style="color:#e04040;"></i> Routes vélo
+            <input type="checkbox" id="waymarked-toggle" checked />
+            <span class="legend-switch"></span>
+          </label>
+
         </div>
       </div>
     </section>
@@ -458,20 +468,24 @@ const projet = etapesData.projet;
   <!-- Leaflet CSS & JS -->
   <link
     rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
   />
-  <script
-    is:inline
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin="">
-  </script>
 
   <!-- Carte Leaflet init -->
   <script is:inline define:vars={{ etapes, position }}>
-    document.addEventListener('DOMContentLoaded', function () {
+    // Load Leaflet JS dynamically
+    (function() {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+      s.onload = function() { _initTerrainMaps(); };
+      document.head.appendChild(s);
+    })();
+
+    function _initTerrainMaps() {
+      if (typeof L === 'undefined') {
+        setTimeout(_initTerrainMaps, 100);
+        return;
+      }
 
       var colors = {
         actuel: '#f59e0b',
@@ -489,7 +503,7 @@ const projet = etapesData.projet;
         var zoom = opts.zoom || 6;
 
         var map = L.map(elementId, {
-          scrollWheelZoom: false,
+          scrollWheelZoom: true,
           zoomControl: opts.zoomControl !== false,
         }).setView(center, zoom);
 
@@ -497,6 +511,24 @@ const projet = etapesData.projet;
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
           maxZoom: 18,
         }).addTo(map);
+
+        // Cycling overlay layers
+        var cyclosmOverlay = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm-lite/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.cyclosm.org/">CyclOSM</a> &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+          maxZoom: 18,
+          opacity: 0.6,
+        });
+        var waymarkedOverlay = L.tileLayer('https://tile.waymarkedtrails.org/cycling/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://waymarkedtrails.org/">Waymarked Trails</a>',
+          maxZoom: 18,
+          opacity: 0.7,
+        });
+        map._cyclosmOverlay = cyclosmOverlay;
+        map._waymarkedOverlay = waymarkedOverlay;
+        if (!opts.compact) {
+          cyclosmOverlay.addTo(map);
+          waymarkedOverlay.addTo(map);
+        }
 
         var routeCoords = [];
         var stepsData = opts.etapes || etapes;
@@ -658,6 +690,31 @@ const projet = etapesData.projet;
         });
       }
 
+      // Toggle pistes cyclables (CyclOSM)
+      var cyclosmToggle = document.getElementById('cyclosm-toggle');
+      if (cyclosmToggle) {
+        cyclosmToggle.addEventListener('change', function() {
+          var show = cyclosmToggle.checked;
+          [mainMap, dashMap].forEach(function(map) {
+            if (!map || !map._cyclosmOverlay) return;
+            if (show) { map._cyclosmOverlay.addTo(map); } else { map.removeLayer(map._cyclosmOverlay); }
+          });
+        });
+      }
+
+      // Toggle routes vélo nationales (Waymarked Trails)
+      var waymarkedToggle = document.getElementById('waymarked-toggle');
+      if (waymarkedToggle) {
+        waymarkedToggle.addEventListener('change', function() {
+          var show = waymarkedToggle.checked;
+          [mainMap, dashMap].forEach(function(map) {
+            if (!map || !map._waymarkedOverlay) return;
+            if (show) { map._waymarkedOverlay.addTo(map); } else { map.removeLayer(map._waymarkedOverlay); }
+          });
+        });
+      }
+
+
       // ---- 2. Dashboard compact map ----
       var dashMap = initTerrainMap('tdash-map', {
         center: [47.5, 2.5],
@@ -667,7 +724,13 @@ const projet = etapesData.projet;
       });
       window._terrainDashMap = dashMap;
       if (dashMap) addCoworkingMarkers(dashMap, true);
-    });
+
+      // Force map tiles to render correctly
+      setTimeout(function() {
+        if (mainMap) mainMap.invalidateSize();
+        if (dashMap) dashMap.invalidateSize();
+      }, 200);
+    }
   </script>
 
   <!-- Live-update: reads admin data from localStorage + cross-tab sync -->
@@ -888,4 +951,5 @@ const projet = etapesData.projet;
       });
     })();
   </script>
+
 </BaseLayout>
