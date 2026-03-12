@@ -16,3 +16,6 @@ Thumbs.db
 
 # FTP
 .ftpquota
+
+# Deploy archive
+dist-deploy.zip

@@ -27,11 +27,25 @@ ErrorDocument 404 /404.html
 # ── Security Headers ─────────────────────────────────────────
 <IfModule mod_headers.c>
 
-  # Remove any CSP set by the server to avoid duplicates
+  # Remove ALL CSP headers set by the server (o2switch adds its own)
+  Header unset Content-Security-Policy
   Header always unset Content-Security-Policy
+  Header unset Content-Security-Policy "expr=%{REQUEST_STATUS} >= 200"
+  Header unset X-Content-Type-Options
+  Header always unset X-Content-Type-Options
+  Header unset X-Frame-Options
+  Header always unset X-Frame-Options
+  Header unset X-XSS-Protection
+  Header always unset X-XSS-Protection
+  Header unset Referrer-Policy
+  Header always unset Referrer-Policy
+  Header unset Permissions-Policy
+  Header always unset Permissions-Policy
+  Header unset Strict-Transport-Security
+  Header always unset Strict-Transport-Security
 
-  # Content Security Policy — autorise inline scripts, YouTube, Google Fonts, Font Awesome, CDN, Giscus, OSM tiles
-  Header always set Content-Security-Policy "\
+  # Content Security Policy — notre propre CSP complète
+  Header set Content-Security-Policy "\
 default-src 'self'; \
 script-src 'self' 'unsafe-inline' https://giscus.app; \
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; \
@@ -42,11 +56,12 @@ connect-src 'self' https://tile.openstreetmap.org https://*.cyclosm.openstreetma
 media-src 'self'"
 
   # Autres headers de sécurité
-  Header always set X-Content-Type-Options "nosniff"
-  Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set X-XSS-Protection "1; mode=block"
-  Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 
   # Supprime la signature Apache
   Header always unset X-Powered-By
