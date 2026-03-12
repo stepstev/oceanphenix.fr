@@ -1,0 +1,1687 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import OceanBackground from '../components/OceanBackground.astro';
+import CopyrightBar from '../components/CopyrightBar.astro';
+import etapesData from '../data/terrain-etapes.json';
+---
+
+<BaseLayout
+  title="Admin Terrain | OceanPhenix"
+  description="Interface d'administration du parcours terrain"
+  lastModified="12/03/2026 12:00"
+>
+  <OceanBackground />
+  <Nav />
+
+  <main class="main-content admin-page">
+
+    <!-- Auth gate -->
+    <div id="admin-auth" class="admin-auth">
+      <div class="admin-auth-card">
+        <h1><i class="fas fa-lock"></i> Admin Terrain</h1>
+        <p>Accès réservé — entrez le mot de passe d'administration.</p>
+        <div class="admin-form-group">
+          <input type="password" id="admin-pass" placeholder="Mot de passe" autocomplete="off" />
+        </div>
+        <div class="admin-form-group admin-captcha-group">
+          <label id="captcha-label" class="captcha-question"></label>
+          <input type="text" id="admin-captcha" placeholder="Votre réponse" autocomplete="off" inputmode="numeric" />
+        </div>
+        <button id="admin-login-btn" class="admin-btn admin-btn--primary">
+          <i class="fas fa-sign-in-alt"></i> Accéder
+        </button>
+        <p id="admin-auth-error" class="admin-error" style="display:none;">Mot de passe ou captcha incorrect</p>
+      </div>
+    </div>
+
+    <!-- Admin panel (hidden until auth) -->
+    <div id="admin-panel" class="admin-panel" style="display:none;">
+
+      <!-- Top bar -->
+      <div class="admin-topbar">
+        <h1><i class="fas fa-cogs"></i> Admin — Terrain Data</h1>
+        <div class="admin-topbar-actions">
+          <button id="admin-save-btn" class="admin-btn admin-btn--primary">
+            <i class="fas fa-save"></i> Sauvegarder (localStorage)
+          </button>
+          <button id="admin-export-btn" class="admin-btn admin-btn--secondary">
+            <i class="fas fa-download"></i> Exporter JSON
+          </button>
+          <button id="admin-import-btn" class="admin-btn admin-btn--outline">
+            <i class="fas fa-upload"></i> Importer JSON
+          </button>
+          <input type="file" id="admin-import-file" accept=".json" style="display:none" />
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab admin-tab--active" data-tab="dashboard">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </button>
+        <button class="admin-tab" data-tab="etapes">
+          <i class="fas fa-map-marked-alt"></i> Étapes
+        </button>
+        <button class="admin-tab" data-tab="journal">
+          <i class="fas fa-book-open"></i> Journal
+        </button>
+        <button class="admin-tab" data-tab="photos">
+          <i class="fas fa-images"></i> Photos
+        </button>
+        <button class="admin-tab" data-tab="gpx">
+          <i class="fas fa-route"></i> Parcours GPX
+        </button>
+        <button class="admin-tab" data-tab="preview">
+          <i class="fas fa-eye"></i> Aperçu
+        </button>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Dashboard                 -->
+      <!-- ============================== -->
+      <div class="admin-tab-content admin-tab-content--active" id="tab-dashboard">
+        <div class="admin-card">
+          <h2><i class="fas fa-tachometer-alt"></i> Données du dashboard</h2>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Km parcourus</label>
+              <input type="number" id="dash-km" min="0" step="1" />
+            </div>
+            <div class="admin-form-group">
+              <label>Jours de route</label>
+              <input type="number" id="dash-jours" min="0" step="1" />
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Besoins identifiés</label>
+              <input type="number" id="dash-besoins" min="0" step="1" />
+            </div>
+            <div class="admin-form-group">
+              <label>Rencontres entreprises</label>
+              <input type="number" id="dash-rencontres" min="0" step="1" />
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Étape en cours (texte libre)</label>
+              <input type="text" id="dash-encours" placeholder="Ex: En route vers Dreux" />
+            </div>
+            <div class="admin-form-group">
+              <label>Prochaine étape</label>
+              <select id="dash-prochaine"></select>
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Jours prévus</label>
+              <input type="number" id="dash-joursprevus" min="0" step="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2><i class="fas fa-map-pin"></i> Position actuelle</h2>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Ville</label>
+              <input type="text" id="pos-ville" />
+            </div>
+            <div class="admin-form-group">
+              <label>Statut</label>
+              <select id="pos-statut">
+                <option value="Préparation">Préparation</option>
+                <option value="En route">En route</option>
+                <option value="Étape">Étape</option>
+                <option value="Repos">Repos</option>
+                <option value="Terminé">Terminé</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Latitude</label>
+              <input type="number" id="pos-lat" step="0.0001" />
+            </div>
+            <div class="admin-form-group">
+              <label>Longitude</label>
+              <input type="number" id="pos-lng" step="0.0001" />
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label>Date de départ</label>
+            <input type="date" id="pos-depart" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Étapes                    -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-etapes">
+        <div class="admin-card">
+          <h2><i class="fas fa-map-marked-alt"></i> Gestion des étapes</h2>
+          <p class="admin-hint">Cliquez sur une étape pour la modifier. Changez le statut pour marquer une étape comme visitée.</p>
+          <div id="etapes-list" class="admin-etapes-list"></div>
+          <div id="etape-editor" class="admin-etape-editor" style="display:none;">
+            <h3 id="etape-editor-title">Modifier l'étape</h3>
+            <input type="hidden" id="etape-edit-id" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Ville</label>
+                <input type="text" id="etape-edit-ville" />
+              </div>
+              <div class="admin-form-group">
+                <label>Région</label>
+                <input type="text" id="etape-edit-region" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Statut</label>
+                <select id="etape-edit-statut">
+                  <option value="planifie">Planifié</option>
+                  <option value="actuel">Actuel</option>
+                  <option value="visite">Visité</option>
+                </select>
+              </div>
+              <div class="admin-form-group">
+                <label>Distance depuis départ (km)</label>
+                <input type="number" id="etape-edit-dist" min="0" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Latitude</label>
+                <input type="number" id="etape-edit-lat" step="0.0001" />
+              </div>
+              <div class="admin-form-group">
+                <label>Longitude</label>
+                <input type="number" id="etape-edit-lng" step="0.0001" />
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label>Date estimée</label>
+              <input type="date" id="etape-edit-date" />
+            </div>
+            <div class="admin-form-group">
+              <label>Description</label>
+              <textarea id="etape-edit-desc" rows="3"></textarea>
+            </div>
+            <div class="admin-form-actions">
+              <button id="etape-save-btn" class="admin-btn admin-btn--primary">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="etape-cancel-btn" class="admin-btn admin-btn--outline">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Journal                   -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-journal">
+        <div class="admin-card">
+          <h2><i class="fas fa-book-open"></i> Journal du terrain</h2>
+          <div id="journal-list" class="admin-journal-list"></div>
+          <h3 class="admin-subtitle"><i class="fas fa-plus"></i> Nouvelle entrée</h3>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Date</label>
+              <input type="date" id="journal-date" />
+            </div>
+            <div class="admin-form-group">
+              <label>Ville</label>
+              <input type="text" id="journal-ville" />
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label>Titre</label>
+            <input type="text" id="journal-titre" placeholder="Ex: Arrivée à Caen — premiers contacts" />
+          </div>
+          <div class="admin-form-group">
+            <label>Contenu</label>
+            <textarea id="journal-contenu" rows="5" placeholder="Racontez votre journée, rencontres, observations..."></textarea>
+          </div>
+          <div class="admin-form-group">
+            <label>Tags (séparés par des virgules)</label>
+            <input type="text" id="journal-tags" placeholder="rencontre, diagnostic, data, sponsor" />
+          </div>
+          <button id="journal-add-btn" class="admin-btn admin-btn--primary">
+            <i class="fas fa-plus"></i> Ajouter au journal
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Photos                    -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-photos">
+        <div class="admin-card">
+          <h2><i class="fas fa-images"></i> Photos du parcours</h2>
+          <p class="admin-hint">
+            Les photos sont référencées par leur chemin dans <code>/Images/terrain/</code>.
+            Uploadez-les via FTP ou le gestionnaire de fichiers O2switch, puis ajoutez le chemin ici.
+          </p>
+
+          <div class="admin-photos-grid" id="photos-grid"></div>
+
+          <h3 class="admin-subtitle"><i class="fas fa-plus"></i> Ajouter une photo</h3>
+          <div class="admin-form-group">
+            <label>Sélectionner une image (pour prévisualiser et obtenir le nom)</label>
+            <input type="file" id="photo-file-input" accept="image/*" />
+          </div>
+          <div class="admin-photo-preview" id="photo-preview" style="display:none;">
+            <img id="photo-preview-img" alt="Aperçu" />
+            <div class="admin-photo-preview-info">
+              <p>Fichier : <strong id="photo-preview-name"></strong></p>
+              <p>Chemin qui sera ajouté : <code id="photo-preview-path"></code></p>
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label>Ou entrer le chemin manuellement</label>
+            <input type="text" id="photo-path-input" placeholder="/Images/terrain/nom-du-fichier.jpg" />
+          </div>
+          <div class="admin-form-actions">
+            <button id="photo-add-btn" class="admin-btn admin-btn--primary">
+              <i class="fas fa-plus"></i> Ajouter la photo
+            </button>
+            <button id="photo-download-btn" class="admin-btn admin-btn--secondary" style="display:none;">
+              <i class="fas fa-download"></i> Télécharger (pour upload FTP)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: GPX                       -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-gpx">
+        <div class="admin-card">
+          <h2><i class="fas fa-route"></i> Parcours GPX</h2>
+          <p class="admin-hint">
+            Importez vos fichiers GPX Garmin / Strava / Komoot. Le tracé sera affiché sur la carte d'aperçu
+            et le fichier sera prêt à copier dans <code>/public/gpx/</code>.
+          </p>
+
+          <div class="admin-form-group">
+            <label>Charger un fichier GPX</label>
+            <input type="file" id="gpx-file-input" accept=".gpx" />
+          </div>
+
+          <div id="gpx-info" class="admin-gpx-info" style="display:none;">
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom du fichier</label>
+                <input type="text" id="gpx-filename" readonly />
+              </div>
+              <div class="admin-form-group">
+                <label>Points GPS</label>
+                <input type="text" id="gpx-points" readonly />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Distance estimée</label>
+                <input type="text" id="gpx-distance" readonly />
+              </div>
+              <div class="admin-form-group">
+                <label>Dénivelé estimé</label>
+                <input type="text" id="gpx-elevation" readonly />
+              </div>
+            </div>
+          </div>
+
+          <div id="gpx-map" class="admin-gpx-map" style="display:none;"></div>
+
+          <div id="gpx-actions" class="admin-form-actions" style="display:none;">
+            <button id="gpx-download-btn" class="admin-btn admin-btn--secondary">
+              <i class="fas fa-download"></i> Télécharger le GPX
+            </button>
+            <button id="gpx-add-btn" class="admin-btn admin-btn--primary">
+              <i class="fas fa-plus"></i> Ajouter au parcours
+            </button>
+          </div>
+
+          <h3 class="admin-subtitle">Fichiers GPX enregistrés</h3>
+          <div id="gpx-list" class="admin-gpx-list">
+            <p class="admin-hint">Aucun fichier GPX enregistré pour le moment.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Preview                   -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-preview">
+        <div class="admin-card">
+          <h2><i class="fas fa-eye"></i> Aperçu des données</h2>
+          <p class="admin-hint">Voici le JSON complet tel qu'il sera exporté. Vérifiez les données avant de les exporter.</p>
+          <pre id="preview-json" class="admin-json-preview"></pre>
+          <div class="admin-form-actions">
+            <button id="preview-copy-btn" class="admin-btn admin-btn--primary">
+              <i class="fas fa-copy"></i> Copier le JSON
+            </button>
+            <button id="preview-export-btn" class="admin-btn admin-btn--secondary">
+              <i class="fas fa-download"></i> Exporter en fichier
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <CopyrightBar />
+
+  <!-- Leaflet for GPX map -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    is:inline
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
+  <!-- Admin JS -->
+  <script is:inline define:vars={{ etapesData }}>
+  (function() {
+    'use strict';
+
+    // ---- Config ----
+    // Hash of the admin password (SHA-256 of "oceanphenix2026")
+    // Change this by running: echo -n "yourpassword" | sha256sum
+    var PASS_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // "admin"
+    var STORAGE_KEY = 'op-terrain-admin';
+    var STORAGE_GPX_KEY = 'op-terrain-gpx';
+
+    var data = null;
+    var gpxFiles = [];
+    var currentGpxContent = null;
+    var gpxMap = null;
+    var gpxLayer = null;
+
+    // ---- Helpers ----
+    async function sha256(str) {
+      var buf = new TextEncoder().encode(str);
+      var hash = await crypto.subtle.digest('SHA-256', buf);
+      return Array.from(new Uint8Array(hash)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+    }
+
+    function loadData() {
+      var saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { data = JSON.parse(saved); return; } catch(e) { /* fall through */ }
+      }
+      data = JSON.parse(JSON.stringify(etapesData));
+    }
+
+    function loadGpx() {
+      var saved = localStorage.getItem(STORAGE_GPX_KEY);
+      if (saved) {
+        try { gpxFiles = JSON.parse(saved); } catch(e) { gpxFiles = []; }
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showToast('Données sauvegardées dans le navigateur');
+    }
+
+    function saveGpxData() {
+      localStorage.setItem(STORAGE_GPX_KEY, JSON.stringify(gpxFiles));
+    }
+
+    function exportJson() {
+      var json = JSON.stringify(data, null, 2);
+      var blob = new Blob([json], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'terrain-etapes.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('JSON exporté — déposez-le dans src/data/');
+    }
+
+    function showToast(msg) {
+      var toast = document.createElement('div');
+      toast.className = 'admin-toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.classList.add('admin-toast--show'); }, 10);
+      setTimeout(function() {
+        toast.classList.remove('admin-toast--show');
+        setTimeout(function() { toast.remove(); }, 300);
+      }, 3000);
+    }
+
+    // ---- Captcha ----
+    var captchaA, captchaB, captchaOp, captchaAnswer;
+    function generateCaptcha() {
+      captchaA = Math.floor(Math.random() * 20) + 1;
+      captchaB = Math.floor(Math.random() * 20) + 1;
+      var ops = ['+', '-', '×'];
+      captchaOp = ops[Math.floor(Math.random() * ops.length)];
+      if (captchaOp === '+') captchaAnswer = captchaA + captchaB;
+      else if (captchaOp === '-') { if (captchaA < captchaB) { var t = captchaA; captchaA = captchaB; captchaB = t; } captchaAnswer = captchaA - captchaB; }
+      else captchaAnswer = captchaA * captchaB;
+      document.getElementById('captcha-label').textContent = '🔒 Vérification : ' + captchaA + ' ' + captchaOp + ' ' + captchaB + ' = ?';
+      document.getElementById('admin-captcha').value = '';
+    }
+    generateCaptcha();
+
+    // ---- Auth ----
+    var AUTH_SESSION_KEY = 'op-admin-auth';
+    var AUTH_MAX_AGE = 3600000; // 1 hour
+    var authEl = document.getElementById('admin-auth');
+    var panelEl = document.getElementById('admin-panel');
+    var passInput = document.getElementById('admin-pass');
+    var captchaInput = document.getElementById('admin-captcha');
+    var loginBtn = document.getElementById('admin-login-btn');
+    var authError = document.getElementById('admin-auth-error');
+    var failCount = 0;
+    var MAX_ATTEMPTS = 5;
+    var lockedUntil = 0;
+
+    function isSessionValid() {
+      var raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+      if (!raw) return false;
+      try {
+        var sess = JSON.parse(raw);
+        if (sess.v !== 2 || !sess.ts) return false;
+        if (Date.now() - sess.ts > AUTH_MAX_AGE) { sessionStorage.removeItem(AUTH_SESSION_KEY); return false; }
+        return true;
+      } catch(e) { sessionStorage.removeItem(AUTH_SESSION_KEY); return false; }
+    }
+    function setSession() {
+      sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ v: 2, ts: Date.now() }));
+    }
+
+    if (isSessionValid()) {
+      authEl.style.display = 'none';
+      panelEl.style.display = 'block';
+      init();
+    }
+
+    loginBtn.addEventListener('click', async function() {
+      // Rate-limit
+      if (Date.now() < lockedUntil) {
+        var secs = Math.ceil((lockedUntil - Date.now()) / 1000);
+        authError.textContent = 'Trop de tentatives — réessayez dans ' + secs + 's';
+        authError.style.display = 'block';
+        return;
+      }
+      // Validate captcha
+      var userCaptcha = parseInt(captchaInput.value);
+      if (isNaN(userCaptcha) || userCaptcha !== captchaAnswer) {
+        failCount++;
+        authError.textContent = 'Captcha incorrect';
+        authError.style.display = 'block';
+        generateCaptcha();
+        if (failCount >= MAX_ATTEMPTS) { lockedUntil = Date.now() + 30000; }
+        return;
+      }
+      // Validate password
+      var hash = await sha256(passInput.value);
+      if (hash === PASS_HASH) {
+        setSession();
+        authEl.style.display = 'none';
+        panelEl.style.display = 'block';
+        authError.style.display = 'none';
+        failCount = 0;
+        init();
+      } else {
+        failCount++;
+        authError.textContent = 'Mot de passe incorrect';
+        authError.style.display = 'block';
+        passInput.value = '';
+        passInput.focus();
+        generateCaptcha();
+        if (failCount >= MAX_ATTEMPTS) { lockedUntil = Date.now() + 30000; }
+      }
+    });
+
+    captchaInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') loginBtn.click();
+    });
+    passInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') captchaInput.focus();
+    });
+
+    // ---- Tabs ----
+    document.querySelectorAll('.admin-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('admin-tab--active'); });
+        document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('admin-tab-content--active'); });
+        tab.classList.add('admin-tab--active');
+        var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+        if (target) target.classList.add('admin-tab-content--active');
+        if (tab.getAttribute('data-tab') === 'preview') renderPreview();
+        if (tab.getAttribute('data-tab') === 'gpx' && !gpxMap) initGpxMap();
+      });
+    });
+
+    // ---- Init ----
+    function init() {
+      loadData();
+      loadGpx();
+      populateDashboard();
+      populatePosition();
+      renderEtapes();
+      renderJournal();
+      renderPhotos();
+      renderGpxList();
+      bindTopbar();
+    }
+
+    function bindTopbar() {
+      document.getElementById('admin-save-btn').addEventListener('click', function() {
+        collectDashboard();
+        collectPosition();
+        saveData();
+      });
+      document.getElementById('admin-export-btn').addEventListener('click', function() {
+        collectDashboard();
+        collectPosition();
+        exportJson();
+      });
+      document.getElementById('admin-import-btn').addEventListener('click', function() {
+        document.getElementById('admin-import-file').click();
+      });
+      document.getElementById('admin-import-file').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          try {
+            data = JSON.parse(ev.target.result);
+            saveData();
+            populateDashboard();
+            populatePosition();
+            renderEtapes();
+            renderJournal();
+            renderPhotos();
+            showToast('JSON importé avec succès');
+          } catch(err) {
+            showToast('Erreur : fichier JSON invalide');
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    // ---- Dashboard tab ----
+    function populateDashboard() {
+      var d = data.dashboard;
+      document.getElementById('dash-km').value = d.kmParcourus;
+      document.getElementById('dash-jours').value = d.joursRoute;
+      document.getElementById('dash-besoins').value = d.besoinsIdentifies;
+      document.getElementById('dash-rencontres').value = d.rencontresEntreprises;
+      document.getElementById('dash-encours').value = d.etapeEnCours || '';
+      document.getElementById('dash-joursprevus').value = d.joursPrevus;
+      // Populate prochaine étape select
+      var sel = document.getElementById('dash-prochaine');
+      sel.innerHTML = '<option value="">—</option>';
+      data.etapes.forEach(function(e) {
+        var opt = document.createElement('option');
+        opt.value = e.ville;
+        opt.textContent = e.ville;
+        if (e.ville === d.prochaineEtape) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function collectDashboard() {
+      data.dashboard.kmParcourus = parseInt(document.getElementById('dash-km').value) || 0;
+      data.dashboard.joursRoute = parseInt(document.getElementById('dash-jours').value) || 0;
+      data.dashboard.besoinsIdentifies = parseInt(document.getElementById('dash-besoins').value) || 0;
+      data.dashboard.rencontresEntreprises = parseInt(document.getElementById('dash-rencontres').value) || 0;
+      data.dashboard.etapeEnCours = document.getElementById('dash-encours').value || null;
+      data.dashboard.prochaineEtape = document.getElementById('dash-prochaine').value || null;
+      data.dashboard.joursPrevus = parseInt(document.getElementById('dash-joursprevus').value) || 0;
+    }
+
+    // ---- Position tab ----
+    function populatePosition() {
+      var p = data.positionActuelle;
+      document.getElementById('pos-ville').value = p.ville;
+      document.getElementById('pos-statut').value = p.statut;
+      document.getElementById('pos-lat').value = p.lat;
+      document.getElementById('pos-lng').value = p.lng;
+      document.getElementById('pos-depart').value = p.dateDepart;
+    }
+
+    function collectPosition() {
+      data.positionActuelle.ville = document.getElementById('pos-ville').value;
+      data.positionActuelle.statut = document.getElementById('pos-statut').value;
+      data.positionActuelle.lat = parseFloat(document.getElementById('pos-lat').value) || 0;
+      data.positionActuelle.lng = parseFloat(document.getElementById('pos-lng').value) || 0;
+      data.positionActuelle.dateDepart = document.getElementById('pos-depart').value;
+    }
+
+    // ---- Étapes tab ----
+    function renderEtapes() {
+      var list = document.getElementById('etapes-list');
+      list.innerHTML = '';
+      data.etapes.forEach(function(etape) {
+        var statusClass = 'admin-etape--' + etape.statut;
+        var statusIcons = { planifie: 'fa-circle', actuel: 'fa-location-dot', visite: 'fa-check-circle' };
+        var statusLabels = { planifie: 'Planifié', actuel: 'Actuel', visite: 'Visité' };
+        var div = document.createElement('div');
+        div.className = 'admin-etape-item ' + statusClass;
+        div.innerHTML =
+          '<div class="admin-etape-num">' + etape.id + '</div>' +
+          '<div class="admin-etape-info">' +
+          '<strong>' + etape.ville + '</strong>' +
+          '<span>' + etape.region + ' — ' + etape.distanceDepuisDepart + ' km</span>' +
+          '</div>' +
+          '<div class="admin-etape-status">' +
+          '<i class="fas ' + (statusIcons[etape.statut] || 'fa-circle') + '"></i> ' +
+          (statusLabels[etape.statut] || etape.statut) +
+          '</div>' +
+          '<button class="admin-btn admin-btn--sm" data-edit="' + etape.id + '">' +
+          '<i class="fas fa-pen"></i>' +
+          '</button>';
+        list.appendChild(div);
+      });
+      list.querySelectorAll('[data-edit]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          openEtapeEditor(parseInt(btn.getAttribute('data-edit')));
+        });
+      });
+    }
+
+    function openEtapeEditor(id) {
+      var etape = data.etapes.find(function(e) { return e.id === id; });
+      if (!etape) return;
+      document.getElementById('etape-editor').style.display = 'block';
+      document.getElementById('etape-editor-title').textContent = 'Modifier — ' + etape.ville;
+      document.getElementById('etape-edit-id').value = etape.id;
+      document.getElementById('etape-edit-ville').value = etape.ville;
+      document.getElementById('etape-edit-region').value = etape.region;
+      document.getElementById('etape-edit-statut').value = etape.statut;
+      document.getElementById('etape-edit-dist').value = etape.distanceDepuisDepart;
+      document.getElementById('etape-edit-lat').value = etape.lat;
+      document.getElementById('etape-edit-lng').value = etape.lng;
+      document.getElementById('etape-edit-date').value = etape.dateEstimee;
+      document.getElementById('etape-edit-desc').value = etape.description;
+    }
+
+    document.getElementById('etape-save-btn').addEventListener('click', function() {
+      var id = parseInt(document.getElementById('etape-edit-id').value);
+      var etape = data.etapes.find(function(e) { return e.id === id; });
+      if (!etape) return;
+      etape.ville = document.getElementById('etape-edit-ville').value;
+      etape.region = document.getElementById('etape-edit-region').value;
+      etape.statut = document.getElementById('etape-edit-statut').value;
+      etape.distanceDepuisDepart = parseInt(document.getElementById('etape-edit-dist').value) || 0;
+      etape.lat = parseFloat(document.getElementById('etape-edit-lat').value) || 0;
+      etape.lng = parseFloat(document.getElementById('etape-edit-lng').value) || 0;
+      etape.dateEstimee = document.getElementById('etape-edit-date').value;
+      etape.description = document.getElementById('etape-edit-desc').value;
+      document.getElementById('etape-editor').style.display = 'none';
+      renderEtapes();
+      saveData();
+      showToast('Étape mise à jour');
+    });
+
+    document.getElementById('etape-cancel-btn').addEventListener('click', function() {
+      document.getElementById('etape-editor').style.display = 'none';
+    });
+
+    // ---- Journal tab ----
+    function renderJournal() {
+      var list = document.getElementById('journal-list');
+      list.innerHTML = '';
+      if (!data.journal || data.journal.length === 0) {
+        list.innerHTML = '<p class="admin-hint">Aucune entrée de journal.</p>';
+        return;
+      }
+      data.journal.slice().reverse().forEach(function(entry, idx) {
+        var realIdx = data.journal.length - 1 - idx;
+        var div = document.createElement('div');
+        div.className = 'admin-journal-item';
+        div.innerHTML =
+          '<div class="admin-journal-head">' +
+          '<strong>' + entry.date + ' — ' + entry.ville + '</strong>' +
+          '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-journal="' + realIdx + '">' +
+          '<i class="fas fa-trash"></i>' +
+          '</button>' +
+          '</div>' +
+          '<h4>' + entry.titre + '</h4>' +
+          '<p>' + entry.contenu + '</p>' +
+          '<div class="admin-journal-tags">' +
+          entry.tags.map(function(t) { return '<span class="admin-tag">' + t + '</span>'; }).join(' ') +
+          '</div>';
+        list.appendChild(div);
+      });
+      list.querySelectorAll('[data-del-journal]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-del-journal'));
+          if (confirm('Supprimer cette entrée du journal ?')) {
+            data.journal.splice(idx, 1);
+            renderJournal();
+            saveData();
+          }
+        });
+      });
+    }
+
+    document.getElementById('journal-add-btn').addEventListener('click', function() {
+      var date = document.getElementById('journal-date').value;
+      var ville = document.getElementById('journal-ville').value;
+      var titre = document.getElementById('journal-titre').value;
+      var contenu = document.getElementById('journal-contenu').value;
+      var tagsRaw = document.getElementById('journal-tags').value;
+      if (!date || !titre || !contenu) {
+        showToast('Remplissez au minimum la date, le titre et le contenu');
+        return;
+      }
+      var tags = tagsRaw.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+      data.journal.push({ date: date, ville: ville, titre: titre, contenu: contenu, tags: tags });
+      renderJournal();
+      saveData();
+      // Reset
+      document.getElementById('journal-date').value = '';
+      document.getElementById('journal-ville').value = '';
+      document.getElementById('journal-titre').value = '';
+      document.getElementById('journal-contenu').value = '';
+      document.getElementById('journal-tags').value = '';
+      showToast('Entrée ajoutée au journal');
+    });
+
+    // ---- Photos tab ----
+    function renderPhotos() {
+      var grid = document.getElementById('photos-grid');
+      grid.innerHTML = '';
+      var photos = data.dashboard.photos || [];
+      if (photos.length === 0) {
+        grid.innerHTML = '<p class="admin-hint">Aucune photo enregistrée.</p>';
+        return;
+      }
+      photos.forEach(function(src, idx) {
+        var div = document.createElement('div');
+        div.className = 'admin-photo-item';
+        div.innerHTML =
+          '<img src="' + src + '" alt="Photo terrain" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22><rect fill=%22%23142038%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%234db8d4%22 font-size=%2212%22>No img</text></svg>\'" />' +
+          '<div class="admin-photo-overlay">' +
+          '<code>' + src + '</code>' +
+          '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-photo="' + idx + '">' +
+          '<i class="fas fa-trash"></i>' +
+          '</button>' +
+          '</div>';
+        grid.appendChild(div);
+      });
+      grid.querySelectorAll('[data-del-photo]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-del-photo'));
+          data.dashboard.photos.splice(idx, 1);
+          renderPhotos();
+          saveData();
+        });
+      });
+    }
+
+    var selectedPhotoBlob = null;
+    var selectedPhotoName = null;
+
+    document.getElementById('photo-file-input').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      selectedPhotoBlob = file;
+      selectedPhotoName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        document.getElementById('photo-preview').style.display = 'flex';
+        document.getElementById('photo-preview-img').src = ev.target.result;
+        document.getElementById('photo-preview-name').textContent = selectedPhotoName;
+        document.getElementById('photo-preview-path').textContent = '/Images/terrain/' + selectedPhotoName;
+        document.getElementById('photo-path-input').value = '/Images/terrain/' + selectedPhotoName;
+        document.getElementById('photo-download-btn').style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('photo-download-btn').addEventListener('click', function() {
+      if (!selectedPhotoBlob) return;
+      var url = URL.createObjectURL(selectedPhotoBlob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = selectedPhotoName;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Photo téléchargée — uploadez-la dans /Images/terrain/ sur O2switch');
+    });
+
+    document.getElementById('photo-add-btn').addEventListener('click', function() {
+      var path = document.getElementById('photo-path-input').value.trim();
+      if (!path) {
+        showToast('Entrez un chemin pour la photo');
+        return;
+      }
+      if (!data.dashboard.photos) data.dashboard.photos = [];
+      data.dashboard.photos.push(path);
+      renderPhotos();
+      saveData();
+      // Reset
+      document.getElementById('photo-file-input').value = '';
+      document.getElementById('photo-path-input').value = '';
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('photo-download-btn').style.display = 'none';
+      selectedPhotoBlob = null;
+      selectedPhotoName = null;
+      showToast('Photo ajoutée');
+    });
+
+    // ---- GPX tab ----
+    function initGpxMap() {
+      var el = document.getElementById('gpx-map');
+      el.style.display = 'block';
+      gpxMap = L.map('gpx-map', { scrollWheelZoom: true }).setView([46.6, 2.8], 6);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 18,
+      }).addTo(gpxMap);
+      // Add etape markers
+      data.etapes.forEach(function(etape) {
+        L.circleMarker([etape.lat, etape.lng], {
+          radius: 5, fillColor: '#4db8d4', color: '#fff', weight: 1.5, opacity: 0.8, fillOpacity: 0.7,
+        }).addTo(gpxMap).bindTooltip(etape.ville);
+      });
+      setTimeout(function() { gpxMap.invalidateSize(); }, 200);
+    }
+
+    function parseGpx(xmlStr) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(xmlStr, 'application/xml');
+      var points = [];
+      var trkpts = doc.querySelectorAll('trkpt');
+      if (trkpts.length === 0) trkpts = doc.querySelectorAll('rtept');
+      if (trkpts.length === 0) trkpts = doc.querySelectorAll('wpt');
+      trkpts.forEach(function(pt) {
+        var lat = parseFloat(pt.getAttribute('lat'));
+        var lon = parseFloat(pt.getAttribute('lon'));
+        var eleEl = pt.querySelector('ele');
+        var ele = eleEl ? parseFloat(eleEl.textContent) : null;
+        if (!isNaN(lat) && !isNaN(lon)) points.push({ lat: lat, lng: lon, ele: ele });
+      });
+      return points;
+    }
+
+    function calcDistance(points) {
+      var total = 0;
+      for (var i = 1; i < points.length; i++) {
+        var R = 6371;
+        var dLat = (points[i].lat - points[i-1].lat) * Math.PI / 180;
+        var dLon = (points[i].lng - points[i-1].lng) * Math.PI / 180;
+        var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(points[i-1].lat*Math.PI/180)*Math.cos(points[i].lat*Math.PI/180)*
+                Math.sin(dLon/2)*Math.sin(dLon/2);
+        total += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      }
+      return total;
+    }
+
+    function calcElevation(points) {
+      var gain = 0;
+      for (var i = 1; i < points.length; i++) {
+        if (points[i].ele !== null && points[i-1].ele !== null) {
+          var diff = points[i].ele - points[i-1].ele;
+          if (diff > 0) gain += diff;
+        }
+      }
+      return gain;
+    }
+
+    document.getElementById('gpx-file-input').addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        currentGpxContent = ev.target.result;
+        var points = parseGpx(currentGpxContent);
+        if (points.length === 0) {
+          showToast('Aucun point GPS trouvé dans ce fichier');
+          return;
+        }
+
+        document.getElementById('gpx-info').style.display = 'block';
+        document.getElementById('gpx-actions').style.display = 'flex';
+        document.getElementById('gpx-filename').value = file.name;
+        document.getElementById('gpx-points').value = points.length + ' points';
+        document.getElementById('gpx-distance').value = calcDistance(points).toFixed(1) + ' km';
+        document.getElementById('gpx-elevation').value = Math.round(calcElevation(points)) + ' m D+';
+
+        // Show on map
+        if (!gpxMap) initGpxMap();
+        if (gpxLayer) gpxMap.removeLayer(gpxLayer);
+        var coords = points.map(function(p) { return [p.lat, p.lng]; });
+        gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
+        gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('gpx-download-btn').addEventListener('click', function() {
+      if (!currentGpxContent) return;
+      var name = document.getElementById('gpx-filename').value || 'parcours.gpx';
+      var blob = new Blob([currentGpxContent], { type: 'application/gpx+xml' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('gpx-add-btn').addEventListener('click', function() {
+      if (!currentGpxContent) return;
+      var name = document.getElementById('gpx-filename').value || 'parcours.gpx';
+      var points = parseGpx(currentGpxContent);
+      gpxFiles.push({
+        name: name,
+        date: new Date().toISOString().split('T')[0],
+        points: points.length,
+        distance: calcDistance(points).toFixed(1) + ' km',
+        elevation: Math.round(calcElevation(points)) + ' m D+',
+        path: '/gpx/' + name.replace(/[^a-zA-Z0-9._-]/g, '_'),
+      });
+      saveGpxData();
+      renderGpxList();
+      showToast('GPX ajouté — pensez à uploader le .gpx dans /public/gpx/');
+    });
+
+    function renderGpxList() {
+      var list = document.getElementById('gpx-list');
+      list.innerHTML = '';
+      if (gpxFiles.length === 0) {
+        list.innerHTML = '<p class="admin-hint">Aucun fichier GPX enregistré.</p>';
+        return;
+      }
+      gpxFiles.forEach(function(g, idx) {
+        var div = document.createElement('div');
+        div.className = 'admin-gpx-item';
+        div.innerHTML =
+          '<div class="admin-gpx-item-info">' +
+          '<strong><i class="fas fa-route"></i> ' + g.name + '</strong>' +
+          '<span>' + g.date + ' — ' + g.points + ' pts — ' + g.distance + ' — ' + g.elevation + '</span>' +
+          '</div>' +
+          '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-gpx="' + idx + '">' +
+          '<i class="fas fa-trash"></i>' +
+          '</button>';
+        list.appendChild(div);
+      });
+      list.querySelectorAll('[data-del-gpx]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-del-gpx'));
+          gpxFiles.splice(idx, 1);
+          saveGpxData();
+          renderGpxList();
+        });
+      });
+    }
+
+    // ---- Preview tab ----
+    function renderPreview() {
+      collectDashboard();
+      collectPosition();
+      document.getElementById('preview-json').textContent = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById('preview-copy-btn').addEventListener('click', function() {
+      collectDashboard();
+      collectPosition();
+      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
+        showToast('JSON copié dans le presse-papier');
+      });
+    });
+
+    document.getElementById('preview-export-btn').addEventListener('click', function() {
+      collectDashboard();
+      collectPosition();
+      exportJson();
+    });
+
+  })();
+  </script>
+</BaseLayout>
+
+<style>
+  /* ============================== */
+  /* ADMIN PAGE STYLES              */
+  /* ============================== */
+
+  .admin-page {
+    position: relative;
+    z-index: 1;
+    padding-top: 5rem;
+    min-height: 100vh;
+  }
+
+  /* Auth */
+  .admin-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 2rem;
+  }
+
+  .admin-auth-card {
+    background: rgba(12, 20, 36, 0.92);
+    border: 1px solid rgba(45, 130, 170, 0.15);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .admin-auth-card h1 {
+    font-size: var(--text-xl);
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-auth-card h1 i { color: var(--accent-cyan); }
+
+  .admin-auth-card p {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-error {
+    color: #f87171;
+    font-size: var(--text-sm);
+    margin-top: 0.75rem;
+  }
+
+  .admin-captcha-group {
+    margin-top: 0.25rem;
+  }
+
+  .captcha-question {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--accent-cyan);
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* Panel */
+  .admin-panel {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  /* Topbar */
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-topbar h1 {
+    font-size: var(--text-xl);
+    color: var(--white);
+  }
+
+  .admin-topbar h1 i { color: var(--accent-cyan); }
+
+  .admin-topbar-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Buttons */
+  .admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border: 1.5px solid transparent;
+    text-decoration: none;
+  }
+
+  .admin-btn--primary {
+    background: rgba(77, 184, 212, 0.15);
+    border-color: rgba(77, 184, 212, 0.4);
+    color: var(--accent-cyan);
+  }
+  .admin-btn--primary:hover {
+    background: rgba(77, 184, 212, 0.25);
+  }
+
+  .admin-btn--secondary {
+    background: rgba(150, 100, 55, 0.15);
+    border-color: rgba(150, 100, 55, 0.4);
+    color: #d4915a;
+  }
+  .admin-btn--secondary:hover {
+    background: rgba(150, 100, 55, 0.25);
+  }
+
+  .admin-btn--outline {
+    background: transparent;
+    border-color: rgba(45, 130, 170, 0.2);
+    color: var(--text-muted);
+  }
+  .admin-btn--outline:hover {
+    border-color: rgba(45, 130, 170, 0.4);
+    color: var(--white);
+  }
+
+  .admin-btn--sm {
+    padding: 0.3rem 0.6rem;
+    font-size: var(--text-xs);
+  }
+
+  .admin-btn--danger {
+    background: rgba(248, 113, 113, 0.1);
+    border-color: rgba(248, 113, 113, 0.3);
+    color: #f87171;
+  }
+  .admin-btn--danger:hover {
+    background: rgba(248, 113, 113, 0.2);
+  }
+
+  /* Tabs */
+  .admin-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(45, 130, 170, 0.1);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .admin-tab {
+    padding: 0.6rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .admin-tab:hover { color: var(--white); }
+  .admin-tab--active {
+    color: var(--accent-cyan);
+    border-bottom-color: var(--accent-cyan);
+  }
+
+  .admin-tab-content {
+    display: none;
+  }
+  .admin-tab-content--active {
+    display: block;
+  }
+
+  /* Card */
+  .admin-card {
+    background: rgba(12, 20, 36, 0.8);
+    border: 1px solid rgba(45, 130, 170, 0.1);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-card h2 {
+    font-size: var(--text-lg);
+    color: var(--white);
+    margin-bottom: 1rem;
+  }
+
+  .admin-card h2 i { color: var(--accent-cyan); margin-right: 0.3rem; }
+
+  .admin-subtitle {
+    font-size: var(--text-base);
+    color: var(--accent-cyan);
+    margin: 1.5rem 0 1rem;
+  }
+
+  .admin-hint {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .admin-hint code {
+    background: rgba(77, 184, 212, 0.1);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8em;
+    color: var(--accent-cyan);
+  }
+
+  /* Forms */
+  .admin-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .admin-form-group {
+    margin-bottom: 1rem;
+  }
+
+  .admin-form-group label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .admin-form-group input,
+  .admin-form-group select,
+  .admin-form-group textarea {
+    width: 100%;
+    padding: 0.55rem 0.8rem;
+    font-size: var(--text-sm);
+    font-family: var(--font-secondary);
+    color: var(--text-light);
+    background: rgba(10, 18, 32, 0.8);
+    border: 1px solid rgba(45, 130, 170, 0.2);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+  }
+
+  .admin-form-group input:focus,
+  .admin-form-group select:focus,
+  .admin-form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 3px rgba(77, 184, 212, 0.1);
+  }
+
+  .admin-form-group input[type="file"] {
+    padding: 0.4rem;
+    cursor: pointer;
+  }
+
+  .admin-form-group select option {
+    background: #0b1a2e;
+    color: var(--text-light);
+  }
+
+  .admin-form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* Étapes list */
+  .admin-etapes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .admin-etape-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+  }
+
+  .admin-etape-item:hover {
+    border-color: rgba(45, 130, 170, 0.2);
+  }
+
+  .admin-etape-num {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(77, 184, 212, 0.15);
+    color: var(--accent-cyan);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .admin-etape-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-etape-info strong {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--white);
+  }
+
+  .admin-etape-info span {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  .admin-etape-status {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .admin-etape--actuel .admin-etape-status { color: #f59e0b; }
+  .admin-etape--visite .admin-etape-status { color: #22c55e; }
+  .admin-etape--actuel .admin-etape-num { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+  .admin-etape--visite .admin-etape-num { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+
+  .admin-etape-editor {
+    background: rgba(20, 32, 56, 0.7);
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .admin-etape-editor h3 {
+    font-size: var(--text-base);
+    color: var(--accent-cyan);
+    margin-bottom: 1rem;
+  }
+
+  /* Journal items */
+  .admin-journal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-journal-item {
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+  }
+
+  .admin-journal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-journal-head strong {
+    font-size: var(--text-sm);
+    color: var(--accent-cyan);
+  }
+
+  .admin-journal-item h4 {
+    font-size: var(--text-base);
+    color: var(--white);
+    margin-bottom: 0.35rem;
+  }
+
+  .admin-journal-item p {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .admin-journal-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .admin-tag {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    background: rgba(77, 184, 212, 0.08);
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    color: var(--accent-cyan);
+  }
+
+  /* Photos grid */
+  .admin-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-photo-item {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+  }
+
+  .admin-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .admin-photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.4rem 0.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3rem;
+  }
+
+  .admin-photo-overlay code {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-photo-preview {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+  }
+
+  .admin-photo-preview img {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+  }
+
+  .admin-photo-preview-info p {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin: 0.2rem 0;
+  }
+
+  .admin-photo-preview-info code {
+    color: var(--accent-cyan);
+    font-size: 0.8em;
+  }
+
+  /* GPX */
+  .admin-gpx-map {
+    height: 400px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(45, 130, 170, 0.12);
+    overflow: hidden;
+    margin: 1rem 0;
+    background: var(--primary-dark);
+  }
+
+  .admin-gpx-info {
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .admin-gpx-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-gpx-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.8rem;
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+  }
+
+  .admin-gpx-item-info strong {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--white);
+  }
+
+  .admin-gpx-item-info strong i {
+    color: var(--accent-cyan);
+    margin-right: 0.3rem;
+  }
+
+  .admin-gpx-item-info span {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  /* JSON Preview */
+  .admin-json-preview {
+    background: rgba(10, 18, 32, 0.9);
+    border: 1px solid rgba(45, 130, 170, 0.1);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    font-size: 0.72rem;
+    color: var(--accent-cyan);
+    overflow-x: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    line-height: 1.5;
+  }
+
+  /* Toast */
+  .admin-toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(12, 20, 36, 0.95);
+    border: 1px solid rgba(77, 184, 212, 0.3);
+    color: var(--accent-cyan);
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  .admin-toast--show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Light theme */
+  :global([data-theme="light"]) .admin-auth-card,
+  :global([data-theme="light"]) .admin-card,
+  :global([data-theme="light"]) .admin-etape-item,
+  :global([data-theme="light"]) .admin-journal-item,
+  :global([data-theme="light"]) .admin-gpx-item,
+  :global([data-theme="light"]) .admin-gpx-info,
+  :global([data-theme="light"]) .admin-etape-editor {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(10, 24, 44, 0.1);
+  }
+
+  :global([data-theme="light"]) .admin-form-group input,
+  :global([data-theme="light"]) .admin-form-group select,
+  :global([data-theme="light"]) .admin-form-group textarea {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(10, 24, 44, 0.15);
+    color: #1a2535;
+  }
+
+  :global([data-theme="light"]) .admin-toast {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(26, 127, 160, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-form-row {
+      grid-template-columns: 1fr;
+    }
+    .admin-topbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .admin-topbar-actions {
+      width: 100%;
+    }
+    .admin-tabs {
+      gap: 0;
+    }
+    .admin-tab {
+      padding: 0.5rem 0.65rem;
+      font-size: var(--text-xs);
+    }
+  }
+</style>

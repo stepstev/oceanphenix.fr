@@ -1,0 +1,774 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CopyrightBar from '../components/CopyrightBar.astro';
+import CguModal from '../components/CguModal.astro';
+import OceanBackground from '../components/OceanBackground.astro';
+import TerrainDashboard from '../components/TerrainDashboard.astro';
+import '../styles/terrain.css';
+import '../styles/terrain-dashboard.css';
+import etapesData from '../data/terrain-etapes.json';
+
+const etapes = etapesData.etapes;
+const position = etapesData.positionActuelle;
+const journal = etapesData.journal;
+const projet = etapesData.projet;
+---
+
+<BaseLayout
+  title="Retour au Terrain — Besoins Data | OceanPhenix 2026"
+  description="Parcours à vélo à travers la France pour rencontrer les entreprises, comprendre leurs besoins data réels et faciliter les échanges entre entreprises et freelances / consultants."
+  lastModified="12/03/2026 12:00"
+>
+  <OceanBackground />
+  <Nav />
+
+  <main class="main-content terrain-page">
+
+    <!-- ============================== -->
+    <!-- 1. HERO                        -->
+    <!-- ============================== -->
+    <section class="terrain-hero" id="terrain-top">
+      <div class="terrain-hero-inner">
+        <div class="terrain-badge">
+          <i class="fas fa-bicycle"></i>
+          Projet Terrain 2026
+        </div>
+        <h1 class="terrain-hero-title">
+          <span class="gradient-text">Retour au Terrain</span><br />
+          <span>vers les Besoins Data</span>
+        </h1>
+        <p class="terrain-hero-subtitle">
+          Un parcours à vélo à travers <strong>14 villes françaises</strong> pour aller à la rencontre des entreprises,
+          comprendre leurs besoins réels autour de la data, identifier leurs pain points
+          et faciliter les échanges entre entreprises et freelances&nbsp;/&nbsp;consultants.
+        </p>
+        <div class="terrain-hero-meta">
+          <span><i class="fas fa-road"></i> ~3 150 km</span>
+          <span><i class="fas fa-map-marker-alt"></i> 14 étapes</span>
+          <span><i class="fas fa-calendar-alt"></i> Avril – Juillet 2026</span>
+        </div>
+        <div class="terrain-hero-actions">
+          <a href="#carte" class="terrain-cta terrain-cta--primary">
+            <i class="fas fa-map"></i> Voir la carte
+          </a>
+          <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
+            <i class="fas fa-handshake"></i> Me contacter
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- DASHBOARD CARD (mockup style)  -->
+    <!-- ============================== -->
+    <TerrainDashboard />
+
+    <!-- ============================== -->
+    <!-- 2. VISION / DÉMARCHE           -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="vision">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-eye"></i> VISION &amp; DÉMARCHE
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Pourquoi ce projet&nbsp;?</span>
+        </h2>
+        <div class="terrain-vision-grid">
+          <div class="terrain-vision-card">
+            <div class="terrain-vision-icon"><i class="fas fa-comments"></i></div>
+            <h3>Écouter le terrain</h3>
+            <p>
+              Trop de solutions data sont conçues loin des réalités métier. Ce projet remet l'humain au centre :
+              aller directement dans les entreprises, écouter, comprendre, diagnostiquer.
+            </p>
+          </div>
+          <div class="terrain-vision-card">
+            <div class="terrain-vision-icon"><i class="fas fa-puzzle-piece"></i></div>
+            <h3>Identifier les pain points</h3>
+            <p>
+              Chaque entreprise a des défis data uniques. Qualité des données, manque de pilotage,
+              outils inadaptés, IA mal positionnée… L'objectif est de cartographier ces besoins réels.
+            </p>
+          </div>
+          <div class="terrain-vision-card">
+            <div class="terrain-vision-icon"><i class="fas fa-network-wired"></i></div>
+            <h3>Connecter les acteurs</h3>
+            <p>
+              Faciliter les échanges entre entreprises et freelances / consultants spécialisés.
+              Créer un réseau de confiance basé sur des besoins terrain, pas sur du marketing.
+            </p>
+          </div>
+          <div class="terrain-vision-card">
+            <div class="terrain-vision-icon"><i class="fas fa-bicycle"></i></div>
+            <h3>Le vélo comme vecteur</h3>
+            <p>
+              Le vélo impose un rythme humain. Il ouvre les conversations, brise les codes corporates
+              et montre un engagement authentique. C'est un choix délibéré, pas un gadget.
+            </p>
+          </div>
+        </div>
+        <div class="terrain-vision-admin">
+          <p>
+            <i class="fas fa-file-contract"></i>
+            Gestion administrative via <strong><a href="https://leades.fr" target="_blank" rel="noopener">Leades.fr</a></strong>
+            — Recherche continue de sponsors pour soutenir le projet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 3. CARTE INTERACTIVE           -->
+    <!-- ============================== -->
+    <section class="terrain-section terrain-section--map" id="carte">
+      <div class="terrain-container terrain-container--wide">
+        <div class="terrain-section-badge">
+          <i class="fas fa-map-marked-alt"></i> PARCOURS
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Carte du parcours</span>
+        </h2>
+        <p class="terrain-section-desc">
+          Cliquez sur une étape pour voir les détails. Le tracé GPX sera ajouté au fil du parcours via Garmin&nbsp;/&nbsp;Strava&nbsp;/&nbsp;Komoot.
+        </p>
+        <div id="terrain-map" class="terrain-map-container"></div>
+        <div class="terrain-map-legend">
+          <span class="legend-item"><span class="legend-dot legend-dot--actuel"></span> Position actuelle</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--planifie"></span> Étape planifiée</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--visite"></span> Étape visitée</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 4. POSITION ACTUELLE           -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="position">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-map-pin"></i> POSITION ACTUELLE
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text" id="live-position-ville">{position.ville}</span>
+        </h2>
+        <div class="terrain-position-card">
+          <div class="terrain-position-status">
+            <span class="terrain-status-badge terrain-status-badge--preparation" id="live-position-badge">
+              <i class="fas fa-tools"></i> <span id="live-position-statut">{position.statut}</span>
+            </span>
+          </div>
+          <p class="terrain-position-info">
+            Départ prévu le <strong id="live-position-depart">{position.dateDepart}</strong>.
+            Phase de préparation : contacts entreprises, planification logistique, recherche sponsors.
+          </p>
+          <div class="terrain-position-links">
+            <a href={projet.liens.strava} target="_blank" rel="noopener" class="terrain-link-btn">
+              <i class="fas fa-running"></i> Strava
+            </a>
+            <a href={projet.liens.komoot} target="_blank" rel="noopener" class="terrain-link-btn">
+              <i class="fas fa-route"></i> Komoot
+            </a>
+            <a href={projet.liens.youtube} target="_blank" rel="noopener" class="terrain-link-btn terrain-link-btn--yt">
+              <i class="fab fa-youtube"></i> YouTube
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 5. COMMENT JE PEUX AIDER       -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="aider">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-hands-helping"></i> POUR LES ENTREPRISES
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Comment je peux vous aider</span>
+        </h2>
+        <div class="terrain-help-grid">
+          <div class="terrain-help-card">
+            <i class="fas fa-search-plus"></i>
+            <h3>Diagnostic Data</h3>
+            <p>Audit rapide de votre maturité data : outils, processus, gouvernance, qualité des données.</p>
+          </div>
+          <div class="terrain-help-card">
+            <i class="fas fa-lightbulb"></i>
+            <h3>Identification des Quick Wins</h3>
+            <p>Repérer les actions à fort impact et faible effort pour créer de la valeur rapidement.</p>
+          </div>
+          <div class="terrain-help-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Pilotage &amp; BI</h3>
+            <p>Mise en place de tableaux de bord et indicateurs pour piloter votre activité par la donnée.</p>
+          </div>
+          <div class="terrain-help-card">
+            <i class="fas fa-users-cog"></i>
+            <h3>Mise en relation</h3>
+            <p>Connexion avec des freelances et consultants adaptés à vos besoins identifiés sur le terrain.</p>
+          </div>
+          <div class="terrain-help-card">
+            <i class="fas fa-robot"></i>
+            <h3>IA Pragmatique</h3>
+            <p>Évaluation réaliste de l'apport de l'IA pour votre métier — sans buzzwords, avec des cas concrets.</p>
+          </div>
+          <div class="terrain-help-card">
+            <i class="fas fa-shield-alt"></i>
+            <h3>Souveraineté Data</h3>
+            <p>Conseils sur l'hébergement, la conformité RGPD et les solutions souveraines adaptées à votre taille.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 6. FORMULAIRE DE CONTACT       -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="contact-terrain">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-envelope"></i> CONTACT
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Me contacter</span>
+        </h2>
+        <p class="terrain-section-desc">
+          Vous êtes une entreprise sur mon parcours ? Vous souhaitez organiser une rencontre, proposer un échange
+          ou devenir sponsor ? Écrivez-moi&nbsp;!
+        </p>
+        <form
+          class="terrain-contact-form"
+          action="https://formspree.io/f/VOTRE_ID_FORMSPREE"
+          method="POST"
+        >
+          <div class="terrain-form-row">
+            <div class="terrain-form-group">
+              <label for="terrain-nom">Nom / Entreprise</label>
+              <input type="text" id="terrain-nom" name="nom" required autocomplete="organization" />
+            </div>
+            <div class="terrain-form-group">
+              <label for="terrain-email">Email</label>
+              <input type="email" id="terrain-email" name="email" required autocomplete="email" />
+            </div>
+          </div>
+          <div class="terrain-form-group">
+            <label for="terrain-ville">Ville / Étape concernée</label>
+            <select id="terrain-ville" name="ville">
+              <option value="">— Sélectionnez —</option>
+              {etapes.map((e) => (
+                <option value={e.ville}>{e.ville} ({e.region})</option>
+              ))}
+            </select>
+          </div>
+          <div class="terrain-form-group">
+            <label for="terrain-type">Type de demande</label>
+            <select id="terrain-type" name="type">
+              <option value="">— Sélectionnez —</option>
+              <option value="rencontre">Organiser une rencontre</option>
+              <option value="diagnostic">Demander un diagnostic data</option>
+              <option value="sponsor">Devenir sponsor</option>
+              <option value="freelance">Proposer mes services (freelance/consultant)</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="terrain-form-group">
+            <label for="terrain-message">Message</label>
+            <textarea id="terrain-message" name="message" rows="5" required></textarea>
+          </div>
+          <input type="text" name="_gotcha" style="display:none" />
+          <button type="submit" class="terrain-cta terrain-cta--primary terrain-form-submit">
+            <i class="fas fa-paper-plane"></i> Envoyer
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 7. ESPACE ÉCHANGES             -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="echanges">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-comment-dots"></i> ÉCHANGES &amp; ENCOURAGEMENTS
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Espace d'échange</span>
+        </h2>
+        <p class="terrain-section-desc">
+          Encouragements, questions, retours d'expérience — cet espace est le vôtre.
+          Propulsé par <a href="https://giscus.app" target="_blank" rel="noopener">Giscus</a> (GitHub Discussions).
+        </p>
+        <div class="terrain-giscus-container">
+          <script
+            is:inline
+            src="https://giscus.app/client.js"
+            data-repo="stepstev/oceanphenix.fr"
+            data-repo-id=""
+            data-category="General"
+            data-category-id=""
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="dark_dimmed"
+            data-lang="fr"
+            crossorigin="anonymous"
+            async>
+          </script>
+          <noscript>
+            <p class="terrain-noscript">Les commentaires nécessitent JavaScript. Vous pouvez aussi me contacter via le <a href="#contact-terrain">formulaire</a>.</p>
+          </noscript>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 8. ENTREPRISE / CONSULTANTS    -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="matchmaking">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-exchange-alt"></i> ENTREPRISES &amp; CONSULTANTS
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Point d'échange</span>
+        </h2>
+        <p class="terrain-section-desc">
+          Ce projet vise à créer un pont entre les entreprises qui ont des besoins data
+          et les freelances / consultants qui peuvent y répondre.
+        </p>
+        <div class="terrain-match-grid">
+          <div class="terrain-match-card terrain-match-card--entreprise">
+            <div class="terrain-match-header">
+              <i class="fas fa-building"></i>
+              <h3>Entreprises</h3>
+            </div>
+            <ul>
+              <li>Exprimez vos besoins data réels</li>
+              <li>Bénéficiez d'un diagnostic gratuit sur site</li>
+              <li>Recevez des recommandations concrètes</li>
+              <li>Accédez à un réseau de consultants vérifiés</li>
+            </ul>
+            <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
+              <i class="fas fa-hand-point-right"></i> Je suis une entreprise
+            </a>
+          </div>
+          <div class="terrain-match-card terrain-match-card--consultant">
+            <div class="terrain-match-header">
+              <i class="fas fa-user-tie"></i>
+              <h3>Freelances &amp; Consultants</h3>
+            </div>
+            <ul>
+              <li>Rejoignez le réseau terrain</li>
+              <li>Recevez des leads qualifiés par le terrain</li>
+              <li>Participez à des missions concrètes</li>
+              <li>Échangez avec d'autres experts data</li>
+            </ul>
+            <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
+              <i class="fas fa-hand-point-right"></i> Je suis consultant
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- 9. JOURNAL DU TERRAIN          -->
+    <!-- ============================== -->
+    <section class="terrain-section" id="journal">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-book-open"></i> JOURNAL
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Journal du terrain</span>
+        </h2>
+        <div class="terrain-journal-timeline" id="live-journal">
+          {journal.map((entry) => (
+            <div class="terrain-journal-entry">
+              <div class="terrain-journal-date">
+                <i class="fas fa-calendar-day"></i> {entry.date}
+                <span class="terrain-journal-ville">— {entry.ville}</span>
+              </div>
+              <h3 class="terrain-journal-titre">{entry.titre}</h3>
+              <p>{entry.contenu}</p>
+              <div class="terrain-journal-tags">
+                {entry.tags.map((tag: string) => (
+                  <span class="terrain-tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- VISIBILITÉ / LIENS             -->
+    <!-- ============================== -->
+    <section class="terrain-section terrain-section--links" id="suivre">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-satellite-dish"></i> SUIVRE LE PROJET
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Restez connectés</span>
+        </h2>
+        <div class="terrain-social-grid">
+          <a href={projet.liens.youtube} target="_blank" rel="noopener" class="terrain-social-card terrain-social--yt">
+            <i class="fab fa-youtube"></i>
+            <span>YouTube</span>
+            <small>Discovery IT DATA</small>
+          </a>
+          <a href={projet.liens.strava} target="_blank" rel="noopener" class="terrain-social-card terrain-social--strava">
+            <i class="fas fa-running"></i>
+            <span>Strava</span>
+            <small>Suivi GPS live</small>
+          </a>
+          <a href={projet.liens.komoot} target="_blank" rel="noopener" class="terrain-social-card terrain-social--komoot">
+            <i class="fas fa-route"></i>
+            <span>Komoot</span>
+            <small>Itinéraires détaillés</small>
+          </a>
+          <a href={projet.liens.linkedin} target="_blank" rel="noopener" class="terrain-social-card terrain-social--li">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn</span>
+            <small>Stéphane Celton</small>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+  <CopyrightBar />
+  <CguModal />
+
+  <!-- Leaflet CSS & JS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <script
+    is:inline
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
+  <!-- Carte Leaflet init -->
+  <script is:inline define:vars={{ etapes, position }}>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      var colors = {
+        actuel: '#f59e0b',
+        planifie: '#4db8d4',
+        visite: '#22c55e',
+        depart: '#f59e0b',
+      };
+
+      // ---- Helper: create a map with markers + route ----
+      function initTerrainMap(elementId, opts) {
+        var mapEl = document.getElementById(elementId);
+        if (!mapEl) return null;
+
+        var center = opts.center || [46.6, 2.8];
+        var zoom = opts.zoom || 6;
+
+        var map = L.map(elementId, {
+          scrollWheelZoom: false,
+          zoomControl: opts.zoomControl !== false,
+        }).setView(center, zoom);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          maxZoom: 18,
+        }).addTo(map);
+
+        var routeCoords = [];
+        var stepsData = opts.etapes || etapes;
+
+        stepsData.forEach(function (etape) {
+          var color = colors[etape.statut] || colors.planifie;
+          var radius = etape.statut === 'actuel' ? (opts.compact ? 8 : 10) : (opts.compact ? 5 : 7);
+
+          var marker = L.circleMarker([etape.lat, etape.lng], {
+            radius: radius,
+            fillColor: color,
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9,
+          }).addTo(map);
+
+          // Label for visited / current
+          if (!opts.compact && (etape.statut === 'actuel' || etape.statut === 'visite')) {
+            L.circleMarker([etape.lat, etape.lng], {
+              radius: 18,
+              fillColor: color,
+              color: color,
+              weight: 2,
+              opacity: 0.3,
+              fillOpacity: 0.1,
+            }).addTo(map);
+          }
+
+          if (!opts.compact) {
+            var popupHtml =
+              '<div style="font-family:Inter,sans-serif;min-width:200px;">' +
+              '<strong style="font-size:14px;color:#0b1a2e;">' + etape.ville + '</strong>' +
+              '<br><span style="color:#666;font-size:12px;">' + etape.region + '</span>' +
+              '<br><span style="color:#888;font-size:11px;">Étape ' + etape.id + ' / 14 — ' + etape.distanceDepuisDepart + ' km</span>' +
+              '<hr style="margin:6px 0;border:0;border-top:1px solid #e5e7eb;">' +
+              '<p style="font-size:12px;color:#444;margin:0;">' + etape.description + '</p>' +
+              '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estimée : ' + etape.dateEstimee + '</p>' +
+              '</div>';
+            marker.bindPopup(popupHtml);
+          } else {
+            marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
+          }
+
+          routeCoords.push([etape.lat, etape.lng]);
+        });
+
+        if (routeCoords.length > 1) {
+          L.polyline(routeCoords, {
+            color: '#4db8d4',
+            weight: opts.compact ? 2 : 2.5,
+            opacity: 0.5,
+            dashArray: '8, 8',
+          }).addTo(map);
+        }
+
+        return map;
+      }
+
+      // ---- Load GPX tracks from public/gpx/ directory ----
+      function loadGpxTracks(map) {
+        // Try loading GPX file list from localStorage (set by admin)
+        var gpxKey = 'op-terrain-gpx';
+        var gpxRaw = localStorage.getItem(gpxKey);
+        if (!gpxRaw) return;
+        try {
+          var gpxFiles = JSON.parse(gpxRaw);
+          gpxFiles.forEach(function(g) {
+            if (!g.path) return;
+            fetch(g.path)
+              .then(function(r) { return r.ok ? r.text() : null; })
+              .then(function(xml) {
+                if (!xml) return;
+                var doc = new DOMParser().parseFromString(xml, 'application/xml');
+                var pts = doc.querySelectorAll('trkpt');
+                if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+                var coords = [];
+                pts.forEach(function(p) {
+                  var lat = parseFloat(p.getAttribute('lat'));
+                  var lon = parseFloat(p.getAttribute('lon'));
+                  if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
+                });
+                if (coords.length > 1) {
+                  L.polyline(coords, {
+                    color: '#f59e0b',
+                    weight: 3,
+                    opacity: 0.8,
+                  }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
+                }
+              })
+              .catch(function() { /* file not yet uploaded */ });
+          });
+        } catch(e) { /* ignore */ }
+      }
+
+      // ---- 1. Full page map ----
+      var mainMap = initTerrainMap('terrain-map', {
+        center: [46.6, 2.8],
+        zoom: 6,
+        compact: false,
+      });
+      if (mainMap) loadGpxTracks(mainMap);
+      window._terrainMainMap = mainMap;
+
+      // ---- 2. Dashboard compact map ----
+      var dashMap = initTerrainMap('tdash-map', {
+        center: [47.5, 2.5],
+        zoom: 6,
+        compact: true,
+        zoomControl: false,
+      });
+      window._terrainDashMap = dashMap;
+    });
+  </script>
+
+  <!-- Live-update: reads admin data from localStorage + cross-tab sync -->
+  <script is:inline>
+    (function () {
+      var STORAGE_KEY = 'op-terrain-admin';
+
+      function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function setText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      }
+
+      function applyLiveData(d) {
+        if (!d) return;
+        var dash = d.dashboard || {};
+        var pos = d.positionActuelle || {};
+        var etapes = d.etapes || [];
+        var journal = d.journal || [];
+
+        // --- Dashboard stats ---
+        setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
+        setText('live-jours', dash.joursPrevus != null ? dash.joursPrevus : '');
+        setText('live-besoins', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
+        setText('live-rencontres', dash.rencontresEntreprises != null ? dash.rencontresEntreprises : '');
+        setText('live-besoins-m', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
+        setText('live-rencontres-m', dash.rencontresEntreprises != null ? dash.rencontresEntreprises : '');
+        setText('live-status', dash.etapeEnCours || pos.statut || '');
+
+        // Prochaine étape
+        var prochaine = dash.prochaineEtape || '';
+        setText('live-prochaine', prochaine);
+        setText('live-route-arrivee', prochaine);
+
+        // Départ
+        var departVille = '';
+        for (var i = 0; i < etapes.length; i++) {
+          if (etapes[i].statut === 'depart' || etapes[i].statut === 'actuel') {
+            departVille = etapes[i].ville;
+            break;
+          }
+        }
+        if (!departVille && pos.ville) departVille = pos.ville;
+        setText('live-route-depart', departVille);
+
+        // --- Position section ---
+        setText('live-position-ville', pos.ville || '');
+        setText('live-position-statut', pos.statut || '');
+        setText('live-position-depart', pos.dateDepart || '');
+
+        // --- Photos ---
+        var photosEl = document.getElementById('live-photos');
+        if (photosEl && dash.photos) {
+          var html = '';
+          dash.photos.forEach(function (src) {
+            html += '<div class="tdash-thumb"><img src="' + escapeHtml(src) +
+              '" alt="Photo terrain" loading="lazy" onerror="this.parentElement.style.display=\'none\'" /></div>';
+          });
+          photosEl.innerHTML = html;
+        }
+
+        // --- Journal ---
+        var journalEl = document.getElementById('live-journal');
+        if (journalEl && journal.length > 0) {
+          var jhtml = '';
+          journal.forEach(function (entry) {
+            jhtml += '<div class="terrain-journal-entry">' +
+              '<div class="terrain-journal-date">' +
+              '<i class="fas fa-calendar-day"></i> ' + escapeHtml(entry.date || '') +
+              '<span class="terrain-journal-ville">— ' + escapeHtml(entry.ville || '') + '</span>' +
+              '</div>' +
+              '<h3 class="terrain-journal-titre">' + escapeHtml(entry.titre || '') + '</h3>' +
+              '<p>' + escapeHtml(entry.contenu || '') + '</p>';
+            if (entry.tags && entry.tags.length) {
+              jhtml += '<div class="terrain-journal-tags">';
+              entry.tags.forEach(function (tag) {
+                jhtml += '<span class="terrain-tag">' + escapeHtml(tag) + '</span>';
+              });
+              jhtml += '</div>';
+            }
+            jhtml += '</div>';
+          });
+          journalEl.innerHTML = jhtml;
+        }
+
+        // --- Update Leaflet map markers if maps exist ---
+        if (etapes.length && window._terrainMainMap) {
+          rebuildMapMarkers(window._terrainMainMap, etapes, false);
+        }
+        if (etapes.length && window._terrainDashMap) {
+          rebuildMapMarkers(window._terrainDashMap, etapes, true);
+        }
+      }
+
+      function rebuildMapMarkers(map, etapes, compact) {
+        var colors = { actuel: '#f59e0b', planifie: '#4db8d4', visite: '#22c55e', depart: '#f59e0b' };
+        // Remove existing markers and polylines
+        map.eachLayer(function (layer) {
+          if (layer instanceof L.CircleMarker || layer instanceof L.Polyline) {
+            map.removeLayer(layer);
+          }
+        });
+        var routeCoords = [];
+        etapes.forEach(function (etape) {
+          var color = colors[etape.statut] || colors.planifie;
+          var radius = etape.statut === 'actuel' ? (compact ? 8 : 10) : (compact ? 5 : 7);
+          var marker = L.circleMarker([etape.lat, etape.lng], {
+            radius: radius, fillColor: color, color: '#fff',
+            weight: 2, opacity: 1, fillOpacity: 0.9,
+          }).addTo(map);
+          if (!compact && (etape.statut === 'actuel' || etape.statut === 'visite')) {
+            L.circleMarker([etape.lat, etape.lng], {
+              radius: 18, fillColor: color, color: color,
+              weight: 2, opacity: 0.3, fillOpacity: 0.1,
+            }).addTo(map);
+          }
+          if (!compact) {
+            marker.bindPopup(
+              '<div style="font-family:Inter,sans-serif;min-width:200px;">' +
+              '<strong style="font-size:14px;color:#0b1a2e;">' + etape.ville + '</strong>' +
+              '<br><span style="color:#666;font-size:12px;">' + etape.region + '</span>' +
+              '<br><span style="color:#888;font-size:11px;">Étape ' + etape.id + ' / 14 — ' + etape.distanceDepuisDepart + ' km</span>' +
+              '<hr style="margin:6px 0;border:0;border-top:1px solid #e5e7eb;">' +
+              '<p style="font-size:12px;color:#444;margin:0;">' + etape.description + '</p>' +
+              '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estimée : ' + etape.dateEstimee + '</p></div>'
+            );
+          } else {
+            marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
+          }
+          routeCoords.push([etape.lat, etape.lng]);
+        });
+        if (routeCoords.length > 1) {
+          L.polyline(routeCoords, {
+            color: '#4db8d4', weight: compact ? 2 : 2.5, opacity: 0.5, dashArray: '8, 8',
+          }).addTo(map);
+        }
+      }
+
+      // Load from localStorage on page load
+      function loadAndApply() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) applyLiveData(JSON.parse(raw));
+        } catch (e) { /* invalid JSON, skip */ }
+      }
+
+      // Run on DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadAndApply);
+      } else {
+        loadAndApply();
+      }
+
+      // Cross-tab real-time: update when admin saves in another tab
+      window.addEventListener('storage', function (e) {
+        if (e.key === STORAGE_KEY && e.newValue) {
+          try { applyLiveData(JSON.parse(e.newValue)); } catch (err) { /* skip */ }
+        }
+      });
+    })();
+  </script>
+</BaseLayout>
