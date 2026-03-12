@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import OceanBackground from '../components/OceanBackground.astro';
@@ -21,16 +21,16 @@ import etapesData from '../data/terrain-etapes.json';
     <div id="admin-auth" class="admin-auth">
       <div class="admin-auth-card">
         <h1><i class="fas fa-lock"></i> Admin Terrain</h1>
-        <p>AccÃ¨s rÃ©servÃ© â€” entrez le mot de passe d'administration.</p>
+        <p>Accès réservé — entrez le mot de passe d'administration.</p>
         <div class="admin-form-group">
           <input type="password" id="admin-pass" placeholder="Mot de passe" autocomplete="off" />
         </div>
         <div class="admin-form-group admin-captcha-group">
           <label id="captcha-label" class="captcha-question"></label>
-          <input type="text" id="admin-captcha" placeholder="Votre rÃ©ponse" autocomplete="off" inputmode="numeric" />
+          <input type="text" id="admin-captcha" placeholder="Votre réponse" autocomplete="off" inputmode="numeric" />
         </div>
         <button id="admin-login-btn" class="admin-btn admin-btn--primary">
-          <i class="fas fa-sign-in-alt"></i> AccÃ©der
+          <i class="fas fa-sign-in-alt"></i> Accéder
         </button>
         <p id="admin-auth-error" class="admin-error" style="display:none;">Mot de passe ou captcha incorrect</p>
       </div>
@@ -41,7 +41,7 @@ import etapesData from '../data/terrain-etapes.json';
 
       <!-- Top bar -->
       <div class="admin-topbar">
-        <h1><i class="fas fa-cogs"></i> Admin â€” Terrain Data</h1>
+        <h1><i class="fas fa-cogs"></i> Admin — Terrain Data</h1>
         <div class="admin-topbar-actions">
           <button id="admin-save-btn" class="admin-btn admin-btn--primary">
             <i class="fas fa-save"></i> Sauvegarder (localStorage)
@@ -62,7 +62,7 @@ import etapesData from '../data/terrain-etapes.json';
           <i class="fas fa-tachometer-alt"></i> Dashboard
         </button>
         <button class="admin-tab" data-tab="etapes">
-          <i class="fas fa-map-marked-alt"></i> Ã‰tapes
+          <i class="fas fa-map-marked-alt"></i> Étapes
         </button>
         <button class="admin-tab" data-tab="journal">
           <i class="fas fa-book-open"></i> Journal
@@ -74,7 +74,7 @@ import etapesData from '../data/terrain-etapes.json';
           <i class="fas fa-route"></i> Parcours GPX
         </button>
         <button class="admin-tab" data-tab="preview">
-          <i class="fas fa-eye"></i> AperÃ§u
+          <i class="fas fa-eye"></i> Aperçu
         </button>
         <button class="admin-tab" data-tab="villes">
           <i class="fas fa-map-pin"></i> Villes France
@@ -89,7 +89,7 @@ import etapesData from '../data/terrain-etapes.json';
       <!-- ============================== -->
       <div class="admin-tab-content admin-tab-content--active" id="tab-dashboard">
         <div class="admin-card">
-          <h2><i class="fas fa-tachometer-alt"></i> DonnÃ©es du dashboard</h2>
+          <h2><i class="fas fa-tachometer-alt"></i> Données du dashboard</h2>
           <div class="admin-form-row">
             <div class="admin-form-group">
               <label>Km parcourus</label>
@@ -102,7 +102,7 @@ import etapesData from '../data/terrain-etapes.json';
           </div>
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label>Besoins identifiÃ©s</label>
+              <label>Besoins identifiés</label>
               <input type="number" id="dash-besoins" min="0" step="1" />
             </div>
             <div class="admin-form-group">
@@ -112,17 +112,17 @@ import etapesData from '../data/terrain-etapes.json';
           </div>
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label>Ã‰tape en cours (texte libre)</label>
+              <label>Étape en cours (texte libre)</label>
               <input type="text" id="dash-encours" placeholder="Ex: En route vers Dreux" />
             </div>
             <div class="admin-form-group">
-              <label>Prochaine Ã©tape</label>
+              <label>Prochaine étape</label>
               <select id="dash-prochaine"></select>
             </div>
           </div>
           <div class="admin-form-row">
             <div class="admin-form-group">
-              <label>Jours prÃ©vus</label>
+              <label>Jours prévus</label>
               <input type="number" id="dash-joursprevus" min="0" step="1" />
             </div>
           </div>
@@ -138,11 +138,11 @@ import etapesData from '../data/terrain-etapes.json';
             <div class="admin-form-group">
               <label>Statut</label>
               <select id="pos-statut">
-                <option value="PrÃ©paration">PrÃ©paration</option>
+                <option value="Préparation">Préparation</option>
                 <option value="En route">En route</option>
-                <option value="Ã‰tape">Ã‰tape</option>
+                <option value="Étape">Étape</option>
                 <option value="Repos">Repos</option>
-                <option value="TerminÃ©">TerminÃ©</option>
+                <option value="Terminé">Terminé</option>
               </select>
             </div>
           </div>
@@ -157,22 +157,22 @@ import etapesData from '../data/terrain-etapes.json';
             </div>
           </div>
           <div class="admin-form-group">
-            <label>Date de dÃ©part</label>
+            <label>Date de départ</label>
             <input type="date" id="pos-depart" />
           </div>
         </div>
       </div>
 
       <!-- ============================== -->
-      <!-- TAB: Ã‰tapes                    -->
+      <!-- TAB: Étapes                    -->
       <!-- ============================== -->
       <div class="admin-tab-content" id="tab-etapes">
         <div class="admin-card">
-          <h2><i class="fas fa-map-marked-alt"></i> Gestion des Ã©tapes</h2>
-          <p class="admin-hint">Cliquez sur une Ã©tape pour la modifier. Changez le statut pour marquer une Ã©tape comme visitÃ©e.</p>
+          <h2><i class="fas fa-map-marked-alt"></i> Gestion des étapes</h2>
+          <p class="admin-hint">Cliquez sur une étape pour la modifier. Changez le statut pour marquer une étape comme visitée.</p>
           <div class="admin-form-actions" style="margin-bottom:1rem;">
             <button id="etape-add-btn" class="admin-btn admin-btn--primary">
-              <i class="fas fa-plus"></i> Nouvelle Ã©tape
+              <i class="fas fa-plus"></i> Nouvelle étape
             </button>
           </div>
           <div style="overflow-x:auto;">
@@ -181,7 +181,7 @@ import etapesData from '../data/terrain-etapes.json';
                 <tr>
                   <th style="width:40px;">#</th>
                   <th>Ville</th>
-                  <th>RÃ©gion</th>
+                  <th>Région</th>
                   <th style="text-align:center;">Km</th>
                   <th style="text-align:center;">Statut</th>
                   <th style="text-align:center;">Lat</th>
@@ -193,7 +193,7 @@ import etapesData from '../data/terrain-etapes.json';
             </table>
           </div>
           <div id="etape-editor" class="admin-etape-editor" style="display:none;">
-            <h3 id="etape-editor-title">Modifier l'Ã©tape</h3>
+            <h3 id="etape-editor-title">Modifier l'étape</h3>
             <input type="hidden" id="etape-edit-id" />
             <div class="admin-form-row">
               <div class="admin-form-group">
@@ -201,7 +201,7 @@ import etapesData from '../data/terrain-etapes.json';
                 <input type="text" id="etape-edit-ville" />
               </div>
               <div class="admin-form-group">
-                <label>RÃ©gion</label>
+                <label>Région</label>
                 <input type="text" id="etape-edit-region" />
               </div>
             </div>
@@ -209,13 +209,13 @@ import etapesData from '../data/terrain-etapes.json';
               <div class="admin-form-group">
                 <label>Statut</label>
                 <select id="etape-edit-statut">
-                  <option value="planifie">PlanifiÃ©</option>
+                  <option value="planifie">Planifié</option>
                   <option value="actuel">Actuel</option>
-                  <option value="visite">VisitÃ©</option>
+                  <option value="visite">Visité</option>
                 </select>
               </div>
               <div class="admin-form-group">
-                <label>Distance depuis dÃ©part (km)</label>
+                <label>Distance depuis départ (km)</label>
                 <input type="number" id="etape-edit-dist" min="0" />
               </div>
             </div>
@@ -230,7 +230,7 @@ import etapesData from '../data/terrain-etapes.json';
               </div>
             </div>
             <div class="admin-form-group">
-              <label>Date estimÃ©e</label>
+              <label>Date estimée</label>
               <input type="date" id="etape-edit-date" />
             </div>
             <div class="admin-form-group">
@@ -256,7 +256,7 @@ import etapesData from '../data/terrain-etapes.json';
         <div class="admin-card">
           <h2><i class="fas fa-book-open"></i> Journal du terrain</h2>
           <div id="journal-list" class="admin-journal-list"></div>
-          <h3 class="admin-subtitle"><i class="fas fa-plus"></i> Nouvelle entrÃ©e</h3>
+          <h3 class="admin-subtitle"><i class="fas fa-plus"></i> Nouvelle entrée</h3>
           <div class="admin-form-row">
             <div class="admin-form-group">
               <label>Date</label>
@@ -269,14 +269,14 @@ import etapesData from '../data/terrain-etapes.json';
           </div>
           <div class="admin-form-group">
             <label>Titre</label>
-            <input type="text" id="journal-titre" placeholder="Ex: ArrivÃ©e Ã  Caen â€” premiers contacts" />
+            <input type="text" id="journal-titre" placeholder="Ex: Arrivée à Caen — premiers contacts" />
           </div>
           <div class="admin-form-group">
             <label>Contenu</label>
-            <textarea id="journal-contenu" rows="5" placeholder="Racontez votre journÃ©e, rencontres, observations..."></textarea>
+            <textarea id="journal-contenu" rows="5" placeholder="Racontez votre journée, rencontres, observations..."></textarea>
           </div>
           <div class="admin-form-group">
-            <label>Tags (sÃ©parÃ©s par des virgules)</label>
+            <label>Tags (séparés par des virgules)</label>
             <input type="text" id="journal-tags" placeholder="rencontre, diagnostic, data, sponsor" />
           </div>
           <button id="journal-add-btn" class="admin-btn admin-btn--primary">
@@ -292,7 +292,7 @@ import etapesData from '../data/terrain-etapes.json';
         <div class="admin-card">
           <h2><i class="fas fa-images"></i> Photos du parcours</h2>
           <p class="admin-hint">
-            Les photos sont rÃ©fÃ©rencÃ©es par leur chemin dans <code>/Images/terrain/</code>.
+            Les photos sont référencées par leur chemin dans <code>/Images/terrain/</code>.
             Uploadez-les via FTP ou le gestionnaire de fichiers O2switch, puis ajoutez le chemin ici.
           </p>
 
@@ -300,14 +300,14 @@ import etapesData from '../data/terrain-etapes.json';
 
           <h3 class="admin-subtitle"><i class="fas fa-plus"></i> Ajouter une photo</h3>
           <div class="admin-form-group">
-            <label>SÃ©lectionner une image (pour prÃ©visualiser et obtenir le nom)</label>
+            <label>Sélectionner une image (pour prévisualiser et obtenir le nom)</label>
             <input type="file" id="photo-file-input" accept="image/*" />
           </div>
           <div class="admin-photo-preview" id="photo-preview" style="display:none;">
-            <img id="photo-preview-img" alt="AperÃ§u" />
+            <img id="photo-preview-img" alt="Aperçu" />
             <div class="admin-photo-preview-info">
               <p>Fichier : <strong id="photo-preview-name"></strong></p>
-              <p>Chemin qui sera ajoutÃ© : <code id="photo-preview-path"></code></p>
+              <p>Chemin qui sera ajouté : <code id="photo-preview-path"></code></p>
             </div>
           </div>
           <div class="admin-form-group">
@@ -319,7 +319,7 @@ import etapesData from '../data/terrain-etapes.json';
               <i class="fas fa-plus"></i> Ajouter la photo
             </button>
             <button id="photo-download-btn" class="admin-btn admin-btn--secondary" style="display:none;">
-              <i class="fas fa-download"></i> TÃ©lÃ©charger (pour upload FTP)
+              <i class="fas fa-download"></i> Télécharger (pour upload FTP)
             </button>
           </div>
         </div>
@@ -332,8 +332,8 @@ import etapesData from '../data/terrain-etapes.json';
         <div class="admin-card">
           <h2><i class="fas fa-route"></i> Parcours GPX</h2>
           <p class="admin-hint">
-            Importez vos fichiers GPX Garmin / Strava / Komoot. Le tracÃ© sera affichÃ© sur la carte d'aperÃ§u
-            et le fichier sera prÃªt Ã  copier dans <code>/public/gpx/</code>.
+            Importez vos fichiers GPX Garmin / Strava / Komoot. Le tracé sera affiché sur la carte d'aperçu
+            et le fichier sera prêt à copier dans <code>/public/gpx/</code>.
           </p>
 
           <div class="admin-form-group">
@@ -354,11 +354,11 @@ import etapesData from '../data/terrain-etapes.json';
             </div>
             <div class="admin-form-row">
               <div class="admin-form-group">
-                <label>Distance estimÃ©e</label>
+                <label>Distance estimée</label>
                 <input type="text" id="gpx-distance" readonly />
               </div>
               <div class="admin-form-group">
-                <label>DÃ©nivelÃ© estimÃ©</label>
+                <label>Dénivelé estimé</label>
                 <input type="text" id="gpx-elevation" readonly />
               </div>
             </div>
@@ -368,16 +368,16 @@ import etapesData from '../data/terrain-etapes.json';
 
           <div id="gpx-actions" class="admin-form-actions" style="display:none;">
             <button id="gpx-download-btn" class="admin-btn admin-btn--secondary">
-              <i class="fas fa-download"></i> TÃ©lÃ©charger le GPX
+              <i class="fas fa-download"></i> Télécharger le GPX
             </button>
             <button id="gpx-add-btn" class="admin-btn admin-btn--primary">
               <i class="fas fa-plus"></i> Ajouter au parcours
             </button>
           </div>
 
-          <h3 class="admin-subtitle">Fichiers GPX enregistrÃ©s</h3>
+          <h3 class="admin-subtitle">Fichiers GPX enregistrés</h3>
           <div id="gpx-list" class="admin-gpx-list">
-            <p class="admin-hint">Aucun fichier GPX enregistrÃ© pour le moment.</p>
+            <p class="admin-hint">Aucun fichier GPX enregistré pour le moment.</p>
           </div>
         </div>
       </div>
@@ -387,8 +387,8 @@ import etapesData from '../data/terrain-etapes.json';
       <!-- ============================== -->
       <div class="admin-tab-content" id="tab-preview">
         <div class="admin-card">
-          <h2><i class="fas fa-eye"></i> AperÃ§u des donnÃ©es</h2>
-          <p class="admin-hint">Voici le JSON complet tel qu'il sera exportÃ©. VÃ©rifiez les donnÃ©es avant de les exporter.</p>
+          <h2><i class="fas fa-eye"></i> Aperçu des données</h2>
+          <p class="admin-hint">Voici le JSON complet tel qu'il sera exporté. Vérifiez les données avant de les exporter.</p>
           <pre id="preview-json" class="admin-json-preview"></pre>
           <div class="admin-form-actions">
             <button id="preview-copy-btn" class="admin-btn admin-btn--primary">
@@ -406,15 +406,15 @@ import etapesData from '../data/terrain-etapes.json';
       <!-- ============================== -->
       <div class="admin-tab-content" id="tab-villes">
         <div class="admin-card">
-          <h2><i class="fas fa-map-pin"></i> CoordonnÃ©es des grandes villes de France</h2>
-          <p class="admin-hint">Recherchez une ville puis cliquez sur <strong>Copier</strong> pour rÃ©cupÃ©rer ses coordonnÃ©es.</p>
-          <input type="text" id="villes-search" placeholder="Rechercher une villeâ€¦" style="width:100%;padding:10px 14px;margin-bottom:16px;border-radius:8px;border:1px solid #333;background:#181e26;color:#e0e0e0;font-size:1rem;" />
+          <h2><i class="fas fa-map-pin"></i> Coordonnées des grandes villes de France</h2>
+          <p class="admin-hint">Recherchez une ville puis cliquez sur <strong>Copier</strong> pour récupérer ses coordonnées.</p>
+          <input type="text" id="villes-search" placeholder="Rechercher une ville…" style="width:100%;padding:10px 14px;margin-bottom:16px;border-radius:8px;border:1px solid #333;background:#181e26;color:#e0e0e0;font-size:1rem;" />
           <div style="overflow-x:auto;">
             <table id="villes-table" style="width:100%;border-collapse:collapse;font-size:0.95rem;">
               <thead>
                 <tr style="background:#1a2030;">
                   <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #4db8d4;color:#4db8d4;">Ville</th>
-                  <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #4db8d4;color:#4db8d4;">RÃ©gion</th>
+                  <th style="padding:10px 12px;text-align:left;border-bottom:2px solid #4db8d4;color:#4db8d4;">Région</th>
                   <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Latitude</th>
                   <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Longitude</th>
                   <th style="padding:10px 12px;text-align:center;border-bottom:2px solid #4db8d4;color:#4db8d4;">Action</th>
@@ -433,7 +433,7 @@ import etapesData from '../data/terrain-etapes.json';
       <div class="admin-tab-content" id="tab-coworking">
         <div class="admin-card">
           <h2><i class="fas fa-building"></i> Espaces de coworking</h2>
-          <p class="admin-hint">GÃ©rez les espaces de coworking. Ils apparaissent comme <i class="fas fa-flag"></i> drapeaux sur la carte terrain.</p>
+          <p class="admin-hint">Gérez les espaces de coworking. Ils apparaissent comme <i class="fas fa-flag"></i> drapeaux sur la carte terrain.</p>
           <div class="admin-form-actions" style="margin-bottom:1rem;">
             <button id="cw-add-btn" class="admin-btn admin-btn--primary">
               <i class="fas fa-plus"></i> Nouveau coworking
@@ -462,11 +462,11 @@ import etapesData from '../data/terrain-etapes.json';
             <div class="admin-form-row">
               <div class="admin-form-group">
                 <label>Nom de l'espace</label>
-                <input type="text" id="cw-edit-nom" placeholder="WeWork, La CordÃ©eâ€¦" />
+                <input type="text" id="cw-edit-nom" placeholder="WeWork, La Cordée…" />
               </div>
               <div class="admin-form-group">
                 <label>Ville</label>
-                <input type="text" id="cw-edit-ville" placeholder="Lyon, Parisâ€¦" />
+                <input type="text" id="cw-edit-ville" placeholder="Lyon, Paris…" />
               </div>
             </div>
             <div class="admin-form-row">
@@ -476,7 +476,7 @@ import etapesData from '../data/terrain-etapes.json';
               </div>
               <div class="admin-form-group">
                 <label>Site web</label>
-                <input type="url" id="cw-edit-url" placeholder="https://â€¦" />
+                <input type="url" id="cw-edit-url" placeholder="https://…" />
               </div>
             </div>
             <div class="admin-form-row">
@@ -518,6 +518,7 @@ import etapesData from '../data/terrain-etapes.json';
   <!-- Admin JS -->
   <script src="/js/admin-terrain.js" is:inline></script>
 </BaseLayout>
+
 <style>
   /* ============================== */
   /* ADMIN PAGE STYLES              */
@@ -804,7 +805,7 @@ import etapesData from '../data/terrain-etapes.json';
     flex-wrap: wrap;
   }
 
-  /* ├ëtapes table */
+  /* Étapes table */
   .admin-etapes-table {
     width: 100%;
     border-collapse: collapse;
