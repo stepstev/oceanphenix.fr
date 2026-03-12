@@ -13,6 +13,44 @@
     if (el) el.textContent = val;
   }
 
+  var statusConfig = {
+    'Pr\u00e9paration': { css: 'terrain-status-badge--preparation', icon: 'fa-tools' },
+    'En route':       { css: 'terrain-status-badge--enroute',      icon: 'fa-bicycle' },
+    '\u00c9tape':     { css: 'terrain-status-badge--etape',        icon: 'fa-map-pin' },
+    'Repos':          { css: 'terrain-status-badge--repos',        icon: 'fa-bed' },
+    'Termin\u00e9':   { css: 'terrain-status-badge--termine',      icon: 'fa-check-circle' }
+  };
+
+  function updatePositionBadge(statut) {
+    var badge = document.getElementById('live-position-badge');
+    var icon = document.getElementById('live-position-icon');
+    if (!badge) return;
+    // Remove all status classes
+    var keys = Object.keys(statusConfig);
+    for (var i = 0; i < keys.length; i++) {
+      badge.classList.remove(statusConfig[keys[i]].css);
+    }
+    var cfg = statusConfig[statut] || statusConfig['Pr\u00e9paration'];
+    badge.classList.add(cfg.css);
+    if (icon) icon.className = 'fas ' + cfg.icon;
+  }
+
+  var statusTexts = {
+    'Pr\u00e9paration': 'Phase de pr\u00e9paration\u00a0: contacts entreprises, planification logistique, recherche sponsors.',
+    'En route':         'Actuellement en route \u00e0 v\u00e9lo \u2014 rencontres terrain et exploration des besoins data.',
+    '\u00c9tape':       '\u00c9tape en cours \u2014 rencontres entreprises, diagnostics data et \u00e9changes terrain.',
+    'Repos':            'Journ\u00e9e de repos \u2014 pr\u00e9paration de la prochaine \u00e9tape.',
+    'Termin\u00e9':     'Parcours termin\u00e9\u00a0! Merci \u00e0 toutes les entreprises rencontr\u00e9es.'
+  };
+
+  function updatePositionInfo(pos) {
+    var el = document.getElementById('live-position-info');
+    if (!el) return;
+    var dateStr = pos.dateDepart || '';
+    var desc = statusTexts[pos.statut] || statusTexts['Pr\u00e9paration'];
+    el.innerHTML = 'D\u00e9part pr\u00e9vu le <strong id="live-position-depart">' + escapeHtml(dateStr) + '</strong>. ' + escapeHtml(desc);
+  }
+
   function applyLiveData(d) {
     if (!d) return;
     var dash = d.dashboard || {};
@@ -23,6 +61,8 @@
     // --- Dashboard stats ---
     setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
     setText('live-jours', dash.joursPrevus != null ? dash.joursPrevus : '');
+    setText('live-jours-route', dash.joursRoute != null ? dash.joursRoute : '');
+    setText('live-jours-bar', dash.joursPrevus != null ? dash.joursPrevus : '');
     setText('live-besoins', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
     setText('live-rencontres', dash.rencontresEntreprises != null ? dash.rencontresEntreprises : '');
     setText('live-besoins-m', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
@@ -49,6 +89,13 @@
     setText('live-position-ville', pos.ville || '');
     setText('live-position-statut', pos.statut || '');
     setText('live-position-depart', pos.dateDepart || '');
+    setText('live-depart-date-bar', pos.dateDepart || '');
+
+    // --- Position badge: class + icon based on statut ---
+    updatePositionBadge(pos.statut || '');
+
+    // --- Position info text ---
+    updatePositionInfo(pos);
 
     // --- Photos (using DOM API to avoid inline onerror) ---
     var photosEl = document.getElementById('live-photos');
@@ -156,6 +203,12 @@
 
   // Load from localStorage on page load
   function loadAndApply() {
+    // Apply initial badge style from data attribute
+    var badge = document.getElementById('live-position-badge');
+    if (badge) {
+      var initStatut = badge.getAttribute('data-statut') || 'Pr\u00e9paration';
+      updatePositionBadge(initStatut);
+    }
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) applyLiveData(JSON.parse(raw));
@@ -163,6 +216,16 @@
     // Also refresh coworking flags
     addCwFlags(window._terrainMainMap, false);
     addCwFlags(window._terrainDashMap, true);
+    // Attach error handlers to initial photo thumbnails (CSP-safe)
+    var photosEl = document.getElementById('live-photos');
+    if (photosEl) {
+      var imgs = photosEl.querySelectorAll('img');
+      for (var i = 0; i < imgs.length; i++) {
+        (function(img) {
+          img.addEventListener('error', function() { img.parentElement.style.display = 'none'; });
+        })(imgs[i]);
+      }
+    }
   }
 
   // Helper to reload coworking flags

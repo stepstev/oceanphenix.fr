@@ -462,6 +462,30 @@
   color: #f59e0b;
 }
 
+.terrain-status-badge--enroute {
+  background: rgba(45, 130, 170, 0.15);
+  border: 1px solid rgba(45, 130, 170, 0.3);
+  color: #5cc8e4;
+}
+
+.terrain-status-badge--etape {
+  background: rgba(200, 122, 74, 0.15);
+  border: 1px solid rgba(200, 122, 74, 0.3);
+  color: #c87a4a;
+}
+
+.terrain-status-badge--repos {
+  background: rgba(139, 148, 158, 0.15);
+  border: 1px solid rgba(139, 148, 158, 0.3);
+  color: #8b949e;
+}
+
+.terrain-status-badge--termine {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
 .terrain-position-info {
   color: var(--text-muted);
   margin: 1rem 0 1.5rem;

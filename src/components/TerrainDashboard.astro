@@ -61,11 +61,11 @@ const arrivee = dash.prochaineEtape || '—';
           </div>
           <div class="tdash-route-bar-item">
             <i class="fas fa-calendar-alt"></i>
-            <span>Départ : {position.dateDepart}</span>
+            <span>Départ : <span id="live-depart-date-bar">{position.dateDepart}</span></span>
           </div>
           <div class="tdash-route-bar-item">
             <i class="fas fa-clock"></i>
-            <span>Jours : {dash.joursPrevus} jours prévus</span>
+            <span><span id="live-jours-bar">{dash.joursPrevus}</span> jours prévus</span>
           </div>
           <div class="tdash-route-bar-item tdash-route-bar-gpx">
             <i class="fas fa-download"></i>
@@ -88,6 +88,10 @@ const arrivee = dash.prochaineEtape || '—';
             <div class="tdash-stat">
               <span class="tdash-stat-dot tdash-stat-dot--km"></span>
               <strong><span id="live-km">{dash.kmParcourus}</span> km</strong> parcourus
+            </div>
+            <div class="tdash-stat">
+              <i class="fas fa-road"></i>
+              <span><span id="live-jours-route">{dash.joursRoute}</span> jours de route</span>
             </div>
             <div class="tdash-stat">
               <i class="fas fa-clock"></i>
@@ -143,15 +147,13 @@ const arrivee = dash.prochaineEtape || '—';
         </div>
 
         <!-- Thumbnails -->
-        {dash.photos.length > 0 && (
-          <div class="tdash-thumbs" id="live-photos">
-            {dash.photos.map((src: string) => (
-              <div class="tdash-thumb">
-                <img src={src} alt="Photo terrain" loading="lazy" onerror="this.parentElement.style.display='none'" />
-              </div>
-            ))}
-          </div>
-        )}
+        <div class="tdash-thumbs" id="live-photos">
+          {dash.photos.map((src: string) => (
+            <div class="tdash-thumb">
+              <img src={src} alt="Photo terrain" loading="lazy" />
+            </div>
+          ))}
+        </div>
 
       </div>
     </div>

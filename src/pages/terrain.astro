@@ -172,11 +172,11 @@ const projet = etapesData.projet;
         </h2>
         <div class="terrain-position-card">
           <div class="terrain-position-status">
-            <span class="terrain-status-badge terrain-status-badge--preparation" id="live-position-badge">
-              <i class="fas fa-tools"></i> <span id="live-position-statut">{position.statut}</span>
+            <span class="terrain-status-badge" id="live-position-badge" data-statut={position.statut}>
+              <i id="live-position-icon" class="fas fa-tools"></i> <span id="live-position-statut">{position.statut}</span>
             </span>
           </div>
-          <p class="terrain-position-info">
+          <p class="terrain-position-info" id="live-position-info">
             Départ prévu le <strong id="live-position-depart">{position.dateDepart}</strong>.
             Phase de préparation : contacts entreprises, planification logistique, recherche sponsors.
           </p>
