@@ -39,9 +39,9 @@
     }
   }
 
-  function saveData() {
+  function saveData(silent) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    showToast('Données sauvegardées dans le navigateur');
+    if (!silent) showToast('Donn\u00e9es sauvegard\u00e9es dans le navigateur');
   }
 
   function saveGpxData() {
@@ -443,8 +443,24 @@
     document.getElementById('admin-save-btn').addEventListener('click', function() {
       collectDashboard();
       collectPosition();
-      saveData();
+      saveData(true);
+      showToast('\u2705 Tout sauvegard\u00e9 \u2014 Ouvrez /terrain/ pour voir les changements');
     });
+
+    // Valider buttons per card
+    document.getElementById('dash-validate-btn').addEventListener('click', function() {
+      collectDashboard();
+      collectPosition();
+      saveData(true);
+      showToast('\u2705 Dashboard + Position sauvegard\u00e9s \u2014 km:' + data.dashboard.kmParcourus + ' besoins:' + data.dashboard.besoinsIdentifies + ' statut:' + data.positionActuelle.statut);
+    });
+    document.getElementById('pos-validate-btn').addEventListener('click', function() {
+      collectDashboard();
+      collectPosition();
+      saveData(true);
+      showToast('\u2705 Dashboard + Position sauvegard\u00e9s \u2014 ville:' + data.positionActuelle.ville + ' statut:' + data.positionActuelle.statut);
+    });
+
     document.getElementById('admin-export-btn').addEventListener('click', function() {
       collectDashboard();
       collectPosition();
