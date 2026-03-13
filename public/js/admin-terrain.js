@@ -37,6 +37,23 @@
     if (saved) {
       try { gpxFiles = JSON.parse(saved); } catch { gpxFiles = []; }
     }
+    // Migrate old entries: fetch gpxContent from path if missing
+    let migrated = false;
+    gpxFiles.forEach(function(g) {
+      if (g.gpxContent || !g.path) return;
+      fetch(g.path)
+        .then(function(r) { return r.ok ? r.text() : null; })
+        .then(function(xml) {
+          if (!xml) return;
+          g.gpxContent = xml;
+          if (!('visible' in g)) g.visible = true;
+          migrated = true;
+          saveGpxData();
+          renderGpxList();
+          showToast('GPX \u00ab ' + g.name + ' \u00bb migr\u00e9 (contenu stock\u00e9)');
+        })
+        .catch(function() { /* file not available */ });
+    });
   }
 
   function saveData(silent) {
