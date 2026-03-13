@@ -213,12 +213,14 @@ import etapesData from '../data/terrain-etapes.json';
                   <th style="text-align:center;">Statut</th>
                   <th style="text-align:center;">Lat</th>
                   <th style="text-align:center;">Lng</th>
+                  <th style="text-align:center;width:55px;">Visible</th>
                   <th style="text-align:center;width:80px;">Actions</th>
                 </tr>
               </thead>
               <tbody id="etapes-list"></tbody>
             </table>
           </div>
+          <div id="etapes-summary" class="admin-etapes-summary"></div>
           <div id="etape-editor" class="admin-etape-editor" style="display:none;">
             <h3 id="etape-editor-title">Modifier l'étape</h3>
             <input type="hidden" id="etape-edit-id" />
@@ -876,6 +878,35 @@ import etapesData from '../data/terrain-etapes.json';
   }
 
 
+
+  .admin-etapes-summary {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: rgba(20, 32, 56, 0.5);
+    border: 1px solid rgba(45, 130, 170, 0.12);
+    border-radius: var(--radius-sm);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.2rem;
+    align-items: center;
+  }
+  .admin-etapes-summary .summary-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .admin-etapes-summary .sb-total { background: rgba(77,184,212,0.12); color: #4db8d4; }
+  .admin-etapes-summary .sb-visible { background: rgba(34,197,94,0.12); color: #22c55e; }
+  .admin-etapes-summary .sb-hidden { background: rgba(248,113,113,0.1); color: #f87171; }
+  .admin-etapes-summary .sb-actuel { background: rgba(245,158,11,0.12); color: #f59e0b; }
+  .admin-etapes-summary .sb-visite { background: rgba(34,197,94,0.12); color: #22c55e; }
+  .admin-etapes-summary .sb-planifie { background: rgba(26,107,138,0.15); color: #1a9bba; }
 
   .admin-etape-editor {
     background: rgba(20, 32, 56, 0.7);

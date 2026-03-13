@@ -642,9 +642,11 @@
         if (data.etapes[idx]) {
           data.etapes[idx].visible = cb.checked;
           saveData(true);
+          updateEtapesSummary();
         }
       });
     });
+    updateEtapesSummary();
     list.querySelectorAll('[data-del-etape]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         let idx = Number.parseInt(btn.dataset.delEtape);
@@ -658,6 +660,28 @@
         }
       });
     });
+  }
+
+  function updateEtapesSummary() {
+    var el = document.getElementById('etapes-summary');
+    if (!el) return;
+    var total = data.etapes.length;
+    var visible = 0, hidden = 0, actuel = 0, visite = 0, planifie = 0;
+    data.etapes.forEach(function(e) {
+      if (e.visible === false) { hidden++; } else { visible++; }
+      if (e.statut === 'actuel') actuel++;
+      else if (e.statut === 'visite') visite++;
+      else planifie++;
+    });
+    var visibleVilles = data.etapes.filter(function(e) { return e.visible !== false; }).map(function(e) { return e.ville; });
+    el.innerHTML =
+      '<span class="summary-badge sb-total"><i class="fas fa-map-marked-alt"></i> ' + total + ' \u00e9tapes</span>' +
+      '<span class="summary-badge sb-visible"><i class="fas fa-eye"></i> ' + visible + ' visible' + (visible > 1 ? 's' : '') + '</span>' +
+      (hidden > 0 ? '<span class="summary-badge sb-hidden"><i class="fas fa-eye-slash"></i> ' + hidden + ' masqu\u00e9e' + (hidden > 1 ? 's' : '') + '</span>' : '') +
+      '<span class="summary-badge sb-planifie"><i class="fas fa-circle"></i> ' + planifie + ' planifi\u00e9e' + (planifie > 1 ? 's' : '') + '</span>' +
+      (actuel > 0 ? '<span class="summary-badge sb-actuel"><i class="fas fa-location-dot"></i> ' + actuel + ' actuelle' + (actuel > 1 ? 's' : '') + '</span>' : '') +
+      (visite > 0 ? '<span class="summary-badge sb-visite"><i class="fas fa-check-circle"></i> ' + visite + ' visit\u00e9e' + (visite > 1 ? 's' : '') + '</span>' : '') +
+      '<br><span style="color:#9ab0c4;font-size:0.78rem;"><i class="fas fa-route"></i> Itin\u00e9raire affich\u00e9 : ' + visibleVilles.join(' \u2192 ') + '</span>';
   }
 
   function openEtapeEditor(id) {
