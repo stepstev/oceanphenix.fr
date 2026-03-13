@@ -254,6 +254,29 @@
     }
   }
 
+  // Helper: parse GPX XML string → [[lat,lng], ...]
+  function parseGpxCoords(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    let pts = doc.querySelectorAll('trkpt');
+    if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+    const coords = [];
+    for (const p of pts) {
+      const lat = Number.parseFloat(p.getAttribute('lat'));
+      const lon = Number.parseFloat(p.getAttribute('lon'));
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) coords.push([lat, lon]);
+    }
+    return coords;
+  }
+
+  // Helper: draw a GPX polyline on the map
+  function drawGpxTrack(map, coords, name) {
+    if (coords.length < 2) return;
+    const layer = L.polyline(coords, {
+      color: '#f59e0b', weight: 3, opacity: 0.8,
+    }).addTo(map).bindTooltip(name || 'Tracé GPX', { sticky: true });
+    map._gpxLayers.push(layer);
+  }
+
   // Helper to reload GPX tracks from localStorage
   function reloadGpxTracks(map) {
     if (!map || typeof L === 'undefined') return;
@@ -270,21 +293,20 @@
       if (toggle && !toggle.checked) return;
       const gpxFiles = JSON.parse(raw);
       gpxFiles.forEach(function(g) {
-        if (g.visible === false || !g.gpxContent) return;
-        const doc = new DOMParser().parseFromString(g.gpxContent, 'application/xml');
-        let pts = doc.querySelectorAll('trkpt');
-        if (pts.length === 0) pts = doc.querySelectorAll('rtept');
-        const coords = [];
-        for (const p of pts) {
-          const lat = Number.parseFloat(p.getAttribute('lat'));
-          const lon = Number.parseFloat(p.getAttribute('lon'));
-          if (!Number.isNaN(lat) && !Number.isNaN(lon)) coords.push([lat, lon]);
+        if (g.visible === false) return;
+        // New format: gpxContent stored inline
+        if (g.gpxContent) {
+          drawGpxTrack(map, parseGpxCoords(g.gpxContent), g.name);
+          return;
         }
-        if (coords.length > 1) {
-          const layer = L.polyline(coords, {
-            color: '#f59e0b', weight: 3, opacity: 0.8,
-          }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
-          map._gpxLayers.push(layer);
+        // Legacy fallback: fetch from path
+        if (g.path) {
+          fetch(g.path)
+            .then(function(r) { return r.ok ? r.text() : null; })
+            .then(function(xml) {
+              if (xml) drawGpxTrack(map, parseGpxCoords(xml), g.name);
+            })
+            .catch(function() { /* skip */ });
         }
       });
     } catch { /* skip */ }

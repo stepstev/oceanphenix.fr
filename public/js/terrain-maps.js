@@ -155,35 +155,54 @@
       } catch(e) { /* skip */ }
     }
 
+    // ---- Parse GPX XML string → [[lat,lng], ...] ----
+    function parseGpxCoords(xml) {
+      var doc = new DOMParser().parseFromString(xml, 'application/xml');
+      var pts = doc.querySelectorAll('trkpt');
+      if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+      var coords = [];
+      pts.forEach(function(p) {
+        var lat = parseFloat(p.getAttribute('lat'));
+        var lon = parseFloat(p.getAttribute('lon'));
+        if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
+      });
+      return coords;
+    }
+
+    // ---- Draw a GPX polyline on the map ----
+    function drawGpxTrack(map, coords, name) {
+      if (coords.length < 2) return;
+      var layer = L.polyline(coords, {
+        color: '#f59e0b',
+        weight: 3,
+        opacity: 0.8,
+      }).addTo(map).bindTooltip(name || 'Tracé GPX', { sticky: true });
+      map._gpxLayers.push(layer);
+    }
+
     // ---- Load GPX tracks from localStorage ----
     function loadGpxTracks(map) {
       var gpxKey = 'op-terrain-gpx';
       var gpxRaw = localStorage.getItem(gpxKey);
       if (!gpxRaw) return;
-      // store layers for toggle
       if (!map._gpxLayers) map._gpxLayers = [];
       try {
         var gpxFiles = JSON.parse(gpxRaw);
         gpxFiles.forEach(function(g) {
           if (g.visible === false) return;
-          var xml = g.gpxContent;
-          if (!xml) return;
-          var doc = new DOMParser().parseFromString(xml, 'application/xml');
-          var pts = doc.querySelectorAll('trkpt');
-          if (pts.length === 0) pts = doc.querySelectorAll('rtept');
-          var coords = [];
-          pts.forEach(function(p) {
-            var lat = parseFloat(p.getAttribute('lat'));
-            var lon = parseFloat(p.getAttribute('lon'));
-            if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
-          });
-          if (coords.length > 1) {
-            var layer = L.polyline(coords, {
-              color: '#f59e0b',
-              weight: 3,
-              opacity: 0.8,
-            }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
-            map._gpxLayers.push(layer);
+          // New format: gpxContent stored inline
+          if (g.gpxContent) {
+            drawGpxTrack(map, parseGpxCoords(g.gpxContent), g.name);
+            return;
+          }
+          // Legacy fallback: fetch from path
+          if (g.path) {
+            fetch(g.path)
+              .then(function(r) { return r.ok ? r.text() : null; })
+              .then(function(xml) {
+                if (xml) drawGpxTrack(map, parseGpxCoords(xml), g.name);
+              })
+              .catch(function() { /* file not uploaded yet */ });
           }
         });
       } catch(e) { /* ignore */ }
