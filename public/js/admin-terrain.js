@@ -681,7 +681,7 @@
       '<span class="summary-badge sb-planifie"><i class="fas fa-circle"></i> ' + planifie + ' planifi\u00e9e' + (planifie > 1 ? 's' : '') + '</span>' +
       (actuel > 0 ? '<span class="summary-badge sb-actuel"><i class="fas fa-location-dot"></i> ' + actuel + ' actuelle' + (actuel > 1 ? 's' : '') + '</span>' : '') +
       (visite > 0 ? '<span class="summary-badge sb-visite"><i class="fas fa-check-circle"></i> ' + visite + ' visit\u00e9e' + (visite > 1 ? 's' : '') + '</span>' : '') +
-      '<br><span style="color:#9ab0c4;font-size:0.78rem;"><i class="fas fa-route"></i> Itin\u00e9raire affich\u00e9 : ' + visibleVilles.join(' \u2192 ') + '</span>';
+      '<br><span style="color:#93c5fd;font-size:0.82rem;"><i class="fas fa-route" style="color:#6dd0f0;"></i> Itin\u00e9raire affich\u00e9 : <strong>' + visibleVilles.join(' \u2192 ') + '</strong></span>';
   }
 
   function openEtapeEditor(id) {
