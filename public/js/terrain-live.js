@@ -236,7 +236,31 @@
     }
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) applyLiveData(JSON.parse(raw));
+      if (raw) {
+        const d = JSON.parse(raw);
+        // Merge missing étapes from Astro template data
+        const tplEl = document.getElementById('terrain-data');
+        if (tplEl && d.etapes) {
+          try {
+            const tpl = JSON.parse(tplEl.textContent);
+            const tplEtapes = tpl.etapes || [];
+            const savedVilles = new Set(d.etapes.map(function(e) { return e.ville; }));
+            tplEtapes.forEach(function(te) {
+              if (!savedVilles.has(te.ville)) {
+                let insertIdx = d.etapes.length;
+                for (let i = 0; i < d.etapes.length; i++) {
+                  if (d.etapes[i].id >= te.id) { insertIdx = i; break; }
+                }
+                d.etapes.splice(insertIdx, 0, JSON.parse(JSON.stringify(te)));
+              }
+            });
+            d.etapes.forEach(function(e, i) { e.id = i + 1; });
+            // Persist the merged data
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+          } catch { /* skip merge */ }
+        }
+        applyLiveData(d);
+      }
     } catch { /* invalid JSON, skip */ }
     // Also refresh coworking flags
     addCwFlags(globalThis._terrainMainMap, false);

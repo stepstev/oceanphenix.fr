@@ -27,7 +27,25 @@
   function loadData() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      try { data = JSON.parse(saved); return; } catch { /* fall through */ }
+      try {
+        data = JSON.parse(saved);
+        // Merge missing étapes from JSON template (added after initial save)
+        const templateEtapes = etapesData.etapes || [];
+        const savedVilles = new Set(data.etapes.map(function(e) { return e.ville; }));
+        templateEtapes.forEach(function(te) {
+          if (!savedVilles.has(te.ville)) {
+            // Insert at the correct position based on original id
+            let insertIdx = data.etapes.length;
+            for (let i = 0; i < data.etapes.length; i++) {
+              if (data.etapes[i].id >= te.id) { insertIdx = i; break; }
+            }
+            data.etapes.splice(insertIdx, 0, structuredClone(te));
+          }
+        });
+        // Reindex ids sequentially
+        data.etapes.forEach(function(e, i) { e.id = i + 1; });
+        return;
+      } catch { /* fall through */ }
     }
     data = structuredClone(etapesData);
   }
