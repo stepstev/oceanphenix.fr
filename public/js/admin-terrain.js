@@ -936,11 +936,12 @@
       points: points.length,
       distance: calcDistance(points).toFixed(1) + ' km',
       elevation: Math.round(calcElevation(points)) + ' m D+',
-      path: '/gpx/' + name.replaceAll(/[^a-zA-Z0-9._-]/g, '_'),
+      visible: true,
+      gpxContent: currentGpxContent,
     });
     saveGpxData();
     renderGpxList();
-    showToast('GPX ajout\u00e9 \u2014 pensez \u00e0 uploader le .gpx dans /public/gpx/');
+    showToast('GPX ajout\u00e9 et visible sur la carte Terrain');
   });
 
   function renderGpxList() {
@@ -953,19 +954,54 @@
     gpxFiles.forEach(function(g, idx) {
       const div = document.createElement('div');
       div.className = 'admin-gpx-item';
+      const visChecked = g.visible !== false ? ' checked' : '';
       div.innerHTML =
+        '<label class="admin-gpx-toggle" title="Afficher/masquer sur la carte Terrain">' +
+        '<input type="checkbox" data-gpx-vis="' + idx + '"' + visChecked + ' />' +
+        '<span class="admin-gpx-switch"></span>' +
+        '</label>' +
         '<div class="admin-gpx-item-info">' +
         '<strong><i class="fas fa-route"></i> ' + g.name + '</strong>' +
         '<span>' + g.date + ' \u2014 ' + g.points + ' pts \u2014 ' + g.distance + ' \u2014 ' + g.elevation + '</span>' +
         '</div>' +
-        '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-gpx="' + idx + '">' +
+        '<div class="admin-gpx-item-actions">' +
+        '<button class="admin-btn admin-btn--sm admin-btn--secondary" data-show-gpx="' + idx + '" title="Voir sur la carte">' +
+        '<i class="fas fa-eye"></i>' +
+        '</button>' +
+        '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-gpx="' + idx + '" title="Supprimer">' +
         '<i class="fas fa-trash"></i>' +
-        '</button>';
+        '</button>' +
+        '</div>';
       list.appendChild(div);
     });
+    // Toggle visibility
+    list.querySelectorAll('[data-gpx-vis]').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        const idx = Number.parseInt(cb.dataset.gpxVis);
+        gpxFiles[idx].visible = cb.checked;
+        saveGpxData();
+      });
+    });
+    // Show on admin map
+    list.querySelectorAll('[data-show-gpx]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const idx = Number.parseInt(btn.dataset.showGpx);
+        const g = gpxFiles[idx];
+        if (!g || !g.gpxContent) { showToast('Pas de contenu GPX pour ce fichier'); return; }
+        if (!gpxMap) initGpxMap();
+        if (gpxLayer) gpxMap.removeLayer(gpxLayer);
+        const points = parseGpx(g.gpxContent);
+        const coords = points.map(function(p) { return [p.lat, p.lng]; });
+        if (coords.length > 1) {
+          gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
+          gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
+        }
+      });
+    });
+    // Delete
     list.querySelectorAll('[data-del-gpx]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        let idx = Number.parseInt(btn.dataset.delGpx);
+        const idx = Number.parseInt(btn.dataset.delGpx);
         gpxFiles.splice(idx, 1);
         saveGpxData();
         renderGpxList();

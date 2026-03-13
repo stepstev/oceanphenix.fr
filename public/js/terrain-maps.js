@@ -155,37 +155,36 @@
       } catch(e) { /* skip */ }
     }
 
-    // ---- Load GPX tracks from public/gpx/ directory ----
+    // ---- Load GPX tracks from localStorage ----
     function loadGpxTracks(map) {
       var gpxKey = 'op-terrain-gpx';
       var gpxRaw = localStorage.getItem(gpxKey);
       if (!gpxRaw) return;
+      // store layers for toggle
+      if (!map._gpxLayers) map._gpxLayers = [];
       try {
         var gpxFiles = JSON.parse(gpxRaw);
         gpxFiles.forEach(function(g) {
-          if (!g.path) return;
-          fetch(g.path)
-            .then(function(r) { return r.ok ? r.text() : null; })
-            .then(function(xml) {
-              if (!xml) return;
-              var doc = new DOMParser().parseFromString(xml, 'application/xml');
-              var pts = doc.querySelectorAll('trkpt');
-              if (pts.length === 0) pts = doc.querySelectorAll('rtept');
-              var coords = [];
-              pts.forEach(function(p) {
-                var lat = parseFloat(p.getAttribute('lat'));
-                var lon = parseFloat(p.getAttribute('lon'));
-                if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
-              });
-              if (coords.length > 1) {
-                L.polyline(coords, {
-                  color: '#f59e0b',
-                  weight: 3,
-                  opacity: 0.8,
-                }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
-              }
-            })
-            .catch(function() { /* file not yet uploaded */ });
+          if (g.visible === false) return;
+          var xml = g.gpxContent;
+          if (!xml) return;
+          var doc = new DOMParser().parseFromString(xml, 'application/xml');
+          var pts = doc.querySelectorAll('trkpt');
+          if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+          var coords = [];
+          pts.forEach(function(p) {
+            var lat = parseFloat(p.getAttribute('lat'));
+            var lon = parseFloat(p.getAttribute('lon'));
+            if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
+          });
+          if (coords.length > 1) {
+            var layer = L.polyline(coords, {
+              color: '#f59e0b',
+              weight: 3,
+              opacity: 0.8,
+            }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
+            map._gpxLayers.push(layer);
+          }
         });
       } catch(e) { /* ignore */ }
     }
@@ -238,6 +237,20 @@
       });
     }
 
+    // Toggle tracé GPX
+    var gpxToggle = document.getElementById('gpx-toggle');
+    if (gpxToggle) {
+      gpxToggle.addEventListener('change', function() {
+        var show = gpxToggle.checked;
+        [mainMap, dashMap].forEach(function(map) {
+          if (!map || !map._gpxLayers) return;
+          map._gpxLayers.forEach(function(layer) {
+            if (show) { layer.addTo(map); } else { map.removeLayer(layer); }
+          });
+        });
+      });
+    }
+
     // ---- 2. Dashboard compact map ----
     var dashMap = initTerrainMap('tdash-map', {
       center: [47.5, 2.5],
@@ -247,6 +260,7 @@
     });
     window._terrainDashMap = dashMap;
     if (dashMap) addCoworkingMarkers(dashMap, true);
+    if (dashMap) loadGpxTracks(dashMap);
 
     // Force map tiles to render correctly
     setTimeout(function() {

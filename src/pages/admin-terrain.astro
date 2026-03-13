@@ -359,8 +359,8 @@ import etapesData from '../data/terrain-etapes.json';
         <div class="admin-card">
           <h2><i class="fas fa-route"></i> Parcours GPX</h2>
           <p class="admin-hint">
-            Importez vos fichiers GPX Garmin / Strava / Komoot. Le tracé sera affiché sur la carte d'aperçu
-            et le fichier sera prêt à copier dans <code>/public/gpx/</code>.
+            Importez vos fichiers GPX Garmin / Strava / Komoot. Le tracé sera stocké et affiché directement
+            sur la carte Terrain. Activez/désactivez la visibilité de chaque parcours.
           </p>
 
           <div class="admin-form-group">
@@ -1042,10 +1042,57 @@ import etapesData from '../data/terrain-etapes.json';
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.6rem;
     padding: 0.6rem 0.8rem;
     background: rgba(20, 32, 56, 0.5);
     border: 1px solid rgba(45, 130, 170, 0.08);
     border-radius: var(--radius-sm);
+  }
+
+  .admin-gpx-item-actions {
+    display: flex;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* Toggle switch for GPX visibility */
+  .admin-gpx-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .admin-gpx-toggle input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+  }
+  .admin-gpx-switch {
+    width: 34px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .admin-gpx-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s;
+  }
+  .admin-gpx-toggle input:checked + .admin-gpx-switch {
+    background: #f59e0b;
+  }
+  .admin-gpx-toggle input:checked + .admin-gpx-switch::after {
+    transform: translateX(16px);
   }
 
   .admin-gpx-item-info strong {

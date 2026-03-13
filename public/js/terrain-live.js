@@ -172,12 +172,11 @@
 
   function rebuildMapMarkers(map, etapes, compact) {
     const colors = { actuel: '#f59e0b', planifie: '#1a6b8a', visite: '#22c55e', depart: '#f59e0b' };
-    // Remove existing markers and polylines
-    map.eachLayer(function (layer) {
-      if (layer instanceof L.CircleMarker || layer instanceof L.Polyline) {
-        map.removeLayer(layer);
-      }
-    });
+    // Remove only route-specific layers (preserve GPX tracks & coworking flags)
+    if (map._routeLayers) {
+      map._routeLayers.forEach(function (layer) { map.removeLayer(layer); });
+    }
+    map._routeLayers = [];
     const routeCoords = [];
     etapes.forEach(function (etape) {
       const color = colors[etape.statut] || colors.planifie;
@@ -188,11 +187,13 @@
         radius: radius, fillColor: color, color: '#fff',
         weight: 2, opacity: 1, fillOpacity: 0.9,
       }).addTo(map);
+      map._routeLayers.push(marker);
       if (!compact && (etape.statut === 'actuel' || etape.statut === 'visite')) {
-        L.circleMarker([etape.lat, etape.lng], {
+        const halo = L.circleMarker([etape.lat, etape.lng], {
           radius: 18, fillColor: color, color: color,
           weight: 2, opacity: 0.3, fillOpacity: 0.1,
         }).addTo(map);
+        map._routeLayers.push(halo);
       }
       if (!compact) {
         marker.bindPopup(
@@ -215,12 +216,13 @@
       const to = routeCoords[i + 1];
       const realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
                      (to.statut === 'visite' || to.statut === 'actuel');
-      L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+      const seg = L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
         color: realized ? '#22c55e' : '#1a6b8a',
         weight: compact ? 2 : 2.5,
         opacity: realized ? 0.8 : 0.5,
         dashArray: realized ? null : '8, 8',
       }).addTo(map);
+      map._routeLayers.push(seg);
     }
   }
 
@@ -239,6 +241,9 @@
     // Also refresh coworking flags
     addCwFlags(globalThis._terrainMainMap, false);
     addCwFlags(globalThis._terrainDashMap, true);
+    // Reload GPX tracks
+    reloadGpxTracks(globalThis._terrainMainMap);
+    reloadGpxTracks(globalThis._terrainDashMap);
     // Attach error handlers to initial photo thumbnails (CSP-safe)
     const photosEl = document.getElementById('live-photos');
     if (photosEl) {
@@ -247,6 +252,42 @@
         img.addEventListener('error', function() { img.parentElement.style.display = 'none'; });
       }
     }
+  }
+
+  // Helper to reload GPX tracks from localStorage
+  function reloadGpxTracks(map) {
+    if (!map || typeof L === 'undefined') return;
+    // Remove existing GPX layers
+    if (map._gpxLayers) {
+      map._gpxLayers.forEach(function(layer) { map.removeLayer(layer); });
+    }
+    map._gpxLayers = [];
+    try {
+      const raw = localStorage.getItem('op-terrain-gpx');
+      if (!raw) return;
+      // Check if GPX toggle is off
+      const toggle = document.getElementById('gpx-toggle');
+      if (toggle && !toggle.checked) return;
+      const gpxFiles = JSON.parse(raw);
+      gpxFiles.forEach(function(g) {
+        if (g.visible === false || !g.gpxContent) return;
+        const doc = new DOMParser().parseFromString(g.gpxContent, 'application/xml');
+        let pts = doc.querySelectorAll('trkpt');
+        if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+        const coords = [];
+        for (const p of pts) {
+          const lat = Number.parseFloat(p.getAttribute('lat'));
+          const lon = Number.parseFloat(p.getAttribute('lon'));
+          if (!Number.isNaN(lat) && !Number.isNaN(lon)) coords.push([lat, lon]);
+        }
+        if (coords.length > 1) {
+          const layer = L.polyline(coords, {
+            color: '#f59e0b', weight: 3, opacity: 0.8,
+          }).addTo(map).bindTooltip(g.name || 'Tracé GPX', { sticky: true });
+          map._gpxLayers.push(layer);
+        }
+      });
+    } catch { /* skip */ }
   }
 
   // Helper to reload coworking flags
@@ -301,6 +342,10 @@
     if (e.key === 'op-terrain-coworking') {
       addCwFlags(globalThis._terrainMainMap, false);
       addCwFlags(globalThis._terrainDashMap, true);
+    }
+    if (e.key === 'op-terrain-gpx') {
+      reloadGpxTracks(globalThis._terrainMainMap);
+      reloadGpxTracks(globalThis._terrainDashMap);
     }
   });
 })();

@@ -149,7 +149,7 @@ const projet = etapesData.projet;
           <span class="gradient-text">Carte du parcours</span>
         </h2>
         <p class="terrain-section-desc">
-          Cliquez sur une étape pour voir les détails. Le tracé GPX sera ajouté au fil du parcours via Garmin&nbsp;/&nbsp;Strava.
+          Cliquez sur une étape pour voir les détails. Le tracé GPX est mis à jour en temps réel depuis l'admin.
         </p>
         <div id="terrain-map" class="terrain-map-container"></div>
         <div class="terrain-map-legend">
@@ -169,6 +169,11 @@ const projet = etapesData.projet;
           <label class="legend-item legend-toggle" title="Afficher/masquer routes vélo nationales">
             <i class="fas fa-route" style="color:#e04040;"></i> Routes vélo
             <input type="checkbox" id="waymarked-toggle" />
+            <span class="legend-switch"></span>
+          </label>
+          <label class="legend-item legend-toggle" title="Afficher/masquer le tracé GPX du parcours">
+            <i class="fas fa-map-signs" style="color:#f59e0b;"></i> Tracé GPX
+            <input type="checkbox" id="gpx-toggle" checked />
             <span class="legend-switch"></span>
           </label>
 
