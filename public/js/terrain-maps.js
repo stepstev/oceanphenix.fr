@@ -53,7 +53,6 @@
       map._waymarkedOverlay = waymarkedOverlay;
       if (!opts.compact) {
         cyclosmOverlay.addTo(map);
-        waymarkedOverlay.addTo(map);
       }
 
       var routeCoords = [];
