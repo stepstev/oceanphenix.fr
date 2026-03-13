@@ -127,6 +127,22 @@ import etapesData from '../data/terrain-etapes.json';
               <input type="number" id="dash-joursprevus" min="0" step="1" />
             </div>
           </div>
+          <hr style="border:0;border-top:1px solid #1e2a3e;margin:1rem 0;" />
+          <h3 style="color:#4db8d4;font-size:0.95rem;margin-bottom:0.75rem;"><i class="fas fa-route"></i> Infos parcours (hero)</h3>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label>Km total (ex: ~3 150)</label>
+              <input type="text" id="dash-km-total" placeholder="~3 150" />
+            </div>
+            <div class="admin-form-group">
+              <label>Nombre d'étapes</label>
+              <input type="number" id="dash-nb-etapes" min="1" step="1" />
+            </div>
+            <div class="admin-form-group">
+              <label>Période (ex: Avril – Juillet 2026)</label>
+              <input type="text" id="dash-periode" placeholder="Avril – Juillet 2026" />
+            </div>
+          </div>
           <div class="admin-form-actions">
             <button id="dash-validate-btn" class="admin-btn admin-btn--primary">
               <i class="fas fa-check"></i> Valider les données dashboard

@@ -41,14 +41,14 @@ const projet = etapesData.projet;
           <span>vers les Besoins Data</span>
         </h1>
         <p class="terrain-hero-subtitle">
-          Un parcours à vélo à travers <strong>14 villes françaises</strong> pour aller à la rencontre des entreprises,
+          Un parcours à vélo à travers <strong id="live-nb-villes">{projet.nbEtapes} villes françaises</strong> pour aller à la rencontre des entreprises,
           comprendre leurs besoins réels autour de la data, identifier leurs pain points
           et faciliter les échanges entre entreprises et freelances&nbsp;/&nbsp;consultants.
         </p>
         <div class="terrain-hero-meta">
-          <span><i class="fas fa-road"></i> ~3 150 km</span>
-          <span><i class="fas fa-map-marker-alt"></i> 14 étapes</span>
-          <span><i class="fas fa-calendar-alt"></i> Avril – Juillet 2026</span>
+          <span><i class="fas fa-road"></i> <span id="live-km-total">{projet.kmTotal}</span> km</span>
+          <span><i class="fas fa-map-marker-alt"></i> <span id="live-nb-etapes">{projet.nbEtapes}</span> étapes</span>
+          <span><i class="fas fa-calendar-alt"></i> <span id="live-periode">{projet.periode}</span></span>
         </div>
         <div class="terrain-hero-actions">
           <a href="#carte" class="terrain-cta terrain-cta--primary">

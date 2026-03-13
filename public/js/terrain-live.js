@@ -70,6 +70,15 @@
       }
     }
 
+    // --- Route info (hero) ---
+    var proj = d.projet || {};
+    if (proj.kmTotal) setText('live-km-total', proj.kmTotal);
+    if (proj.nbEtapes) {
+      setText('live-nb-etapes', proj.nbEtapes);
+      setText('live-nb-villes', proj.nbEtapes + ' villes fran\u00e7aises');
+    }
+    if (proj.periode) setText('live-periode', proj.periode);
+
     // --- Dashboard stats ---
     setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
     setText('live-jours', dash.joursPrevus != null ? dash.joursPrevus : '');

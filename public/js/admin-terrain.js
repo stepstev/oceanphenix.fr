@@ -526,6 +526,11 @@
     document.getElementById('dash-rencontres').value = d.rencontresEntreprises;
     document.getElementById('dash-encours').value = d.etapeEnCours || '';
     document.getElementById('dash-joursprevus').value = d.joursPrevus;
+    // Route info fields
+    var p = data.projet || {};
+    document.getElementById('dash-km-total').value = p.kmTotal || '';
+    document.getElementById('dash-nb-etapes').value = p.nbEtapes || '';
+    document.getElementById('dash-periode').value = p.periode || '';
     var sel = document.getElementById('dash-prochaine');
     sel.innerHTML = '<option value="">\u2014</option>';
     data.etapes.forEach(function(e) {
@@ -545,6 +550,11 @@
     data.dashboard.etapeEnCours = document.getElementById('dash-encours').value || null;
     data.dashboard.prochaineEtape = document.getElementById('dash-prochaine').value || null;
     data.dashboard.joursPrevus = parseInt(document.getElementById('dash-joursprevus').value) || 0;
+    // Route info fields
+    if (!data.projet) data.projet = {};
+    data.projet.kmTotal = document.getElementById('dash-km-total').value.trim() || '';
+    data.projet.nbEtapes = parseInt(document.getElementById('dash-nb-etapes').value) || 0;
+    data.projet.periode = document.getElementById('dash-periode').value.trim() || '';
   }
 
   // ---- Position tab ----
