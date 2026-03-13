@@ -58,6 +58,18 @@
     var etapes = d.etapes || [];
     var journal = d.journal || [];
 
+    // --- Show last-updated indicator ---
+    if (d._lastSaved) {
+      var updEl = document.getElementById('live-updated-at');
+      if (updEl) {
+        try {
+          var dt = new Date(d._lastSaved);
+          updEl.textContent = '\u26a1 Donn\u00e9es live \u2014 maj : ' + dt.toLocaleString('fr-FR');
+          updEl.style.display = 'block';
+        } catch(e) { /* skip */ }
+      }
+    }
+
     // --- Dashboard stats ---
     setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
     setText('live-jours', dash.joursPrevus != null ? dash.joursPrevus : '');

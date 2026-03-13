@@ -493,6 +493,14 @@
   line-height: 1.7;
 }
 
+.terrain-live-indicator {
+  font-size: 0.75rem;
+  color: #4db8d4;
+  margin: -0.5rem 0 1rem;
+  text-align: center;
+  opacity: 0.7;
+}
+
 .terrain-position-links {
   display: flex;
   justify-content: center;

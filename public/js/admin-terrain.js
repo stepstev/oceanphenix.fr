@@ -40,8 +40,22 @@
   }
 
   function saveData(silent) {
+    collectDashboard();
+    collectPosition();
+    data._lastSaved = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    updateLastSaved();
     if (!silent) showToast('Donn\u00e9es sauvegard\u00e9es dans le navigateur');
+  }
+
+  function updateLastSaved() {
+    var el = document.getElementById('admin-last-saved');
+    if (!el || !data._lastSaved) return;
+    try {
+      var d = new Date(data._lastSaved);
+      el.textContent = 'Derni\u00e8re sauvegarde : ' + d.toLocaleString('fr-FR');
+      el.style.display = 'block';
+    } catch(e) { /* skip */ }
   }
 
   function saveGpxData() {
@@ -168,6 +182,9 @@
   // ---- Tabs ----
   document.querySelectorAll('.admin-tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
+      // Auto-collect form data before switching tabs
+      collectDashboard();
+      collectPosition();
       document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('admin-tab--active'); });
       document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('admin-tab-content--active'); });
       tab.classList.add('admin-tab--active');
@@ -437,6 +454,15 @@
     renderPhotos();
     renderGpxList();
     bindTopbar();
+    updateLastSaved();
+
+    // Auto-save when leaving the page
+    window.addEventListener('beforeunload', function() {
+      collectDashboard();
+      collectPosition();
+      data._lastSaved = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    });
   }
 
   function bindTopbar() {
