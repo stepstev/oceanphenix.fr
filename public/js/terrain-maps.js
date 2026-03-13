@@ -59,6 +59,7 @@
       var stepsData = opts.etapes || etapes;
 
       stepsData.forEach(function (etape) {
+        if (etape.visible === false) return;
         var color = colors[etape.statut] || colors.planifie;
         var radius = etape.statut === 'actuel' ? (opts.compact ? 8 : 10) : (opts.compact ? 5 : 7);
 

@@ -623,6 +623,8 @@
       html += '<td style="text-align:center;white-space:nowrap;"><i class="fas ' + (statusIcons[etape.statut] || 'fa-circle') + '" style="color:' + sc + ';"></i> <span style="color:' + sc + ';font-weight:600;">' + (statusLabels[etape.statut] || etape.statut) + '</span></td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lat || '') + '</td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lng || '') + '</td>';
+      var vis = etape.visible !== false;
+      html += '<td style="text-align:center;"><label class="admin-gpx-toggle"><input type="checkbox" data-vis-idx="' + idx + '"' + (vis ? ' checked' : '') + ' /><span class="admin-gpx-switch"></span></label></td>';
       html += '<td style="text-align:center;white-space:nowrap;">';
       html += '<button class="admin-btn admin-btn--sm" data-edit="' + etape.id + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
       html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-del-etape="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';
@@ -632,6 +634,15 @@
     list.querySelectorAll('[data-edit]').forEach(function(btn) {
       btn.addEventListener('click', function() {
         openEtapeEditor(Number.parseInt(btn.dataset.edit));
+      });
+    });
+    list.querySelectorAll('[data-vis-idx]').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        var idx = Number.parseInt(cb.dataset.visIdx);
+        if (data.etapes[idx]) {
+          data.etapes[idx].visible = cb.checked;
+          saveData(true);
+        }
       });
     });
     list.querySelectorAll('[data-del-etape]').forEach(function(btn) {

@@ -179,6 +179,7 @@
     map._routeLayers = [];
     const routeCoords = [];
     etapes.forEach(function (etape) {
+      if (etape.visible === false) return;
       const color = colors[etape.statut] || colors.planifie;
       const baseRadius = compact ? 5 : 7;
       const activeRadius = compact ? 8 : 10;
