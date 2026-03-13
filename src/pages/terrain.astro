@@ -25,6 +25,23 @@ const projet = etapesData.projet;
   <OceanBackground />
   <Nav />
 
+  <!-- Guard: redirige vers admin-terrain si pas authentifié -->
+  <script is:inline>
+    (function() {
+      var AUTH_KEY = 'op-admin-auth';
+      var MAX_AGE = 3600000;
+      var raw = sessionStorage.getItem(AUTH_KEY);
+      var ok = false;
+      if (raw) {
+        try {
+          var s = JSON.parse(raw);
+          if (s.v === 2 && s.ts && (Date.now() - s.ts <= MAX_AGE)) ok = true;
+        } catch(e) {}
+      }
+      if (!ok) { window.location.replace('/admin-terrain'); }
+    })();
+  </script>
+
   <main class="main-content terrain-page">
 
     <!-- ============================== -->
@@ -132,7 +149,7 @@ const projet = etapesData.projet;
           <span class="gradient-text">Carte du parcours</span>
         </h2>
         <p class="terrain-section-desc">
-          Cliquez sur une étape pour voir les détails. Le tracé GPX sera ajouté au fil du parcours via Garmin&nbsp;/&nbsp;Strava&nbsp;/&nbsp;Komoot.
+          Cliquez sur une étape pour voir les détails. Le tracé GPX sera ajouté au fil du parcours via Garmin&nbsp;/&nbsp;Strava.
         </p>
         <div id="terrain-map" class="terrain-map-container"></div>
         <div class="terrain-map-legend">
@@ -160,83 +177,72 @@ const projet = etapesData.projet;
     </section>
 
     <!-- ============================== -->
-    <!-- 4. POSITION ACTUELLE           -->
-    <!-- ============================== -->
-    <section class="terrain-section" id="position">
-      <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-map-pin"></i> POSITION ACTUELLE
-        </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text" id="live-position-ville">{position.ville}</span>
-        </h2>
-        <div class="terrain-position-card">
-          <div class="terrain-position-status">
-            <span class="terrain-status-badge" id="live-position-badge" data-statut={position.statut}>
-              <i id="live-position-icon" class="fas fa-tools"></i> <span id="live-position-statut">{position.statut}</span>
-            </span>
-          </div>
-          <p class="terrain-position-info" id="live-position-info">
-            Départ prévu le <strong id="live-position-depart">{position.dateDepart}</strong>.
-            Phase de préparation : contacts entreprises, planification logistique, recherche sponsors.
-          </p>
-          <p class="terrain-live-indicator" id="live-updated-at" style="display:none;"></p>
-          <div class="terrain-position-links">
-            <a href={projet.liens.strava} target="_blank" rel="noopener" class="terrain-link-btn">
-              <i class="fas fa-running"></i> Strava
-            </a>
-            <a href={projet.liens.komoot} target="_blank" rel="noopener" class="terrain-link-btn">
-              <i class="fas fa-route"></i> Komoot
-            </a>
-            <a href={projet.liens.youtube} target="_blank" rel="noopener" class="terrain-link-btn terrain-link-btn--yt">
-              <i class="fab fa-youtube"></i> YouTube
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================== -->
     <!-- 5. COMMENT JE PEUX AIDER       -->
     <!-- ============================== -->
     <section class="terrain-section" id="aider">
       <div class="terrain-container">
         <div class="terrain-section-badge">
-          <i class="fas fa-hands-helping"></i> POUR LES ENTREPRISES
+          <i class="fas fa-hands-helping"></i> OFFRE DE CONSULTING
         </div>
         <h2 class="terrain-section-title">
-          <span class="gradient-text">Comment je peux vous aider</span>
+          <span class="gradient-text">Offre de consulting Data &amp; BI</span>
         </h2>
         <div class="terrain-help-grid">
           <div class="terrain-help-card">
             <i class="fas fa-search-plus"></i>
-            <h3>Diagnostic Data</h3>
-            <p>Audit rapide de votre maturité data : outils, processus, gouvernance, qualité des données.</p>
+            <h3>Diagnostic rapide de votre environnement data</h3>
+            <p>Analyse de votre écosystème data pour identifier les points d'amélioration.</p>
+            <ul class="terrain-help-list">
+              <li>Outils BI et data existants</li>
+              <li>Flux de données et sources</li>
+              <li>Qualité et fiabilité des données</li>
+              <li>Usages métiers et besoins décisionnels</li>
+            </ul>
+            <p class="terrain-help-objectif"><strong>Objectif :</strong> obtenir une vision claire de la situation et des priorités.</p>
           </div>
           <div class="terrain-help-card">
-            <i class="fas fa-lightbulb"></i>
-            <h3>Identification des Quick Wins</h3>
-            <p>Repérer les actions à fort impact et faible effort pour créer de la valeur rapidement.</p>
+            <i class="fas fa-sitemap"></i>
+            <h3>Structuration et gouvernance des données</h3>
+            <p>Accompagnement pour mieux organiser et fiabiliser les données.</p>
+            <ul class="terrain-help-list">
+              <li>Définition de référentiels et sources de données fiables</li>
+              <li>Organisation des flux et des responsabilités data</li>
+              <li>Amélioration de la qualité et de la traçabilité des données</li>
+            </ul>
+            <p class="terrain-help-objectif"><strong>Objectif :</strong> disposer de données exploitables et cohérentes.</p>
           </div>
           <div class="terrain-help-card">
             <i class="fas fa-chart-line"></i>
-            <h3>Pilotage &amp; BI</h3>
-            <p>Mise en place de tableaux de bord et indicateurs pour piloter votre activité par la donnée.</p>
+            <h3>Pilotage par la donnée</h3>
+            <p>Mise en place d'indicateurs et tableaux de bord adaptés aux besoins métiers.</p>
+            <ul class="terrain-help-list">
+              <li>Conception de dashboards BI</li>
+              <li>Indicateurs de performance et suivi d'activité</li>
+              <li>Visibilité sur les opérations et la qualité de service</li>
+            </ul>
+            <p class="terrain-help-objectif"><strong>Objectif :</strong> faciliter la prise de décision grâce à la donnée.</p>
           </div>
           <div class="terrain-help-card">
-            <i class="fas fa-users-cog"></i>
-            <h3>Mise en relation</h3>
-            <p>Connexion avec des freelances et consultants adaptés à vos besoins identifiés sur le terrain.</p>
+            <i class="fas fa-cogs"></i>
+            <h3>Optimisation des processus data</h3>
+            <p>Identification d'améliorations dans l'exploitation et la circulation des données.</p>
+            <ul class="terrain-help-list">
+              <li>Simplification des flux</li>
+              <li>Automatisation de certains traitements</li>
+              <li>Amélioration de la visibilité sur les systèmes</li>
+            </ul>
+            <p class="terrain-help-objectif"><strong>Objectif :</strong> rendre les processus plus efficaces et plus lisibles.</p>
           </div>
           <div class="terrain-help-card">
             <i class="fas fa-robot"></i>
-            <h3>IA Pragmatique</h3>
-            <p>Évaluation réaliste de l'apport de l'IA pour votre métier — sans buzzwords, avec des cas concrets.</p>
-          </div>
-          <div class="terrain-help-card">
-            <i class="fas fa-shield-alt"></i>
-            <h3>Souveraineté Data</h3>
-            <p>Conseils sur l'hébergement, la conformité RGPD et les solutions souveraines adaptées à votre taille.</p>
+            <h3>Évaluation pragmatique des usages IA</h3>
+            <p>Analyse des cas où l'IA peut réellement apporter de la valeur.</p>
+            <ul class="terrain-help-list">
+              <li>Identification de cas d'usage pertinents</li>
+              <li>Validation de la faisabilité</li>
+              <li>Mise en perspective avec les données disponibles</li>
+            </ul>
+            <p class="terrain-help-objectif"><strong>Objectif :</strong> éviter les effets de mode et se concentrer sur les usages utiles.</p>
           </div>
         </div>
       </div>
@@ -259,8 +265,9 @@ const projet = etapesData.projet;
         </p>
         <form
           class="terrain-contact-form"
-          action="https://formspree.io/f/VOTRE_ID_FORMSPREE"
+          action="mailto:contact@oceanpconsulting.fr"
           method="POST"
+          enctype="text/plain"
         >
           <div class="terrain-form-row">
             <div class="terrain-form-group">
@@ -301,96 +308,6 @@ const projet = etapesData.projet;
             <i class="fas fa-paper-plane"></i> Envoyer
           </button>
         </form>
-      </div>
-    </section>
-
-    <!-- ============================== -->
-    <!-- 7. ESPACE ÉCHANGES             -->
-    <!-- ============================== -->
-    <section class="terrain-section" id="echanges">
-      <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-comment-dots"></i> ÉCHANGES &amp; ENCOURAGEMENTS
-        </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Espace d'échange</span>
-        </h2>
-        <p class="terrain-section-desc">
-          Encouragements, questions, retours d'expérience — cet espace est le vôtre.
-          Propulsé par <a href="https://giscus.app" target="_blank" rel="noopener">Giscus</a> (GitHub Discussions).
-        </p>
-        <div class="terrain-giscus-container">
-          <script
-            is:inline
-            src="https://giscus.app/client.js"
-            data-repo="stepstev/oceanphenix.fr"
-            data-repo-id="R_kgDOQxax6A"
-            data-category="General"
-            data-category-id="DIC_kwDOQxax6M4C4QJV"
-            data-mapping="pathname"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="bottom"
-            data-theme="preferred_color_scheme"
-            data-lang="fr"
-            crossorigin="anonymous"
-            async>
-          </script>
-          <noscript>
-            <p class="terrain-noscript">Les commentaires nécessitent JavaScript. Vous pouvez aussi me contacter via le <a href="#contact-terrain">formulaire</a>.</p>
-          </noscript>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================== -->
-    <!-- 8. ENTREPRISE / CONSULTANTS    -->
-    <!-- ============================== -->
-    <section class="terrain-section" id="matchmaking">
-      <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-exchange-alt"></i> ENTREPRISES &amp; CONSULTANTS
-        </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Point d'échange</span>
-        </h2>
-        <p class="terrain-section-desc">
-          Ce projet vise à créer un pont entre les entreprises qui ont des besoins data
-          et les freelances / consultants qui peuvent y répondre.
-        </p>
-        <div class="terrain-match-grid">
-          <div class="terrain-match-card terrain-match-card--entreprise">
-            <div class="terrain-match-header">
-              <i class="fas fa-building"></i>
-              <h3>Entreprises</h3>
-            </div>
-            <ul>
-              <li>Exprimez vos besoins data réels</li>
-              <li>Bénéficiez d'un diagnostic gratuit sur site</li>
-              <li>Recevez des recommandations concrètes</li>
-              <li>Accédez à un réseau de consultants vérifiés</li>
-            </ul>
-            <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
-              <i class="fas fa-hand-point-right"></i> Je suis une entreprise
-            </a>
-          </div>
-          <div class="terrain-match-card terrain-match-card--consultant">
-            <div class="terrain-match-header">
-              <i class="fas fa-user-tie"></i>
-              <h3>Freelances &amp; Consultants</h3>
-            </div>
-            <ul>
-              <li>Rejoignez le réseau terrain</li>
-              <li>Recevez des leads qualifiés par le terrain</li>
-              <li>Participez à des missions concrètes</li>
-              <li>Échangez avec d'autres experts data</li>
-            </ul>
-            <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
-              <i class="fas fa-hand-point-right"></i> Je suis consultant
-            </a>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -442,20 +359,20 @@ const projet = etapesData.projet;
             <span>YouTube</span>
             <small>Discovery IT DATA</small>
           </a>
-          <a href={projet.liens.strava} target="_blank" rel="noopener" class="terrain-social-card terrain-social--strava">
-            <i class="fas fa-running"></i>
+          <a href="https://www.strava.com/athletes/49130349" target="_blank" rel="noopener" class="terrain-social-card terrain-social--strava">
+            <i class="fas fa-bicycle"></i>
             <span>Strava</span>
-            <small>Suivi GPS live</small>
-          </a>
-          <a href={projet.liens.komoot} target="_blank" rel="noopener" class="terrain-social-card terrain-social--komoot">
-            <i class="fas fa-route"></i>
-            <span>Komoot</span>
-            <small>Itinéraires détaillés</small>
+            <small>Suivre mon parcours vélo</small>
           </a>
           <a href={projet.liens.linkedin} target="_blank" rel="noopener" class="terrain-social-card terrain-social--li">
             <i class="fab fa-linkedin"></i>
             <span>LinkedIn</span>
             <small>Stéphane Celton</small>
+          </a>
+          <a href="https://www.linkedin.com/company/oceanphenix" target="_blank" rel="noopener" class="terrain-social-card terrain-social--li">
+            <i class="fab fa-linkedin"></i>
+            <span>OceanPhenix</span>
+            <small>Page entreprise</small>
           </a>
         </div>
       </div>

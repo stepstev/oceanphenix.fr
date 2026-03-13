@@ -1,19 +1,19 @@
 // terrain-live.js — Live-update: reads admin data from localStorage + cross-tab sync
 (function () {
-  var STORAGE_KEY = 'op-terrain-admin';
+  const STORAGE_KEY = 'op-terrain-admin';
 
   function escapeHtml(str) {
-    var d = document.createElement('div');
+    const d = document.createElement('div');
     d.textContent = str;
     return d.innerHTML;
   }
 
   function setText(id, val) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (el) el.textContent = val;
   }
 
-  var statusConfig = {
+  const statusConfig = {
     'Pr\u00e9paration': { css: 'terrain-status-badge--preparation', icon: 'fa-tools' },
     'En route':       { css: 'terrain-status-badge--enroute',      icon: 'fa-bicycle' },
     '\u00c9tape':     { css: 'terrain-status-badge--etape',        icon: 'fa-map-pin' },
@@ -22,20 +22,20 @@
   };
 
   function updatePositionBadge(statut) {
-    var badge = document.getElementById('live-position-badge');
-    var icon = document.getElementById('live-position-icon');
+    const badge = document.getElementById('live-position-badge');
+    const icon = document.getElementById('live-position-icon');
     if (!badge) return;
     // Remove all status classes
-    var keys = Object.keys(statusConfig);
-    for (var i = 0; i < keys.length; i++) {
-      badge.classList.remove(statusConfig[keys[i]].css);
+    const keys = Object.keys(statusConfig);
+    for (const key of keys) {
+      badge.classList.remove(statusConfig[key].css);
     }
-    var cfg = statusConfig[statut] || statusConfig['Pr\u00e9paration'];
+    const cfg = statusConfig[statut] || statusConfig['Pr\u00e9paration'];
     badge.classList.add(cfg.css);
     if (icon) icon.className = 'fas ' + cfg.icon;
   }
 
-  var statusTexts = {
+  const statusTexts = {
     'Pr\u00e9paration': 'Phase de pr\u00e9paration\u00a0: contacts entreprises, planification logistique, recherche sponsors.',
     'En route':         'Actuellement en route \u00e0 v\u00e9lo \u2014 rencontres terrain et exploration des besoins data.',
     '\u00c9tape':       '\u00c9tape en cours \u2014 rencontres entreprises, diagnostics data et \u00e9changes terrain.',
@@ -44,40 +44,40 @@
   };
 
   function updatePositionInfo(pos) {
-    var el = document.getElementById('live-position-info');
+    const el = document.getElementById('live-position-info');
     if (!el) return;
-    var dateStr = pos.dateDepart || '';
-    var desc = statusTexts[pos.statut] || statusTexts['Pr\u00e9paration'];
+    const dateStr = pos.dateDepart || '';
+    const desc = statusTexts[pos.statut] || statusTexts['Préparation'];
     el.innerHTML = 'D\u00e9part pr\u00e9vu le <strong id="live-position-depart">' + escapeHtml(dateStr) + '</strong>. ' + escapeHtml(desc);
   }
 
   function applyLiveData(d) {
     if (!d) return;
-    var dash = d.dashboard || {};
-    var pos = d.positionActuelle || {};
-    var etapes = d.etapes || [];
-    var journal = d.journal || [];
+    const dash = d.dashboard || {};
+    const pos = d.positionActuelle || {};
+    const etapes = d.etapes || [];
+    const journal = d.journal || [];
 
     // --- Show last-updated indicator ---
     if (d._lastSaved) {
-      var updEl = document.getElementById('live-updated-at');
+      const updEl = document.getElementById('live-updated-at');
       if (updEl) {
         try {
-          var dt = new Date(d._lastSaved);
+          const dt = new Date(d._lastSaved);
           updEl.textContent = '\u26a1 Donn\u00e9es live \u2014 maj : ' + dt.toLocaleString('fr-FR');
           updEl.style.display = 'block';
-        } catch(e) { /* skip */ }
+        } catch { /* skip */ }
       }
     }
 
     // --- Route info (hero) ---
-    var proj = d.projet || {};
-    if (proj.kmTotal) setText('live-km-total', proj.kmTotal);
-    if (proj.nbEtapes) {
+    const proj = d.projet || {};
+    if (proj.kmTotal != null) setText('live-km-total', proj.kmTotal);
+    if (proj.nbEtapes != null) {
       setText('live-nb-etapes', proj.nbEtapes);
       setText('live-nb-villes', proj.nbEtapes + ' villes fran\u00e7aises');
     }
-    if (proj.periode) setText('live-periode', proj.periode);
+    if (proj.periode != null) setText('live-periode', proj.periode);
 
     // --- Dashboard stats ---
     setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
@@ -91,15 +91,15 @@
     setText('live-status', dash.etapeEnCours || pos.statut || '');
 
     // Prochaine étape
-    var prochaine = dash.prochaineEtape || '';
+    const prochaine = dash.prochaineEtape || '';
     setText('live-prochaine', prochaine);
     setText('live-route-arrivee', prochaine);
 
     // Départ
-    var departVille = '';
-    for (var i = 0; i < etapes.length; i++) {
-      if (etapes[i].statut === 'depart' || etapes[i].statut === 'actuel') {
-        departVille = etapes[i].ville;
+    let departVille = '';
+    for (const etape of etapes) {
+      if (etape.statut === 'depart' || etape.statut === 'actuel') {
+        departVille = etape.ville;
         break;
       }
     }
@@ -119,13 +119,13 @@
     updatePositionInfo(pos);
 
     // --- Photos (using DOM API to avoid inline onerror) ---
-    var photosEl = document.getElementById('live-photos');
+    const photosEl = document.getElementById('live-photos');
     if (photosEl && dash.photos) {
       photosEl.innerHTML = '';
       dash.photos.forEach(function (src) {
-        var thumb = document.createElement('div');
+        const thumb = document.createElement('div');
         thumb.className = 'tdash-thumb';
-        var img = document.createElement('img');
+        const img = document.createElement('img');
         img.src = src;
         img.alt = 'Photo terrain';
         img.loading = 'lazy';
@@ -136,9 +136,9 @@
     }
 
     // --- Journal ---
-    var journalEl = document.getElementById('live-journal');
+    const journalEl = document.getElementById('live-journal');
     if (journalEl && journal.length > 0) {
-      var jhtml = '';
+      let jhtml = '';
       journal.forEach(function (entry) {
         jhtml += '<div class="terrain-journal-entry">' +
           '<div class="terrain-journal-date">' +
@@ -147,7 +147,7 @@
           '</div>' +
           '<h3 class="terrain-journal-titre">' + escapeHtml(entry.titre || '') + '</h3>' +
           '<p>' + escapeHtml(entry.contenu || '') + '</p>';
-        if (entry.tags && entry.tags.length) {
+        if (entry.tags?.length) {
           jhtml += '<div class="terrain-journal-tags">';
           entry.tags.forEach(function (tag) {
             jhtml += '<span class="terrain-tag">' + escapeHtml(tag) + '</span>';
@@ -160,29 +160,31 @@
     }
 
     // --- Update Leaflet map markers if maps exist ---
-    if (etapes.length && window._terrainMainMap) {
-      rebuildMapMarkers(window._terrainMainMap, etapes, false);
-      addCwFlags(window._terrainMainMap, false);
+    if (etapes.length && globalThis._terrainMainMap) {
+      rebuildMapMarkers(globalThis._terrainMainMap, etapes, false);
+      addCwFlags(globalThis._terrainMainMap, false);
     }
-    if (etapes.length && window._terrainDashMap) {
-      rebuildMapMarkers(window._terrainDashMap, etapes, true);
-      addCwFlags(window._terrainDashMap, true);
+    if (etapes.length && globalThis._terrainDashMap) {
+      rebuildMapMarkers(globalThis._terrainDashMap, etapes, true);
+      addCwFlags(globalThis._terrainDashMap, true);
     }
   }
 
   function rebuildMapMarkers(map, etapes, compact) {
-    var colors = { actuel: '#f59e0b', planifie: '#1a6b8a', visite: '#22c55e', depart: '#f59e0b' };
+    const colors = { actuel: '#f59e0b', planifie: '#1a6b8a', visite: '#22c55e', depart: '#f59e0b' };
     // Remove existing markers and polylines
     map.eachLayer(function (layer) {
       if (layer instanceof L.CircleMarker || layer instanceof L.Polyline) {
         map.removeLayer(layer);
       }
     });
-    var routeCoords = [];
+    const routeCoords = [];
     etapes.forEach(function (etape) {
-      var color = colors[etape.statut] || colors.planifie;
-      var radius = etape.statut === 'actuel' ? (compact ? 8 : 10) : (compact ? 5 : 7);
-      var marker = L.circleMarker([etape.lat, etape.lng], {
+      const color = colors[etape.statut] || colors.planifie;
+      const baseRadius = compact ? 5 : 7;
+      const activeRadius = compact ? 8 : 10;
+      const radius = etape.statut === 'actuel' ? activeRadius : baseRadius;
+      const marker = L.circleMarker([etape.lat, etape.lng], {
         radius: radius, fillColor: color, color: '#fff',
         weight: 2, opacity: 1, fillOpacity: 0.9,
       }).addTo(map);
@@ -208,10 +210,10 @@
       routeCoords.push({ lat: etape.lat, lng: etape.lng, statut: etape.statut });
     });
     // Draw segmented route: green solid for realized, dark blue dashed for planned
-    for (var i = 0; i < routeCoords.length - 1; i++) {
-      var from = routeCoords[i];
-      var to = routeCoords[i + 1];
-      var realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
+    for (let i = 0; i < routeCoords.length - 1; i++) {
+      const from = routeCoords[i];
+      const to = routeCoords[i + 1];
+      const realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
                      (to.statut === 'visite' || to.statut === 'actuel');
       L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
         color: realized ? '#22c55e' : '#1a6b8a',
@@ -225,26 +227,24 @@
   // Load from localStorage on page load
   function loadAndApply() {
     // Apply initial badge style from data attribute
-    var badge = document.getElementById('live-position-badge');
+    const badge = document.getElementById('live-position-badge');
     if (badge) {
-      var initStatut = badge.getAttribute('data-statut') || 'Pr\u00e9paration';
+      const initStatut = badge.dataset.statut || 'Pr\u00e9paration';
       updatePositionBadge(initStatut);
     }
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) applyLiveData(JSON.parse(raw));
-    } catch (e) { /* invalid JSON, skip */ }
+    } catch { /* invalid JSON, skip */ }
     // Also refresh coworking flags
-    addCwFlags(window._terrainMainMap, false);
-    addCwFlags(window._terrainDashMap, true);
+    addCwFlags(globalThis._terrainMainMap, false);
+    addCwFlags(globalThis._terrainDashMap, true);
     // Attach error handlers to initial photo thumbnails (CSP-safe)
-    var photosEl = document.getElementById('live-photos');
+    const photosEl = document.getElementById('live-photos');
     if (photosEl) {
-      var imgs = photosEl.querySelectorAll('img');
-      for (var i = 0; i < imgs.length; i++) {
-        (function(img) {
-          img.addEventListener('error', function() { img.parentElement.style.display = 'none'; });
-        })(imgs[i]);
+      const imgs = photosEl.querySelectorAll('img');
+      for (const img of imgs) {
+        img.addEventListener('error', function() { img.parentElement.style.display = 'none'; });
       }
     }
   }
@@ -258,20 +258,20 @@
     }
     map._cwMarkers = [];
     try {
-      var raw = localStorage.getItem('op-terrain-coworking');
+      const raw = localStorage.getItem('op-terrain-coworking');
       if (!raw) return;
-      var cwList = JSON.parse(raw);
+      const cwList = JSON.parse(raw);
       cwList.forEach(function(cw) {
         if (!cw.visible || !cw.lat || !cw.lng) return;
-        var flagIcon = L.divIcon({
+        const flagIcon = L.divIcon({
           className: 'cw-flag-marker',
           html: '<i class="fas fa-flag" style="color:#d4845a;font-size:' + (compact ? '14px' : '18px') + ';filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));"></i>',
           iconSize: compact ? [14, 14] : [18, 18],
           iconAnchor: compact ? [2, 14] : [3, 18],
         });
-        var m = L.marker([cw.lat, cw.lng], { icon: flagIcon }).addTo(map);
+        const m = L.marker([cw.lat, cw.lng], { icon: flagIcon }).addTo(map);
         if (!compact) {
-          var popup = '<div style="font-family:Inter,sans-serif;min-width:180px;">' +
+          let popup = '<div style="font-family:Inter,sans-serif;min-width:180px;">' +
             '<strong style="font-size:13px;color:#0b1a2e;">' + (cw.nom || '') + '</strong>' +
             '<br><span style="color:#666;font-size:12px;"><i class="fas fa-map-marker-alt"></i> ' + (cw.ville || '') + '</span>';
           if (cw.adresse) popup += '<br><span style="color:#888;font-size:11px;">' + cw.adresse + '</span>';
@@ -283,7 +283,7 @@
         }
         map._cwMarkers.push(m);
       });
-    } catch(e) { /* skip */ }
+    } catch { /* skip */ }
   }
 
   // Run on DOM ready
@@ -294,13 +294,13 @@
   }
 
   // Cross-tab real-time: update when admin saves in another tab
-  window.addEventListener('storage', function (e) {
+  globalThis.addEventListener('storage', function (e) {
     if (e.key === STORAGE_KEY && e.newValue) {
-      try { applyLiveData(JSON.parse(e.newValue)); } catch (err) { /* skip */ }
+      try { applyLiveData(JSON.parse(e.newValue)); } catch { /* skip */ }
     }
     if (e.key === 'op-terrain-coworking') {
-      addCwFlags(window._terrainMainMap, false);
-      addCwFlags(window._terrainDashMap, true);
+      addCwFlags(globalThis._terrainMainMap, false);
+      addCwFlags(globalThis._terrainDashMap, true);
     }
   });
 })();

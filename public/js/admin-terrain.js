@@ -1,41 +1,41 @@
-// admin-terrain.js — Admin panel logic
+﻿// admin-terrain.js — Admin panel logic
 // Data is passed from Astro via <script type="application/json" id="etapes-data">
 (function() {
   'use strict';
 
   // ---- Read server-side data ----
-  var etapesData = JSON.parse(document.getElementById('etapes-data').textContent);
+  const etapesData = JSON.parse(document.getElementById('etapes-data').textContent);
 
   // ---- Config ----
-  var PASS_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // "admin"
-  var STORAGE_KEY = 'op-terrain-admin';
-  var STORAGE_GPX_KEY = 'op-terrain-gpx';
+  const PASS_HASH = '778fee1ef454204c1ef252ad7e72745eb2a8caca602c87d143c02340ed1da535';
+  const STORAGE_KEY = 'op-terrain-admin';
+  const STORAGE_GPX_KEY = 'op-terrain-gpx';
 
-  var data = null;
-  var gpxFiles = [];
-  var currentGpxContent = null;
-  var gpxMap = null;
-  var gpxLayer = null;
+  let data = null;
+  let gpxFiles = [];
+  let currentGpxContent = null;
+  let gpxMap = null;
+  let gpxLayer = null;
 
   // ---- Helpers ----
   async function sha256(str) {
-    var buf = new TextEncoder().encode(str);
-    var hash = await crypto.subtle.digest('SHA-256', buf);
+    const buf = new TextEncoder().encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', buf);
     return Array.from(new Uint8Array(hash)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
   }
 
   function loadData() {
-    var saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      try { data = JSON.parse(saved); return; } catch(e) { /* fall through */ }
+      try { data = JSON.parse(saved); return; } catch { /* fall through */ }
     }
-    data = JSON.parse(JSON.stringify(etapesData));
+    data = structuredClone(etapesData);
   }
 
   function loadGpx() {
-    var saved = localStorage.getItem(STORAGE_GPX_KEY);
+    const saved = localStorage.getItem(STORAGE_GPX_KEY);
     if (saved) {
-      try { gpxFiles = JSON.parse(saved); } catch(e) { gpxFiles = []; }
+      try { gpxFiles = JSON.parse(saved); } catch { gpxFiles = []; }
     }
   }
 
@@ -49,13 +49,13 @@
   }
 
   function updateLastSaved() {
-    var el = document.getElementById('admin-last-saved');
+    const el = document.getElementById('admin-last-saved');
     if (!el || !data._lastSaved) return;
     try {
-      var d = new Date(data._lastSaved);
+      let d = new Date(data._lastSaved);
       el.textContent = 'Derni\u00e8re sauvegarde : ' + d.toLocaleString('fr-FR');
       el.style.display = 'block';
-    } catch(e) { /* skip */ }
+    } catch { /* skip */ }
   }
 
   function saveGpxData() {
@@ -63,10 +63,10 @@
   }
 
   function exportJson() {
-    var json = JSON.stringify(data, null, 2);
-    var blob = new Blob([json], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     a.href = url;
     a.download = 'terrain-etapes.json';
     a.click();
@@ -75,7 +75,7 @@
   }
 
   function showToast(msg) {
-    var toast = document.createElement('div');
+    const toast = document.createElement('div');
     toast.className = 'admin-toast';
     toast.textContent = msg;
     document.body.appendChild(toast);
@@ -87,42 +87,40 @@
   }
 
   // ---- Captcha ----
-  var captchaA, captchaB, captchaOp, captchaAnswer;
+  let captchaA, captchaB, captchaOp, captchaAnswer;
   function generateCaptcha() {
-    captchaA = Math.floor(Math.random() * 20) + 1;
-    captchaB = Math.floor(Math.random() * 20) + 1;
-    var ops = ['+', '-', '\u00d7'];
-    captchaOp = ops[Math.floor(Math.random() * ops.length)];
-    if (captchaOp === '+') captchaAnswer = captchaA + captchaB;
-    else if (captchaOp === '-') { if (captchaA < captchaB) { var t = captchaA; captchaA = captchaB; captchaB = t; } captchaAnswer = captchaA - captchaB; }
-    else captchaAnswer = captchaA * captchaB;
+    captchaA = Math.floor(Math.random() * 10) + 1;
+    captchaB = Math.floor(Math.random() * 10) + 1;
+    captchaOp = Math.random() < 0.5 ? '+' : '-';
+    if (captchaOp === '-' && captchaA < captchaB) { const t = captchaA; captchaA = captchaB; captchaB = t; }
+    captchaAnswer = captchaOp === '+' ? captchaA + captchaB : captchaA - captchaB;
     document.getElementById('captcha-label').textContent = '\ud83d\udd12 V\u00e9rification : ' + captchaA + ' ' + captchaOp + ' ' + captchaB + ' = ?';
     document.getElementById('admin-captcha').value = '';
   }
   generateCaptcha();
 
   // ---- Auth ----
-  var AUTH_SESSION_KEY = 'op-admin-auth';
-  var AUTH_MAX_AGE = 3600000; // 1 hour
-  var authEl = document.getElementById('admin-auth');
-  var panelEl = document.getElementById('admin-panel');
-  var passInput = document.getElementById('admin-pass');
-  var captchaInput = document.getElementById('admin-captcha');
-  var loginBtn = document.getElementById('admin-login-btn');
-  var authError = document.getElementById('admin-auth-error');
-  var failCount = 0;
-  var MAX_ATTEMPTS = 5;
-  var lockedUntil = 0;
+  const AUTH_SESSION_KEY = 'op-admin-auth';
+  const AUTH_MAX_AGE = 3600000; // 1 hour
+  const authEl = document.getElementById('admin-auth');
+  const panelEl = document.getElementById('admin-panel');
+  const passInput = document.getElementById('admin-pass');
+  const captchaInput = document.getElementById('admin-captcha');
+  const loginBtn = document.getElementById('admin-login-btn');
+  const authError = document.getElementById('admin-auth-error');
+  let failCount = 0;
+  const MAX_ATTEMPTS = 5;
+  let lockedUntil = 0;
 
   function isSessionValid() {
-    var raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+    let raw = sessionStorage.getItem(AUTH_SESSION_KEY);
     if (!raw) return false;
     try {
-      var sess = JSON.parse(raw);
+      let sess = JSON.parse(raw);
       if (sess.v !== 2 || !sess.ts) return false;
       if (Date.now() - sess.ts > AUTH_MAX_AGE) { sessionStorage.removeItem(AUTH_SESSION_KEY); return false; }
       return true;
-    } catch(e) { sessionStorage.removeItem(AUTH_SESSION_KEY); return false; }
+    } catch { sessionStorage.removeItem(AUTH_SESSION_KEY); return false; }
   }
   function setSession() {
     sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ v: 2, ts: Date.now() }));
@@ -137,14 +135,14 @@
   loginBtn.addEventListener('click', async function() {
     // Rate-limit
     if (Date.now() < lockedUntil) {
-      var secs = Math.ceil((lockedUntil - Date.now()) / 1000);
+      let secs = Math.ceil((lockedUntil - Date.now()) / 1000);
       authError.textContent = 'Trop de tentatives \u2014 r\u00e9essayez dans ' + secs + 's';
       authError.style.display = 'block';
       return;
     }
     // Validate captcha
-    var userCaptcha = parseInt(captchaInput.value);
-    if (isNaN(userCaptcha) || userCaptcha !== captchaAnswer) {
+    let userCaptcha = Number.parseInt(captchaInput.value);
+    if (Number.isNaN(userCaptcha) || userCaptcha !== captchaAnswer) {
       failCount++;
       authError.textContent = 'Captcha incorrect';
       authError.style.display = 'block';
@@ -153,7 +151,7 @@
       return;
     }
     // Validate password
-    var hash = await sha256(passInput.value);
+    let hash = await sha256(passInput.value);
     if (hash === PASS_HASH) {
       setSession();
       authEl.style.display = 'none';
@@ -188,17 +186,17 @@
       document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('admin-tab--active'); });
       document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('admin-tab-content--active'); });
       tab.classList.add('admin-tab--active');
-      var target = document.getElementById('tab-' + tab.getAttribute('data-tab'));
+      let target = document.getElementById('tab-' + tab.dataset.tab);
       if (target) target.classList.add('admin-tab-content--active');
-      if (tab.getAttribute('data-tab') === 'preview') renderPreview();
-      if (tab.getAttribute('data-tab') === 'gpx' && !gpxMap) initGpxMap();
-      if (tab.getAttribute('data-tab') === 'villes' && !villesRendered) renderVilles('');
-      if (tab.getAttribute('data-tab') === 'coworking') renderCoworking();
+      if (tab.dataset.tab === 'preview') renderPreview();
+      if (tab.dataset.tab === 'gpx' && !gpxMap) initGpxMap();
+      if (tab.dataset.tab === 'villes' && !villesRendered) renderVilles('');
+      if (tab.dataset.tab === 'coworking') renderCoworking();
     });
   });
 
   // ---- Villes de France ----
-  var VILLES_FR = [
+  const VILLES_FR = [
     {v:'Paris',r:'Île-de-France',lat:48.8566,lng:2.3522},
     {v:'Marseille',r:'Provence-Alpes-Côte d\'Azur',lat:43.2965,lng:5.3698},
     {v:'Lyon',r:'Auvergne-Rhône-Alpes',lat:45.7640,lng:4.8357},
@@ -271,16 +269,16 @@
     {v:'Vannes',r:'Bretagne',lat:47.6559,lng:-2.7600}
   ];
 
-  var villesRendered = false;
+  let villesRendered = false;
   function renderVilles(filter) {
-    var tbody = document.getElementById('villes-tbody');
-    var count = document.getElementById('villes-count');
+    const tbody = document.getElementById('villes-tbody');
+    const count = document.getElementById('villes-count');
     if (!tbody) return;
-    var q = (filter || '').toLowerCase().trim();
-    var filtered = q ? VILLES_FR.filter(function(c) {
-      return c.v.toLowerCase().indexOf(q) !== -1 || c.r.toLowerCase().indexOf(q) !== -1;
+    let q = (filter || '').toLowerCase().trim();
+    let filtered = q ? VILLES_FR.filter(function(c) {
+      return c.v.toLowerCase().includes(q) || c.r.toLowerCase().includes(q);
     }) : VILLES_FR;
-    var html = '';
+    let html = '';
     filtered.forEach(function(c) {
       html += '<tr style="border-bottom:1px solid #262d38;">';
       html += '<td style="padding:8px 12px;font-weight:600;">' + c.v + '</td>';
@@ -297,14 +295,14 @@
     // attach copy handlers
     tbody.querySelectorAll('[data-copy-coords]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var coords = btn.getAttribute('data-copy-coords');
+        const coords = btn.dataset.copyCoords;
         if (navigator.clipboard) {
           navigator.clipboard.writeText(coords).then(function() {
             btn.innerHTML = '<i class="fas fa-check"></i> Copi\u00e9!';
             setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 1500);
           });
         } else {
-          window.prompt('Coordonn\u00e9es :', coords);
+          globalThis.prompt('Coordonn\u00e9es :', coords);
         }
       });
     });
@@ -316,11 +314,11 @@
   });
 
   // ---- Coworking CRUD ----
-  var CW_KEY = 'op-terrain-coworking';
-  var cwData = [];
+  const CW_KEY = 'op-terrain-coworking';
+  let cwData = [];
 
   function loadCoworking() {
-    try { var raw = localStorage.getItem(CW_KEY); if (raw) cwData = JSON.parse(raw); } catch(e) { cwData = []; }
+    try { const raw = localStorage.getItem(CW_KEY); if (raw) cwData = JSON.parse(raw); } catch { cwData = []; }
   }
   function saveCoworking() {
     localStorage.setItem(CW_KEY, JSON.stringify(cwData));
@@ -328,10 +326,10 @@
   }
 
   function renderCoworking() {
-    var tbody = document.getElementById('cw-tbody');
-    var count = document.getElementById('cw-count');
+    const tbody = document.getElementById('cw-tbody');
+    const count = document.getElementById('cw-count');
     if (!tbody) return;
-    var html = '';
+    let html = '';
     cwData.forEach(function(cw, idx) {
       html += '<tr>';
       html += '<td style="text-align:center;font-weight:700;color:#d4845a;">' + (idx + 1) + '</td>';
@@ -349,13 +347,13 @@
     count.textContent = cwData.length + ' espace(s) de coworking';
     tbody.querySelectorAll('[data-cw-edit]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        openCwEditor(parseInt(btn.getAttribute('data-cw-edit')));
+        openCwEditor(Number.parseInt(btn.dataset.cwEdit));
       });
     });
     tbody.querySelectorAll('[data-cw-del]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var idx = parseInt(btn.getAttribute('data-cw-del'));
-        var nom = cwData[idx] ? cwData[idx].nom : '';
+        let idx = Number.parseInt(btn.dataset.cwDel);
+        const nom = cwData[idx] ? cwData[idx].nom : '';
         if (confirm('Supprimer "' + nom + '" ?')) {
           cwData.splice(idx, 1);
           saveCoworking();
@@ -366,8 +364,8 @@
   }
 
   function openCwEditor(idx) {
-    var editor = document.getElementById('cw-editor');
-    var cw = idx >= 0 ? cwData[idx] : null;
+    const editor = document.getElementById('cw-editor');
+    const cw = idx >= 0 ? cwData[idx] : null;
     document.getElementById('cw-edit-idx').value = idx;
     document.getElementById('cw-editor-title').textContent = cw ? 'Modifier : ' + cw.nom : 'Nouveau coworking';
     document.getElementById('cw-edit-nom').value = cw ? cw.nom || '' : '';
@@ -386,16 +384,16 @@
   });
 
   document.getElementById('cw-save-btn').addEventListener('click', function() {
-    var idx = parseInt(document.getElementById('cw-edit-idx').value);
-    var nom = document.getElementById('cw-edit-nom').value.trim();
+    let idx = Number.parseInt(document.getElementById('cw-edit-idx').value);
+    let nom = document.getElementById('cw-edit-nom').value.trim();
     if (!nom) { alert('Le nom est obligatoire'); return; }
-    var obj = {
+    let obj = {
       nom: nom,
       ville: document.getElementById('cw-edit-ville').value.trim(),
       adresse: document.getElementById('cw-edit-adresse').value.trim(),
       url: document.getElementById('cw-edit-url').value.trim(),
-      lat: parseFloat(document.getElementById('cw-edit-lat').value) || 0,
-      lng: parseFloat(document.getElementById('cw-edit-lng').value) || 0,
+      lat: Number.parseFloat(document.getElementById('cw-edit-lat').value) || 0,
+      lng: Number.parseFloat(document.getElementById('cw-edit-lng').value) || 0,
       visible: document.getElementById('cw-edit-visible').checked
     };
     if (idx >= 0 && idx < cwData.length) {
@@ -457,7 +455,7 @@
     updateLastSaved();
 
     // Auto-save when leaving the page
-    window.addEventListener('beforeunload', function() {
+    globalThis.addEventListener('beforeunload', function() {
       collectDashboard();
       collectPosition();
       data._lastSaved = new Date().toISOString();
@@ -495,31 +493,28 @@
     document.getElementById('admin-import-btn').addEventListener('click', function() {
       document.getElementById('admin-import-file').click();
     });
-    document.getElementById('admin-import-file').addEventListener('change', function(e) {
-      var file = e.target.files[0];
+    document.getElementById('admin-import-file').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
       if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        try {
-          data = JSON.parse(ev.target.result);
-          saveData();
-          populateDashboard();
-          populatePosition();
-          renderEtapes();
-          renderJournal();
-          renderPhotos();
-          showToast('JSON import\u00e9 avec succ\u00e8s');
-        } catch(err) {
-          showToast('Erreur : fichier JSON invalide');
-        }
-      };
-      reader.readAsText(file);
+      try {
+        let text = await file.text();
+        data = JSON.parse(text);
+        saveData();
+        populateDashboard();
+        populatePosition();
+        renderEtapes();
+        renderJournal();
+        renderPhotos();
+        showToast('JSON import\u00e9 avec succ\u00e8s');
+      } catch {
+        showToast('Erreur : fichier JSON invalide');
+      }
     });
   }
 
   // ---- Dashboard tab ----
   function populateDashboard() {
-    var d = data.dashboard;
+    const d = data.dashboard;
     document.getElementById('dash-km').value = d.kmParcourus;
     document.getElementById('dash-jours').value = d.joursRoute;
     document.getElementById('dash-besoins').value = d.besoinsIdentifies;
@@ -527,14 +522,14 @@
     document.getElementById('dash-encours').value = d.etapeEnCours || '';
     document.getElementById('dash-joursprevus').value = d.joursPrevus;
     // Route info fields
-    var p = data.projet || {};
+    let p = data.projet || {};
     document.getElementById('dash-km-total').value = p.kmTotal || '';
     document.getElementById('dash-nb-etapes').value = p.nbEtapes || '';
     document.getElementById('dash-periode').value = p.periode || '';
-    var sel = document.getElementById('dash-prochaine');
+    const sel = document.getElementById('dash-prochaine');
     sel.innerHTML = '<option value="">\u2014</option>';
     data.etapes.forEach(function(e) {
-      var opt = document.createElement('option');
+      let opt = document.createElement('option');
       opt.value = e.ville;
       opt.textContent = e.ville;
       if (e.ville === d.prochaineEtape) opt.selected = true;
@@ -543,23 +538,23 @@
   }
 
   function collectDashboard() {
-    data.dashboard.kmParcourus = parseInt(document.getElementById('dash-km').value) || 0;
-    data.dashboard.joursRoute = parseInt(document.getElementById('dash-jours').value) || 0;
-    data.dashboard.besoinsIdentifies = parseInt(document.getElementById('dash-besoins').value) || 0;
-    data.dashboard.rencontresEntreprises = parseInt(document.getElementById('dash-rencontres').value) || 0;
+    data.dashboard.kmParcourus = Number.parseInt(document.getElementById('dash-km').value) || 0;
+    data.dashboard.joursRoute = Number.parseInt(document.getElementById('dash-jours').value) || 0;
+    data.dashboard.besoinsIdentifies = Number.parseInt(document.getElementById('dash-besoins').value) || 0;
+    data.dashboard.rencontresEntreprises = Number.parseInt(document.getElementById('dash-rencontres').value) || 0;
     data.dashboard.etapeEnCours = document.getElementById('dash-encours').value || null;
     data.dashboard.prochaineEtape = document.getElementById('dash-prochaine').value || null;
-    data.dashboard.joursPrevus = parseInt(document.getElementById('dash-joursprevus').value) || 0;
+    data.dashboard.joursPrevus = Number.parseInt(document.getElementById('dash-joursprevus').value) || 0;
     // Route info fields
-    if (!data.projet) data.projet = {};
+    if (!data.projet) data.projet = structuredClone(etapesData.projet || {});
     data.projet.kmTotal = document.getElementById('dash-km-total').value.trim() || '';
-    data.projet.nbEtapes = parseInt(document.getElementById('dash-nb-etapes').value) || 0;
+    data.projet.nbEtapes = Number.parseInt(document.getElementById('dash-nb-etapes').value) || 0;
     data.projet.periode = document.getElementById('dash-periode').value.trim() || '';
   }
 
   // ---- Position tab ----
   function populatePosition() {
-    var p = data.positionActuelle;
+    const p = data.positionActuelle;
     document.getElementById('pos-ville').value = p.ville;
     document.getElementById('pos-statut').value = p.statut;
     document.getElementById('pos-lat').value = p.lat;
@@ -570,21 +565,21 @@
   function collectPosition() {
     data.positionActuelle.ville = document.getElementById('pos-ville').value;
     data.positionActuelle.statut = document.getElementById('pos-statut').value;
-    data.positionActuelle.lat = parseFloat(document.getElementById('pos-lat').value) || 0;
-    data.positionActuelle.lng = parseFloat(document.getElementById('pos-lng').value) || 0;
+    data.positionActuelle.lat = Number.parseFloat(document.getElementById('pos-lat').value) || 0;
+    data.positionActuelle.lng = Number.parseFloat(document.getElementById('pos-lng').value) || 0;
     data.positionActuelle.dateDepart = document.getElementById('pos-depart').value;
   }
 
   // ---- Étapes tab ----
   function renderEtapes() {
-    var list = document.getElementById('etapes-list');
+    const list = document.getElementById('etapes-list');
     list.innerHTML = '';
-    var statusIcons = { planifie: 'fa-circle', actuel: 'fa-location-dot', visite: 'fa-check-circle' };
-    var statusLabels = { planifie: 'Planifi\u00e9', actuel: 'Actuel', visite: 'Visit\u00e9' };
-    var statusColors = { planifie: '#1a6b8a', actuel: '#f59e0b', visite: '#22c55e' };
-    var html = '';
+    const statusIcons = { planifie: 'fa-circle', actuel: 'fa-location-dot', visite: 'fa-check-circle' };
+    const statusLabels = { planifie: 'Planifi\u00e9', actuel: 'Actuel', visite: 'Visit\u00e9' };
+    const statusColors = { planifie: '#1a6b8a', actuel: '#f59e0b', visite: '#22c55e' };
+    let html = '';
     data.etapes.forEach(function(etape, idx) {
-      var sc = statusColors[etape.statut] || '#1a6b8a';
+      const sc = statusColors[etape.statut] || '#1a6b8a';
       html += '<tr>';
       html += '<td style="text-align:center;font-weight:700;color:' + sc + ';">' + etape.id + '</td>';
       html += '<td style="font-weight:600;">' + etape.ville + '</td>';
@@ -601,13 +596,13 @@
     list.innerHTML = html;
     list.querySelectorAll('[data-edit]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        openEtapeEditor(parseInt(btn.getAttribute('data-edit')));
+        openEtapeEditor(Number.parseInt(btn.dataset.edit));
       });
     });
     list.querySelectorAll('[data-del-etape]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var idx = parseInt(btn.getAttribute('data-del-etape'));
-        var ville = data.etapes[idx] ? data.etapes[idx].ville : '';
+        let idx = Number.parseInt(btn.dataset.delEtape);
+        let ville = data.etapes[idx] ? data.etapes[idx].ville : '';
         if (confirm('Supprimer l\'\u00e9tape "' + ville + '" ?')) {
           data.etapes.splice(idx, 1);
           data.etapes.forEach(function(e, i) { e.id = i + 1; });
@@ -620,7 +615,7 @@
   }
 
   function openEtapeEditor(id) {
-    var etape = id ? data.etapes.find(function(e) { return e.id === id; }) : null;
+    const etape = id ? data.etapes.find(function(e) { return e.id === id; }) : null;
     document.getElementById('etape-editor').style.display = 'block';
     if (etape) {
       document.getElementById('etape-editor-title').textContent = 'Modifier \u2014 ' + etape.ville;
@@ -653,27 +648,27 @@
   });
 
   document.getElementById('etape-save-btn').addEventListener('click', function() {
-    var id = parseInt(document.getElementById('etape-edit-id').value);
-    var ville = document.getElementById('etape-edit-ville').value.trim();
+    let id = Number.parseInt(document.getElementById('etape-edit-id').value);
+    let ville = document.getElementById('etape-edit-ville').value.trim();
     if (!ville) { showToast('Le nom de la ville est obligatoire'); return; }
-    var fields = {
+    let fields = {
       ville: ville,
       region: document.getElementById('etape-edit-region').value.trim(),
       statut: document.getElementById('etape-edit-statut').value,
-      distanceDepuisDepart: parseInt(document.getElementById('etape-edit-dist').value) || 0,
-      lat: parseFloat(document.getElementById('etape-edit-lat').value) || 0,
-      lng: parseFloat(document.getElementById('etape-edit-lng').value) || 0,
+      distanceDepuisDepart: Number.parseInt(document.getElementById('etape-edit-dist').value) || 0,
+      lat: Number.parseFloat(document.getElementById('etape-edit-lat').value) || 0,
+      lng: Number.parseFloat(document.getElementById('etape-edit-lng').value) || 0,
       dateEstimee: document.getElementById('etape-edit-date').value,
       description: document.getElementById('etape-edit-desc').value.trim(),
     };
     if (id === 0) {
-      var newId = data.etapes.length > 0 ? Math.max.apply(null, data.etapes.map(function(e){ return e.id; })) + 1 : 1;
+      let newId = data.etapes.length > 0 ? Math.max.apply(null, data.etapes.map(function(e){ return e.id; })) + 1 : 1;
       fields.id = newId;
       fields.type = 'etape';
       data.etapes.push(fields);
       showToast('Nouvelle \u00e9tape ajout\u00e9e : ' + ville);
     } else {
-      var etape = data.etapes.find(function(e) { return e.id === id; });
+      let etape = data.etapes.find(function(e) { return e.id === id; });
       if (!etape) return;
       Object.assign(etape, fields);
       showToast('\u00c9tape mise \u00e0 jour');
@@ -689,15 +684,15 @@
 
   // ---- Journal tab ----
   function renderJournal() {
-    var list = document.getElementById('journal-list');
+    const list = document.getElementById('journal-list');
     list.innerHTML = '';
     if (!data.journal || data.journal.length === 0) {
       list.innerHTML = '<p class="admin-hint">Aucune entr\u00e9e de journal.</p>';
       return;
     }
     data.journal.slice().reverse().forEach(function(entry, idx) {
-      var realIdx = data.journal.length - 1 - idx;
-      var div = document.createElement('div');
+      let realIdx = data.journal.length - 1 - idx;
+      const div = document.createElement('div');
       div.className = 'admin-journal-item';
       div.innerHTML =
         '<div class="admin-journal-head">' +
@@ -715,7 +710,7 @@
     });
     list.querySelectorAll('[data-del-journal]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var idx = parseInt(btn.getAttribute('data-del-journal'));
+        let idx = Number.parseInt(btn.dataset.delJournal);
         if (confirm('Supprimer cette entr\u00e9e du journal ?')) {
           data.journal.splice(idx, 1);
           renderJournal();
@@ -726,16 +721,16 @@
   }
 
   document.getElementById('journal-add-btn').addEventListener('click', function() {
-    var date = document.getElementById('journal-date').value;
-    var ville = document.getElementById('journal-ville').value;
-    var titre = document.getElementById('journal-titre').value;
-    var contenu = document.getElementById('journal-contenu').value;
-    var tagsRaw = document.getElementById('journal-tags').value;
+    let date = document.getElementById('journal-date').value;
+    let ville = document.getElementById('journal-ville').value;
+    let titre = document.getElementById('journal-titre').value;
+    let contenu = document.getElementById('journal-contenu').value;
+    let tagsRaw = document.getElementById('journal-tags').value;
     if (!date || !titre || !contenu) {
       showToast('Remplissez au minimum la date, le titre et le contenu');
       return;
     }
-    var tags = tagsRaw.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+    let tags = tagsRaw.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
     data.journal.push({ date: date, ville: ville, titre: titre, contenu: contenu, tags: tags });
     renderJournal();
     saveData();
@@ -749,29 +744,29 @@
 
   // ---- Photos tab (CSP-safe: no inline onerror) ----
   function renderPhotos() {
-    var grid = document.getElementById('photos-grid');
+    const grid = document.getElementById('photos-grid');
     grid.innerHTML = '';
-    var photos = data.dashboard.photos || [];
+    const photos = data.dashboard.photos || [];
     if (photos.length === 0) {
       grid.innerHTML = '<p class="admin-hint">Aucune photo enregistr\u00e9e.</p>';
       return;
     }
     photos.forEach(function(src, idx) {
-      var div = document.createElement('div');
+      const div = document.createElement('div');
       div.className = 'admin-photo-item';
-      var img = document.createElement('img');
+      const img = document.createElement('img');
       img.src = src;
       img.alt = 'Photo terrain';
       img.addEventListener('error', function() {
         this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23142038" width="100" height="100"/><text x="50" y="55" text-anchor="middle" fill="%234db8d4" font-size="12">No img</text></svg>';
       });
-      var overlay = document.createElement('div');
+      const overlay = document.createElement('div');
       overlay.className = 'admin-photo-overlay';
-      var code = document.createElement('code');
+      const code = document.createElement('code');
       code.textContent = src;
-      var delBtn = document.createElement('button');
+      const delBtn = document.createElement('button');
       delBtn.className = 'admin-btn admin-btn--sm admin-btn--danger';
-      delBtn.setAttribute('data-del-photo', idx);
+      delBtn.dataset.delPhoto = idx;
       delBtn.innerHTML = '<i class="fas fa-trash"></i>';
       overlay.appendChild(code);
       overlay.appendChild(delBtn);
@@ -781,7 +776,7 @@
     });
     grid.querySelectorAll('[data-del-photo]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var idx = parseInt(btn.getAttribute('data-del-photo'));
+        let idx = Number.parseInt(btn.dataset.delPhoto);
         data.dashboard.photos.splice(idx, 1);
         renderPhotos();
         saveData();
@@ -789,30 +784,27 @@
     });
   }
 
-  var selectedPhotoBlob = null;
-  var selectedPhotoName = null;
+  let selectedPhotoBlob = null;
+  let selectedPhotoName = null;
 
   document.getElementById('photo-file-input').addEventListener('change', function(e) {
-    var file = e.target.files[0];
+    const file = e.target.files[0];
     if (!file) return;
     selectedPhotoBlob = file;
-    selectedPhotoName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      document.getElementById('photo-preview').style.display = 'flex';
-      document.getElementById('photo-preview-img').src = ev.target.result;
-      document.getElementById('photo-preview-name').textContent = selectedPhotoName;
-      document.getElementById('photo-preview-path').textContent = '/Images/terrain/' + selectedPhotoName;
-      document.getElementById('photo-path-input').value = '/Images/terrain/' + selectedPhotoName;
-      document.getElementById('photo-download-btn').style.display = 'inline-flex';
-    };
-    reader.readAsDataURL(file);
+    selectedPhotoName = file.name.replaceAll(/[^a-zA-Z0-9._-]/g, '_');
+    const previewUrl = URL.createObjectURL(file);
+    document.getElementById('photo-preview').style.display = 'flex';
+    document.getElementById('photo-preview-img').src = previewUrl;
+    document.getElementById('photo-preview-name').textContent = selectedPhotoName;
+    document.getElementById('photo-preview-path').textContent = '/Images/terrain/' + selectedPhotoName;
+    document.getElementById('photo-path-input').value = '/Images/terrain/' + selectedPhotoName;
+    document.getElementById('photo-download-btn').style.display = 'inline-flex';
   });
 
   document.getElementById('photo-download-btn').addEventListener('click', function() {
     if (!selectedPhotoBlob) return;
-    var url = URL.createObjectURL(selectedPhotoBlob);
-    var a = document.createElement('a');
+    const url = URL.createObjectURL(selectedPhotoBlob);
+    const a = document.createElement('a');
     a.href = url;
     a.download = selectedPhotoName;
     a.click();
@@ -821,7 +813,7 @@
   });
 
   document.getElementById('photo-add-btn').addEventListener('click', function() {
-    var path = document.getElementById('photo-path-input').value.trim();
+    let path = document.getElementById('photo-path-input').value.trim();
     if (!path) {
       showToast('Entrez un chemin pour la photo');
       return;
@@ -841,7 +833,7 @@
 
   // ---- GPX tab ----
   function initGpxMap() {
-    var el = document.getElementById('gpx-map');
+    const el = document.getElementById('gpx-map');
     el.style.display = 'block';
     gpxMap = L.map('gpx-map', { scrollWheelZoom: true }).setView([46.6, 2.8], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -857,29 +849,29 @@
   }
 
   function parseGpx(xmlStr) {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(xmlStr, 'application/xml');
-    var points = [];
-    var trkpts = doc.querySelectorAll('trkpt');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlStr, 'application/xml');
+    const points = [];
+    let trkpts = doc.querySelectorAll('trkpt');
     if (trkpts.length === 0) trkpts = doc.querySelectorAll('rtept');
     if (trkpts.length === 0) trkpts = doc.querySelectorAll('wpt');
     trkpts.forEach(function(pt) {
-      var lat = parseFloat(pt.getAttribute('lat'));
-      var lon = parseFloat(pt.getAttribute('lon'));
-      var eleEl = pt.querySelector('ele');
-      var ele = eleEl ? parseFloat(eleEl.textContent) : null;
-      if (!isNaN(lat) && !isNaN(lon)) points.push({ lat: lat, lng: lon, ele: ele });
+      let lat = Number.parseFloat(pt.getAttribute('lat'));
+      let lon = Number.parseFloat(pt.getAttribute('lon'));
+      const eleEl = pt.querySelector('ele');
+      const ele = eleEl ? Number.parseFloat(eleEl.textContent) : null;
+      if (!Number.isNaN(lat) && !Number.isNaN(lon)) points.push({ lat: lat, lng: lon, ele: ele });
     });
     return points;
   }
 
   function calcDistance(points) {
-    var total = 0;
-    for (var i = 1; i < points.length; i++) {
-      var R = 6371;
-      var dLat = (points[i].lat - points[i-1].lat) * Math.PI / 180;
-      var dLon = (points[i].lng - points[i-1].lng) * Math.PI / 180;
-      var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+    let total = 0;
+    for (let i = 1; i < points.length; i++) {
+      let R = 6371;
+      let dLat = (points[i].lat - points[i-1].lat) * Math.PI / 180;
+      let dLon = (points[i].lng - points[i-1].lng) * Math.PI / 180;
+      let a = Math.sin(dLat/2)*Math.sin(dLat/2) +
               Math.cos(points[i-1].lat*Math.PI/180)*Math.cos(points[i].lat*Math.PI/180)*
               Math.sin(dLon/2)*Math.sin(dLon/2);
       total += R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
@@ -888,50 +880,46 @@
   }
 
   function calcElevation(points) {
-    var gain = 0;
-    for (var i = 1; i < points.length; i++) {
+    let gain = 0;
+    for (let i = 1; i < points.length; i++) {
       if (points[i].ele !== null && points[i-1].ele !== null) {
-        var diff = points[i].ele - points[i-1].ele;
+        let diff = points[i].ele - points[i-1].ele;
         if (diff > 0) gain += diff;
       }
     }
     return gain;
   }
 
-  document.getElementById('gpx-file-input').addEventListener('change', function(e) {
-    var file = e.target.files[0];
+  document.getElementById('gpx-file-input').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
     if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      currentGpxContent = ev.target.result;
-      var points = parseGpx(currentGpxContent);
-      if (points.length === 0) {
-        showToast('Aucun point GPS trouv\u00e9 dans ce fichier');
-        return;
-      }
+    currentGpxContent = await file.text();
+    let points = parseGpx(currentGpxContent);
+    if (points.length === 0) {
+      showToast('Aucun point GPS trouv\u00e9 dans ce fichier');
+      return;
+    }
 
-      document.getElementById('gpx-info').style.display = 'block';
-      document.getElementById('gpx-actions').style.display = 'flex';
-      document.getElementById('gpx-filename').value = file.name;
-      document.getElementById('gpx-points').value = points.length + ' points';
-      document.getElementById('gpx-distance').value = calcDistance(points).toFixed(1) + ' km';
-      document.getElementById('gpx-elevation').value = Math.round(calcElevation(points)) + ' m D+';
+    document.getElementById('gpx-info').style.display = 'block';
+    document.getElementById('gpx-actions').style.display = 'flex';
+    document.getElementById('gpx-filename').value = file.name;
+    document.getElementById('gpx-points').value = points.length + ' points';
+    document.getElementById('gpx-distance').value = calcDistance(points).toFixed(1) + ' km';
+    document.getElementById('gpx-elevation').value = Math.round(calcElevation(points)) + ' m D+';
 
-      if (!gpxMap) initGpxMap();
-      if (gpxLayer) gpxMap.removeLayer(gpxLayer);
-      var coords = points.map(function(p) { return [p.lat, p.lng]; });
-      gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
-      gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
-    };
-    reader.readAsText(file);
+    if (!gpxMap) initGpxMap();
+    if (gpxLayer) gpxMap.removeLayer(gpxLayer);
+    const coords = points.map(function(p) { return [p.lat, p.lng]; });
+    gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
+    gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
   });
 
   document.getElementById('gpx-download-btn').addEventListener('click', function() {
     if (!currentGpxContent) return;
-    var name = document.getElementById('gpx-filename').value || 'parcours.gpx';
-    var blob = new Blob([currentGpxContent], { type: 'application/gpx+xml' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
+    let name = document.getElementById('gpx-filename').value || 'parcours.gpx';
+    const blob = new Blob([currentGpxContent], { type: 'application/gpx+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     a.href = url;
     a.download = name;
     a.click();
@@ -940,15 +928,15 @@
 
   document.getElementById('gpx-add-btn').addEventListener('click', function() {
     if (!currentGpxContent) return;
-    var name = document.getElementById('gpx-filename').value || 'parcours.gpx';
-    var points = parseGpx(currentGpxContent);
+    let name = document.getElementById('gpx-filename').value || 'parcours.gpx';
+    let points = parseGpx(currentGpxContent);
     gpxFiles.push({
       name: name,
       date: new Date().toISOString().split('T')[0],
       points: points.length,
       distance: calcDistance(points).toFixed(1) + ' km',
       elevation: Math.round(calcElevation(points)) + ' m D+',
-      path: '/gpx/' + name.replace(/[^a-zA-Z0-9._-]/g, '_'),
+      path: '/gpx/' + name.replaceAll(/[^a-zA-Z0-9._-]/g, '_'),
     });
     saveGpxData();
     renderGpxList();
@@ -956,14 +944,14 @@
   });
 
   function renderGpxList() {
-    var list = document.getElementById('gpx-list');
+    const list = document.getElementById('gpx-list');
     list.innerHTML = '';
     if (gpxFiles.length === 0) {
       list.innerHTML = '<p class="admin-hint">Aucun fichier GPX enregistr\u00e9.</p>';
       return;
     }
     gpxFiles.forEach(function(g, idx) {
-      var div = document.createElement('div');
+      const div = document.createElement('div');
       div.className = 'admin-gpx-item';
       div.innerHTML =
         '<div class="admin-gpx-item-info">' +
@@ -977,7 +965,7 @@
     });
     list.querySelectorAll('[data-del-gpx]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var idx = parseInt(btn.getAttribute('data-del-gpx'));
+        let idx = Number.parseInt(btn.dataset.delGpx);
         gpxFiles.splice(idx, 1);
         saveGpxData();
         renderGpxList();

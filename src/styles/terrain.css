@@ -9,6 +9,8 @@
   justify-content: center;
   min-height: 60vh;
   padding: 2rem;
+  position: relative;
+  z-index: 10;
 }
 
 .terrain-auth-card {
@@ -100,8 +102,31 @@
 }
 
 :global([data-theme="light"]) .terrain-auth-card {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(10, 24, 44, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(10, 24, 44, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+:global([data-theme="light"]) .terrain-auth-card h1 {
+  color: var(--navy, #0a182c);
+}
+
+:global([data-theme="light"]) .terrain-auth-card p {
+  color: #556;
+}
+
+:global([data-theme="light"]) .terrain-auth-form-group input {
+  background: rgba(240, 243, 248, 0.9);
+  border-color: rgba(10, 24, 44, 0.15);
+  color: #0a182c;
+}
+
+:global([data-theme="light"]) .terrain-captcha-question {
+  color: var(--accent-cyan, #2d82aa);
+}
+
+:global([data-theme="light"]) .terrain-auth-error {
+  color: #dc2626;
 }
 
 /* Hero */
@@ -390,6 +415,7 @@
 /* Coworking toggle in legend */
 .legend-toggle {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   gap: 0.35rem;
 }
@@ -540,14 +566,16 @@
 
 /* Help Grid */
 .terrain-help-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
   margin-top: 2rem;
+  justify-content: center;
 }
 
 .terrain-help-card {
   background: rgba(15, 25, 45, 0.6);
+  width: calc(33.333% - 0.85rem);
   border: 1px solid rgba(45, 130, 170, 0.1);
   border-radius: var(--radius-md);
   padding: 1.5rem;
@@ -596,6 +624,38 @@
   font-size: var(--text-sm);
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+.terrain-help-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0.5rem;
+  text-align: left;
+}
+
+.terrain-help-list li {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding-left: 1.2em;
+  position: relative;
+}
+
+.terrain-help-list li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.terrain-help-objectif {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--accent-copper, #c87a4a);
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(45, 130, 170, 0.1);
+  text-align: left;
 }
 
 /* Contact Form */
@@ -900,8 +960,8 @@
 /* RESPONSIVE                     */
 /* ============================== */
 @media (max-width: 1024px) {
-  .terrain-help-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .terrain-help-card {
+    width: calc(50% - 0.65rem);
   }
   .terrain-social-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -923,8 +983,8 @@
     grid-template-columns: 1fr;
   }
 
-  .terrain-help-grid {
-    grid-template-columns: 1fr;
+  .terrain-help-card {
+    width: 100%;
   }
 
   .terrain-form-row {
@@ -984,6 +1044,39 @@
 [data-theme="light"] .terrain-vision-admin {
   background: rgba(176, 104, 48, 0.08);
   border-color: rgba(176, 104, 48, 0.2);
+}
+
+[data-theme="light"] .terrain-auth-btn:hover {
+  background: #1a6b8a;
+  color: #fff;
+}
+
+[data-theme="light"] .terrain-cta--secondary {
+  color: #8a5530;
+}
+
+[data-theme="light"] .terrain-status-badge--preparation {
+  color: #92610a;
+}
+
+[data-theme="light"] .terrain-status-badge--enroute {
+  color: #1a6b8a;
+}
+
+[data-theme="light"] .terrain-status-badge--etape {
+  color: #7a4e2e;
+}
+
+[data-theme="light"] .terrain-status-badge--repos {
+  color: #4a535c;
+}
+
+[data-theme="light"] .terrain-status-badge--termine {
+  color: #158c3e;
+}
+
+[data-theme="light"] .terrain-link-btn--yt {
+  color: #b91c1c;
 }
 
 /* Animations */

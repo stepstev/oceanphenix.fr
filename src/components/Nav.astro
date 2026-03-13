@@ -23,7 +23,7 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="/#home"><i class="fas fa-home"></i> Accueil</a></li>
       <li><a href="/expertises"><i class="fas fa-briefcase"></i> Expertises</a></li>
-      <li><a href="/terrain"><i class="fas fa-bicycle"></i> Terrain</a></li>
+      <li id="nav-terrain" style="display:none"><a href="/terrain"><i class="fas fa-bicycle"></i> Terrain</a></li>
       <li><a href="/#platforms"><i class="fas fa-chart-bar"></i> Data BI &amp; AI</a></li>
       <li><a href="/admin-terrain" class="nav-admin-link" title="Administration"><i class="fas fa-cog"></i></a></li>
       <li>
@@ -32,6 +32,23 @@
         </a>
       </li>
     </ul>
+
+    <!-- Affiche le lien Terrain si session admin valide -->
+    <script is:inline>
+      (function() {
+        var AUTH_KEY = 'op-admin-auth';
+        var MAX_AGE = 3600000;
+        var raw = sessionStorage.getItem(AUTH_KEY);
+        if (!raw) return;
+        try {
+          var s = JSON.parse(raw);
+          if (s.v === 2 && s.ts && (Date.now() - s.ts <= MAX_AGE)) {
+            var el = document.getElementById('nav-terrain');
+            if (el) el.style.display = '';
+          }
+        } catch(e) {}
+      })();
+    </script>
 
     <!-- Right controls: theme toggle + hamburger -->
     <div class="nav-controls">
