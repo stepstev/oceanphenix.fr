@@ -53,8 +53,21 @@ import etapesData from '../data/terrain-etapes.json';
           <button id="admin-import-btn" class="admin-btn admin-btn--outline">
             <i class="fas fa-upload"></i> Importer JSON
           </button>
+          <button id="admin-reset-cache-btn" class="admin-btn admin-btn--danger" title="Efface le localStorage et recharge les données du dernier build">
+            <i class="fas fa-trash-alt"></i> Réinitialiser le cache
+          </button>
           <input type="file" id="admin-import-file" accept=".json" style="display:none" />
         </div>
+      </div>
+
+      <!-- Workflow banner -->
+      <div class="admin-workflow-banner">
+        <strong><i class="fas fa-info-circle"></i> Workflow build :</strong>
+        &nbsp;1️⃣ Modifie les données
+        &nbsp;<span class="wf-sep">→</span> 2️⃣ <strong>Sauvegarder</strong> <span class="wf-note">(localStorage — ce navigateur seulement)</span>
+        &nbsp;<span class="wf-sep">→</span> 3️⃣ <strong>Exporter JSON</strong> → remplace <code>src/data/terrain-etapes.json</code>
+        &nbsp;<span class="wf-sep">→</span> 4️⃣ <code>npx astro build</code> + <code>git push</code>
+        &nbsp;<span class="wf-sep">→</span> 5️⃣ <strong>Réinitialiser le cache</strong> pour lire le nouveau build
       </div>
 
       <!-- Tabs -->
@@ -620,6 +633,27 @@ import etapesData from '../data/terrain-etapes.json';
   }
 
   /* Topbar */
+  .admin-workflow-banner {
+    background: rgba(77, 184, 212, 0.07);
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1rem;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+  .admin-workflow-banner strong { color: var(--accent-cyan); }
+  .admin-workflow-banner code {
+    background: rgba(77,184,212,0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    color: #6ec5d6;
+  }
+  .admin-workflow-banner .wf-sep { color: rgba(77,184,212,0.4); margin: 0 2px; }
+  .admin-workflow-banner .wf-note { color: #5a7a96; font-style: italic; }
+
   .admin-topbar {
     display: flex;
     align-items: center;

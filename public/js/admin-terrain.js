@@ -112,8 +112,16 @@
     }
   }
 
+  function cleanExportData() {
+    // Strip internal admin fields before exporting to terrain-etapes.json
+    const clean = JSON.parse(JSON.stringify(data));
+    delete clean._lastSaved;
+    delete clean._deletedVilles;
+    return clean;
+  }
+
   function exportJson() {
-    const json = JSON.stringify(data, null, 2);
+    const json = JSON.stringify(cleanExportData(), null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -121,7 +129,16 @@
     a.download = 'terrain-etapes.json';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('JSON exporté — déposez-le dans src/data/');
+    showToast('\u2705 JSON export\u00e9 \u2014 1) remplacez src/data/terrain-etapes.json  2) npx astro build  3) git push');
+  }
+
+  function resetCache() {
+    if (!confirm('Réinitialiser le cache local ?\n\nCela efface toutes les modifications non exportées de ce navigateur.\nUtilisez cette action APRÈS avoir exporté le JSON et fait un build.')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_GPX_KEY);
+    localStorage.removeItem('op-terrain-coworking');
+    showToast('\u2705 Cache local réinitialisé — les données viennent maintenant du build');
+    setTimeout(function() { window.location.reload(); }, 1200);
   }
 
   function showToast(msg) {
@@ -1139,7 +1156,7 @@
   document.getElementById('preview-copy-btn').addEventListener('click', function() {
     collectDashboard();
     collectPosition();
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
+    navigator.clipboard.writeText(JSON.stringify(cleanExportData(), null, 2)).then(function() {
       showToast('JSON copi\u00e9 dans le presse-papier');
     });
   });
@@ -1148,6 +1165,10 @@
     collectDashboard();
     collectPosition();
     exportJson();
+  });
+
+  document.getElementById('admin-reset-cache-btn').addEventListener('click', function() {
+    resetCache();
   });
 
 })();
