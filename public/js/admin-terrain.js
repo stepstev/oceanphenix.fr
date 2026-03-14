@@ -118,6 +118,8 @@
     const clean = JSON.parse(JSON.stringify(data));
     delete clean._lastSaved;
     delete clean._deletedVilles;
+    // Bake current visibility state into the build
+    clean.isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
     return clean;
   }
 

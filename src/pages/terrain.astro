@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import terrainData from '../data/terrain-etapes.json';
+const buildPublic = terrainData.isPublic === true;
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import CopyrightBar from '../components/CopyrightBar.astro';
@@ -28,6 +30,7 @@ const projet = etapesData.projet;
   <!-- Guard: redirige vers admin-terrain si pas authentifié ET pas en mode public -->
   <script is:inline>
     (function() {
+      if ({buildPublic}) return; // flag baked into build
       if (localStorage.getItem('op-terrain-public') === '1') return;
       var AUTH_KEY = 'op-admin-auth';
       var MAX_AGE = 3600000;
