@@ -29,12 +29,22 @@
     if (saved) {
       try {
         data = JSON.parse(saved);
-        // Merge missing étapes from JSON template (added after initial save)
+      } catch {
+        data = structuredClone(etapesData);
+        return;
+      }
+      // Ensure etapes array exists
+      if (!Array.isArray(data.etapes)) {
+        data.etapes = structuredClone(etapesData.etapes || []);
+      }
+      // Merge missing étapes from JSON template (added after initial save)
+      // Skips villes the user deliberately deleted (tracked in _deletedVilles)
+      try {
         const templateEtapes = etapesData.etapes || [];
         const savedVilles = new Set(data.etapes.map(function(e) { return e.ville; }));
+        const deletedVilles = new Set(data._deletedVilles || []);
         templateEtapes.forEach(function(te) {
-          if (!savedVilles.has(te.ville)) {
-            // Insert at the correct position based on original id
+          if (!savedVilles.has(te.ville) && !deletedVilles.has(te.ville)) {
             let insertIdx = data.etapes.length;
             for (let i = 0; i < data.etapes.length; i++) {
               if (data.etapes[i].id >= te.id) { insertIdx = i; break; }
@@ -42,10 +52,14 @@
             data.etapes.splice(insertIdx, 0, structuredClone(te));
           }
         });
-        // Reindex ids sequentially
         data.etapes.forEach(function(e, i) { e.id = i + 1; });
-        return;
-      } catch { /* fall through */ }
+      } catch { /* merge failed — keep saved data as-is */ }
+      // Ensure essential objects exist
+      if (!data.dashboard) data.dashboard = structuredClone(etapesData.dashboard || {});
+      if (!data.positionActuelle) data.positionActuelle = structuredClone(etapesData.positionActuelle || {});
+      if (!data.projet) data.projet = structuredClone(etapesData.projet || {});
+      if (!data.journal) data.journal = [];
+      return;
     }
     data = structuredClone(etapesData);
   }
@@ -55,28 +69,25 @@
     if (saved) {
       try { gpxFiles = JSON.parse(saved); } catch { gpxFiles = []; }
     }
-    // Migrate old entries: fetch gpxContent from path if missing
-    let migrated = false;
+    // Migrate old entries: gpxContent (raw XML) → coords array (much smaller)
+    let needsSave = false;
     gpxFiles.forEach(function(g) {
-      if (g.gpxContent || !g.path) return;
-      fetch(g.path)
-        .then(function(r) { return r.ok ? r.text() : null; })
-        .then(function(xml) {
-          if (!xml) return;
-          g.gpxContent = xml;
-          if (!('visible' in g)) g.visible = true;
-          migrated = true;
-          saveGpxData();
-          renderGpxList();
-          showToast('GPX \u00ab ' + g.name + ' \u00bb migr\u00e9 (contenu stock\u00e9)');
-        })
-        .catch(function() { /* file not available */ });
+      if (g.coords) return; // already in new format
+      if (g.gpxContent) {
+        const pts = parseGpx(g.gpxContent);
+        if (pts.length >= 2) {
+          g.coords = pts.map(function(p) { return [p.lat, p.lng]; });
+          delete g.gpxContent;
+          needsSave = true;
+        }
+      }
     });
+    if (needsSave) saveGpxData();
   }
 
   function saveData(silent) {
-    collectDashboard();
-    collectPosition();
+    try { collectDashboard(); } catch { /* keep existing dashboard */ }
+    try { collectPosition(); } catch { /* keep existing position */ }
     data._lastSaved = new Date().toISOString();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     updateLastSaved();
@@ -94,7 +105,11 @@
   }
 
   function saveGpxData() {
-    localStorage.setItem(STORAGE_GPX_KEY, JSON.stringify(gpxFiles));
+    try {
+      localStorage.setItem(STORAGE_GPX_KEY, JSON.stringify(gpxFiles));
+    } catch(e) {
+      showToast('\u26a0 Fichier GPX trop volumineux pour le navigateur. R\u00e9duisez le nombre de points.');
+    }
   }
 
   function exportJson() {
@@ -491,8 +506,8 @@
 
     // Auto-save when leaving the page
     globalThis.addEventListener('beforeunload', function() {
-      collectDashboard();
-      collectPosition();
+      try { collectDashboard(); } catch { /* keep existing */ }
+      try { collectPosition(); } catch { /* keep existing */ }
       data._lastSaved = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     });
@@ -652,9 +667,13 @@
         let idx = Number.parseInt(btn.dataset.delEtape);
         let ville = data.etapes[idx] ? data.etapes[idx].ville : '';
         if (confirm('Supprimer l\'\u00e9tape "' + ville + '" ?')) {
+          // Track deleted ville so the merge in loadData() doesn't re-add it
+          if (!data._deletedVilles) data._deletedVilles = [];
+          if (ville && !data._deletedVilles.includes(ville)) data._deletedVilles.push(ville);
           data.etapes.splice(idx, 1);
           data.etapes.forEach(function(e, i) { e.id = i + 1; });
           renderEtapes();
+          refreshProchaineSelect();
           saveData();
           showToast('\u00c9tape supprim\u00e9e');
         }
@@ -681,7 +700,7 @@
       '<span class="summary-badge sb-planifie"><i class="fas fa-circle"></i> ' + planifie + ' planifi\u00e9e' + (planifie > 1 ? 's' : '') + '</span>' +
       (actuel > 0 ? '<span class="summary-badge sb-actuel"><i class="fas fa-location-dot"></i> ' + actuel + ' actuelle' + (actuel > 1 ? 's' : '') + '</span>' : '') +
       (visite > 0 ? '<span class="summary-badge sb-visite"><i class="fas fa-check-circle"></i> ' + visite + ' visit\u00e9e' + (visite > 1 ? 's' : '') + '</span>' : '') +
-      '<br><span style="color:#93c5fd;font-size:0.82rem;"><i class="fas fa-route" style="color:#6dd0f0;"></i> Itin\u00e9raire affich\u00e9 : <strong>' + visibleVilles.join(' \u2192 ') + '</strong></span>';
+      '<br><span class="summary-itinerary"><i class="fas fa-route"></i> Itin\u00e9raire affich\u00e9 : <strong>' + visibleVilles.join(' \u2192 ') + '</strong></span>';
   }
 
   function openEtapeEditor(id) {
@@ -713,6 +732,21 @@
     document.getElementById('etape-editor').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  // Refresh only the prochaine-étape select without overwriting other dashboard inputs
+  function refreshProchaineSelect() {
+    const sel = document.getElementById('dash-prochaine');
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">\u2014</option>';
+    data.etapes.forEach(function(e) {
+      const opt = document.createElement('option');
+      opt.value = e.ville;
+      opt.textContent = e.ville;
+      if (e.ville === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
   document.getElementById('etape-add-btn').addEventListener('click', function() {
     openEtapeEditor(0);
   });
@@ -735,16 +769,21 @@
       let newId = data.etapes.length > 0 ? Math.max.apply(null, data.etapes.map(function(e){ return e.id; })) + 1 : 1;
       fields.id = newId;
       fields.type = 'etape';
+      // Remove from _deletedVilles if re-adding a previously deleted ville
+      if (data._deletedVilles) {
+        data._deletedVilles = data._deletedVilles.filter(function(v) { return v !== ville; });
+      }
       data.etapes.push(fields);
       showToast('Nouvelle \u00e9tape ajout\u00e9e : ' + ville);
     } else {
       let etape = data.etapes.find(function(e) { return e.id === id; });
-      if (!etape) return;
+      if (!etape) { showToast('\u26a0 \u00c9tape introuvable (id ' + id + ')'); return; }
       Object.assign(etape, fields);
       showToast('\u00c9tape mise \u00e0 jour');
     }
     document.getElementById('etape-editor').style.display = 'none';
     renderEtapes();
+    refreshProchaineSelect();
     saveData();
   });
 
@@ -918,20 +957,21 @@
     setTimeout(function() { gpxMap.invalidateSize(); }, 200);
   }
 
+  // Namespace-safe GPX parser (handles Garmin, Strava, Komoot, etc.)
   function parseGpx(xmlStr) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmlStr, 'application/xml');
+    const doc = new DOMParser().parseFromString(xmlStr, 'application/xml');
+    if (doc.querySelector('parsererror')) return [];
     const points = [];
-    let trkpts = doc.querySelectorAll('trkpt');
-    if (trkpts.length === 0) trkpts = doc.querySelectorAll('rtept');
-    if (trkpts.length === 0) trkpts = doc.querySelectorAll('wpt');
-    trkpts.forEach(function(pt) {
-      let lat = Number.parseFloat(pt.getAttribute('lat'));
-      let lon = Number.parseFloat(pt.getAttribute('lon'));
-      const eleEl = pt.querySelector('ele');
-      const ele = eleEl ? Number.parseFloat(eleEl.textContent) : null;
+    let trkpts = doc.getElementsByTagNameNS('*', 'trkpt');
+    if (trkpts.length === 0) trkpts = doc.getElementsByTagNameNS('*', 'rtept');
+    if (trkpts.length === 0) trkpts = doc.getElementsByTagNameNS('*', 'wpt');
+    for (let i = 0; i < trkpts.length; i++) {
+      const lat = Number.parseFloat(trkpts[i].getAttribute('lat'));
+      const lon = Number.parseFloat(trkpts[i].getAttribute('lon'));
+      const eleEls = trkpts[i].getElementsByTagNameNS('*', 'ele');
+      const ele = eleEls.length > 0 ? Number.parseFloat(eleEls[0].textContent) : null;
       if (!Number.isNaN(lat) && !Number.isNaN(lon)) points.push({ lat: lat, lng: lon, ele: ele });
-    });
+    }
     return points;
   }
 
@@ -1000,18 +1040,24 @@
     if (!currentGpxContent) return;
     let name = document.getElementById('gpx-filename').value || 'parcours.gpx';
     let points = parseGpx(currentGpxContent);
+    if (points.length < 2) {
+      showToast('\u26a0 Aucun point GPS valide trouv\u00e9 dans ce fichier');
+      return;
+    }
+    // Store coords array only (NOT raw XML) to avoid localStorage quota errors
+    const coords = points.map(function(p) { return [p.lat, p.lng]; });
     gpxFiles.push({
       name: name,
       date: new Date().toISOString().split('T')[0],
-      points: points.length,
+      points: coords.length,
       distance: calcDistance(points).toFixed(1) + ' km',
       elevation: Math.round(calcElevation(points)) + ' m D+',
       visible: true,
-      gpxContent: currentGpxContent,
+      coords: coords,
     });
     saveGpxData();
     renderGpxList();
-    showToast('GPX ajout\u00e9 et visible sur la carte Terrain');
+    showToast('\u2705 GPX ajout\u00e9 (' + coords.length + ' points) — visible sur /terrain');
   });
 
   function renderGpxList() {
@@ -1057,15 +1103,19 @@
       btn.addEventListener('click', function() {
         const idx = Number.parseInt(btn.dataset.showGpx);
         const g = gpxFiles[idx];
-        if (!g || !g.gpxContent) { showToast('Pas de contenu GPX pour ce fichier'); return; }
+        if (!g) return;
+        let coords = null;
+        if (g.coords && g.coords.length >= 2) {
+          coords = g.coords;
+        } else if (g.gpxContent) {
+          const pts = parseGpx(g.gpxContent);
+          coords = pts.map(function(p) { return [p.lat, p.lng]; });
+        }
+        if (!coords || coords.length < 2) { showToast('Pas de coordonn\u00e9es pour ce fichier'); return; }
         if (!gpxMap) initGpxMap();
         if (gpxLayer) gpxMap.removeLayer(gpxLayer);
-        const points = parseGpx(g.gpxContent);
-        const coords = points.map(function(p) { return [p.lat, p.lng]; });
-        if (coords.length > 1) {
-          gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
-          gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
-        }
+        gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
+        gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
       });
     });
     // Delete

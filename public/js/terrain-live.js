@@ -228,6 +228,8 @@
   }
 
   // Load from localStorage on page load
+  // NOTE: terrain-live.js is READ-ONLY — it never writes to localStorage.
+  // Only admin-terrain.js is allowed to write (single source of truth).
   function loadAndApply() {
     // Apply initial badge style from data attribute
     const badge = document.getElementById('live-position-badge');
@@ -239,36 +241,11 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const d = JSON.parse(raw);
-        // Merge missing étapes from Astro template data
-        const tplEl = document.getElementById('terrain-data');
-        if (tplEl && d.etapes) {
-          try {
-            const tpl = JSON.parse(tplEl.textContent);
-            const tplEtapes = tpl.etapes || [];
-            const savedVilles = new Set(d.etapes.map(function(e) { return e.ville; }));
-            tplEtapes.forEach(function(te) {
-              if (!savedVilles.has(te.ville)) {
-                let insertIdx = d.etapes.length;
-                for (let i = 0; i < d.etapes.length; i++) {
-                  if (d.etapes[i].id >= te.id) { insertIdx = i; break; }
-                }
-                d.etapes.splice(insertIdx, 0, JSON.parse(JSON.stringify(te)));
-              }
-            });
-            d.etapes.forEach(function(e, i) { e.id = i + 1; });
-            // Persist the merged data
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-          } catch { /* skip merge */ }
-        }
         applyLiveData(d);
       }
     } catch { /* invalid JSON, skip */ }
-    // Also refresh coworking flags
-    addCwFlags(globalThis._terrainMainMap, false);
-    addCwFlags(globalThis._terrainDashMap, true);
-    // Reload GPX tracks
-    reloadGpxTracks(globalThis._terrainMainMap);
-    reloadGpxTracks(globalThis._terrainDashMap);
+    // NOTE: GPX tracks and coworking markers are drawn by terrain-maps.js on initial load.
+    // terrain-live.js only redraws them on cross-tab storage updates (see storage event below).
     // Attach error handlers to initial photo thumbnails (CSP-safe)
     const photosEl = document.getElementById('live-photos');
     if (photosEl) {
@@ -280,14 +257,17 @@
   }
 
   // Helper: parse GPX XML string → [[lat,lng], ...]
+  // Uses getElementsByTagNameNS to handle GPX namespace (e.g. Garmin, Strava, Komoot)
   function parseGpxCoords(xml) {
     const doc = new DOMParser().parseFromString(xml, 'application/xml');
-    let pts = doc.querySelectorAll('trkpt');
-    if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+    if (doc.querySelector('parsererror')) return []; // invalid XML
+    let pts = doc.getElementsByTagNameNS('*', 'trkpt');
+    if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'rtept');
+    if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'wpt');
     const coords = [];
-    for (const p of pts) {
-      const lat = Number.parseFloat(p.getAttribute('lat'));
-      const lon = Number.parseFloat(p.getAttribute('lon'));
+    for (let i = 0; i < pts.length; i++) {
+      const lat = Number.parseFloat(pts[i].getAttribute('lat'));
+      const lon = Number.parseFloat(pts[i].getAttribute('lon'));
       if (!Number.isNaN(lat) && !Number.isNaN(lon)) coords.push([lat, lon]);
     }
     return coords;
@@ -319,12 +299,17 @@
       const gpxFiles = JSON.parse(raw);
       gpxFiles.forEach(function(g) {
         if (g.visible === false) return;
-        // New format: gpxContent stored inline
+        // New format: pre-parsed coords array (preferred)
+        if (g.coords && g.coords.length >= 2) {
+          drawGpxTrack(map, g.coords, g.name);
+          return;
+        }
+        // Legacy fallback: raw XML
         if (g.gpxContent) {
           drawGpxTrack(map, parseGpxCoords(g.gpxContent), g.name);
           return;
         }
-        // Legacy fallback: fetch from path
+        // Very legacy: fetch from path
         if (g.path) {
           fetch(g.path)
             .then(function(r) { return r.ok ? r.text() : null; })
@@ -395,4 +380,9 @@
       reloadGpxTracks(globalThis._terrainDashMap);
     }
   });
+
+  // NOTE: 'terrainMapsReady' is NOT listened here — both scripts are inline and execute
+  // sequentially, so terrain-maps.js fires the event BEFORE terrain-live.js can register
+  // a listener. Initial rendering is fully handled by terrain-maps.js.
+  // Cross-tab updates (storage event above) handle all live sync from admin.
 })();

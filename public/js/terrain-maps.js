@@ -55,8 +55,23 @@
         cyclosmOverlay.addTo(map);
       }
 
-      var routeCoords = [];
+      // Initialize route layers tracking for live-update compatibility
+      map._routeLayers = [];
+      map._gpxLayers = [];
+
+      // Use localStorage data if available, otherwise use Astro template data
       var stepsData = opts.etapes || etapes;
+      try {
+        var savedRaw = localStorage.getItem('op-terrain-admin');
+        if (savedRaw) {
+          var savedData = JSON.parse(savedRaw);
+          if (savedData.etapes && savedData.etapes.length) {
+            stepsData = savedData.etapes;
+          }
+        }
+      } catch { /* use template data */ }
+
+      var routeCoords = [];
 
       stepsData.forEach(function (etape) {
         if (etape.visible === false) return;
@@ -71,10 +86,11 @@
           opacity: 1,
           fillOpacity: 0.9,
         }).addTo(map);
+        map._routeLayers.push(marker);
 
         // Label for visited / current
         if (!opts.compact && (etape.statut === 'actuel' || etape.statut === 'visite')) {
-          L.circleMarker([etape.lat, etape.lng], {
+          var halo = L.circleMarker([etape.lat, etape.lng], {
             radius: 18,
             fillColor: color,
             color: color,
@@ -82,6 +98,7 @@
             opacity: 0.3,
             fillOpacity: 0.1,
           }).addTo(map);
+          map._routeLayers.push(halo);
         }
 
         if (!opts.compact) {
@@ -108,12 +125,13 @@
         var to = routeCoords[i + 1];
         var realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
                        (to.statut === 'visite' || to.statut === 'actuel');
-        L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
+        var seg = L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
           color: realized ? '#22c55e' : '#1a6b8a',
           weight: opts.compact ? 2 : 2.5,
           opacity: realized ? 0.8 : 0.5,
           dashArray: realized ? null : '8, 8',
         }).addTo(map);
+        map._routeLayers.push(seg);
       }
 
       return map;
@@ -157,16 +175,19 @@
     }
 
     // ---- Parse GPX XML string → [[lat,lng], ...] ----
+    // Uses getElementsByTagNameNS to handle GPX default namespace (Garmin, Strava, Komoot…)
     function parseGpxCoords(xml) {
       var doc = new DOMParser().parseFromString(xml, 'application/xml');
-      var pts = doc.querySelectorAll('trkpt');
-      if (pts.length === 0) pts = doc.querySelectorAll('rtept');
+      if (doc.querySelector('parsererror')) return []; // invalid XML
+      var pts = doc.getElementsByTagNameNS('*', 'trkpt');
+      if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'rtept');
+      if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'wpt');
       var coords = [];
-      pts.forEach(function(p) {
-        var lat = parseFloat(p.getAttribute('lat'));
-        var lon = parseFloat(p.getAttribute('lon'));
+      for (var i = 0; i < pts.length; i++) {
+        var lat = parseFloat(pts[i].getAttribute('lat'));
+        var lon = parseFloat(pts[i].getAttribute('lon'));
         if (!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
-      });
+      }
       return coords;
     }
 
@@ -191,12 +212,17 @@
         var gpxFiles = JSON.parse(gpxRaw);
         gpxFiles.forEach(function(g) {
           if (g.visible === false) return;
-          // New format: gpxContent stored inline
+          // New format: pre-parsed coords array (preferred)
+          if (g.coords && g.coords.length >= 2) {
+            drawGpxTrack(map, g.coords, g.name);
+            return;
+          }
+          // Legacy fallback: raw XML content
           if (g.gpxContent) {
             drawGpxTrack(map, parseGpxCoords(g.gpxContent), g.name);
             return;
           }
-          // Legacy fallback: fetch from path
+          // Very legacy: fetch from path
           if (g.path) {
             fetch(g.path)
               .then(function(r) { return r.ok ? r.text() : null; })
@@ -287,6 +313,9 @@
       if (mainMap) mainMap.invalidateSize();
       if (dashMap) dashMap.invalidateSize();
     }, 200);
+
+    // Notify terrain-live.js that maps are ready to receive live data
+    window.dispatchEvent(new CustomEvent('terrainMapsReady'));
   }
 
   // Init maps (Leaflet JS loaded via preceding script tag)
