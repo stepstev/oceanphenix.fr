@@ -202,14 +202,25 @@
       map._gpxLayers.push(layer);
     }
 
-    // ---- Load GPX tracks from localStorage ----
+    // ---- Load GPX tracks from localStorage, fallback to build data ----
     function loadGpxTracks(map) {
       var gpxKey = 'op-terrain-gpx';
       var gpxRaw = localStorage.getItem(gpxKey);
-      if (!gpxRaw) return;
+      var files = null;
+      if (gpxRaw) {
+        try { files = JSON.parse(gpxRaw); } catch(e) {}
+      }
+      // Fallback: server-side gpxFiles baked in build (accessible on all browsers)
+      if (!files || files.length === 0) {
+        try {
+          var sd = JSON.parse(document.getElementById('terrain-data').textContent);
+          if (sd.gpxFiles && sd.gpxFiles.length) files = sd.gpxFiles;
+        } catch(e) {}
+      }
+      if (!files || !files.length) return;
       if (!map._gpxLayers) map._gpxLayers = [];
       try {
-        var gpxFiles = JSON.parse(gpxRaw);
+        var gpxFiles = files;
         gpxFiles.forEach(function(g) {
           if (g.visible === false) return;
           // New format: pre-parsed coords array (preferred)

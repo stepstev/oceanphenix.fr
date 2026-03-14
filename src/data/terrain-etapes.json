@@ -1,5 +1,8 @@
 {
   "isPublic": true,
+  "gpxFiles": [
+    {"name": "2026-03-13_2825614774_Tour DATA", "path": "/gpx/2026-03-13_2825614774_Tour_DATA.gpx", "visible": true}
+  ],
   "projet": {
     "nom": "Retour au Terrain — Besoins Data",
     "porteur": "Stéphane Celton",

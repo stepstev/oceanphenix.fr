@@ -16,6 +16,7 @@ const etapes = etapesData.etapes;
 const position = etapesData.positionActuelle;
 const journal = etapesData.journal;
 const projet = etapesData.projet;
+const gpxFiles = etapesData.gpxFiles || [];
 ---
 
 <BaseLayout
@@ -413,7 +414,7 @@ const projet = etapesData.projet;
   <script src="/lib/leaflet.min.js" is:inline></script>
 
   <!-- Data for map scripts (CSP-safe: not executed) -->
-  <script type="application/json" id="terrain-data" set:html={JSON.stringify({ etapes, position })}></script>
+  <script type="application/json" id="terrain-data" set:html={JSON.stringify({ etapes, position, gpxFiles })}></script>
 
   <!-- Carte Leaflet init -->
   <script src="/js/terrain-maps.js" is:inline></script>

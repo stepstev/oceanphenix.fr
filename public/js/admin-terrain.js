@@ -120,7 +120,50 @@
     delete clean._deletedVilles;
     // Bake current visibility state into the build
     clean.isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
+    // Include GPX file references (path only, not coords — keeps JSON small)
+    const gpxRaw = localStorage.getItem(STORAGE_GPX_KEY);
+    if (gpxRaw) {
+      try {
+        const gpxArr = JSON.parse(gpxRaw);
+        if (gpxArr && gpxArr.length) {
+          clean.gpxFiles = gpxArr.map(function(g) {
+            let safeName = (g.name || 'track').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+            if (!safeName.toLowerCase().endsWith('.gpx')) safeName += '.gpx';
+            return { name: g.name || 'Tracé', path: '/gpx/' + safeName, visible: g.visible !== false };
+          });
+        }
+      } catch(e) {}
+    }
     return clean;
+  }
+
+  function exportGpxFile() {
+    if (!gpxFiles || gpxFiles.length === 0) {
+      showToast('\u26a0 Aucun fichier GPX en mémoire — uploadez un fichier GPX d\'abord');
+      return;
+    }
+    gpxFiles.forEach(function(g) {
+      if (!g.coords || g.coords.length === 0) return;
+      const lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<gpx version="1.1" creator="OceanPhenix Admin" xmlns="http://www.topografix.com/GPX/1/1">',
+        '  <trk><name>' + (g.name || 'Tracé') + '</name><trkseg>'
+      ];
+      g.coords.forEach(function(c) {
+        lines.push('    <trkpt lat="' + c[0] + '" lon="' + c[1] + '"></trkpt>');
+      });
+      lines.push('  </trkseg></trk>', '</gpx>');
+      const blob = new Blob([lines.join('\n')], { type: 'application/gpx+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      let safeName = (g.name || 'track').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+      if (!safeName.toLowerCase().endsWith('.gpx')) safeName += '.gpx';
+      a.download = safeName;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+    showToast('\u2705 GPX téléchargé \u2014 placez-le dans public/gpx/ puis relancez le build');
   }
 
   function exportJson() {
@@ -1191,6 +1234,10 @@
 
   document.getElementById('admin-reset-cache-btn').addEventListener('click', function() {
     resetCache();
+  });
+
+  document.getElementById('admin-export-gpx-btn').addEventListener('click', function() {
+    exportGpxFile();
   });
 
   document.getElementById('admin-visibility-btn').addEventListener('click', function() {
