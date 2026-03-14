@@ -29,9 +29,9 @@ const gpxFiles = etapesData.gpxFiles || [];
   <Nav />
 
   <!-- Guard: redirige vers admin-terrain si pas authentifié ET pas en mode public -->
-  <script is:inline>
+  <script define:vars={{ buildPublic }}>
     (function() {
-      if ({buildPublic}) return; // flag baked into build
+      if (buildPublic) return; // flag baked into build (true = public pour tous)
       if (localStorage.getItem('op-terrain-public') === '1') return;
       var AUTH_KEY = 'op-admin-auth';
       var MAX_AGE = 3600000;
