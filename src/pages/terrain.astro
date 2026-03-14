@@ -25,9 +25,10 @@ const projet = etapesData.projet;
   <OceanBackground />
   <Nav />
 
-  <!-- Guard: redirige vers admin-terrain si pas authentifié -->
+  <!-- Guard: redirige vers admin-terrain si pas authentifié ET pas en mode public -->
   <script is:inline>
     (function() {
+      if (localStorage.getItem('op-terrain-public') === '1') return;
       var AUTH_KEY = 'op-admin-auth';
       var MAX_AGE = 3600000;
       var raw = sessionStorage.getItem(AUTH_KEY);

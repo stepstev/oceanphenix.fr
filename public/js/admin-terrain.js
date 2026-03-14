@@ -10,6 +10,7 @@
   const PASS_HASH = '778fee1ef454204c1ef252ad7e72745eb2a8caca602c87d143c02340ed1da535';
   const STORAGE_KEY = 'op-terrain-admin';
   const STORAGE_GPX_KEY = 'op-terrain-gpx';
+  const PUBLIC_KEY = 'op-terrain-public';
 
   let data = null;
   let gpxFiles = [];
@@ -139,6 +140,26 @@
     localStorage.removeItem('op-terrain-coworking');
     showToast('\u2705 Cache local réinitialisé — les données viennent maintenant du build');
     setTimeout(function() { window.location.reload(); }, 1200);
+  }
+
+  function updateVisibilityBtn() {
+    var btn = document.getElementById('admin-visibility-btn');
+    if (!btn) return;
+    var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
+    btn.className = 'admin-visibility-btn ' + (isPublic ? 'is-public' : 'is-private');
+    btn.querySelector('.vis-label').textContent = isPublic ? 'Public' : 'Privé';
+  }
+
+  function toggleVisibility() {
+    var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
+    if (!isPublic) {
+      localStorage.setItem(PUBLIC_KEY, '1');
+      showToast('🌍 Page Terrain maintenant PUBLIQUE — visible par tous les visiteurs');
+    } else {
+      localStorage.removeItem(PUBLIC_KEY);
+      showToast('🔒 Page Terrain maintenant PRIVÉE — accessible uniquement via admin');
+    }
+    updateVisibilityBtn();
   }
 
   function showToast(msg) {
@@ -1170,5 +1191,10 @@
   document.getElementById('admin-reset-cache-btn').addEventListener('click', function() {
     resetCache();
   });
+
+  document.getElementById('admin-visibility-btn').addEventListener('click', function() {
+    toggleVisibility();
+  });
+  updateVisibilityBtn();
 
 })();

@@ -29,7 +29,7 @@ import etapesData from '../data/terrain-etapes.json';
           <label id="captcha-label" class="captcha-question"></label>
           <input type="text" id="admin-captcha" placeholder="Votre réponse" autocomplete="off" inputmode="numeric" />
         </div>
-        <button id="admin-login-btn" class="admin-btn admin-btn--primary">
+        <button id="admin-login-btn" class="admin-btn admin-btn--accent">
           <i class="fas fa-sign-in-alt"></i> Accéder
         </button>
         <p id="admin-auth-error" class="admin-error" style="display:none;">Mot de passe ou captcha incorrect</p>
@@ -41,20 +41,26 @@ import etapesData from '../data/terrain-etapes.json';
 
       <!-- Top bar -->
       <div class="admin-topbar">
-        <h1><i class="fas fa-cogs"></i> Admin — Terrain Data</h1>
-        <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
+        <div class="admin-topbar-left">
+          <h1><i class="fas fa-cogs"></i> Admin — Terrain Data</h1>
+          <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
+        </div>
         <div class="admin-topbar-actions">
-          <button id="admin-save-btn" class="admin-btn admin-btn--primary">
-            <i class="fas fa-save"></i> Sauvegarder (localStorage)
+          <button id="admin-visibility-btn" class="admin-visibility-btn" title="Basculer la visibilité de la page Terrain">
+            <span class="vis-dot"></span>
+            <span class="vis-label"></span>
           </button>
-          <button id="admin-export-btn" class="admin-btn admin-btn--secondary">
+          <button id="admin-save-btn" class="admin-btn">
+            <i class="fas fa-save"></i> Sauvegarder
+          </button>
+          <button id="admin-export-btn" class="admin-btn admin-btn--accent">
             <i class="fas fa-download"></i> Exporter JSON
           </button>
-          <button id="admin-import-btn" class="admin-btn admin-btn--outline">
+          <button id="admin-import-btn" class="admin-btn">
             <i class="fas fa-upload"></i> Importer JSON
           </button>
-          <button id="admin-reset-cache-btn" class="admin-btn admin-btn--danger" title="Efface le localStorage et recharge les données du dernier build">
-            <i class="fas fa-trash-alt"></i> Réinitialiser le cache
+          <button id="admin-reset-cache-btn" class="admin-btn" title="Efface le localStorage et recharge les données du dernier build">
+            <i class="fas fa-trash-alt"></i> Réinitialiser
           </button>
           <input type="file" id="admin-import-file" accept=".json" style="display:none" />
         </div>
@@ -163,7 +169,7 @@ import etapesData from '../data/terrain-etapes.json';
             </div>
           </div>
           <div class="admin-form-actions">
-            <button id="dash-validate-btn" class="admin-btn admin-btn--primary">
+            <button id="dash-validate-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-check"></i> Valider les données dashboard
             </button>
           </div>
@@ -202,7 +208,7 @@ import etapesData from '../data/terrain-etapes.json';
             <input type="date" id="pos-depart" />
           </div>
           <div class="admin-form-actions">
-            <button id="pos-validate-btn" class="admin-btn admin-btn--primary">
+            <button id="pos-validate-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-check"></i> Valider la position
             </button>
           </div>
@@ -217,7 +223,7 @@ import etapesData from '../data/terrain-etapes.json';
           <h2><i class="fas fa-map-marked-alt"></i> Gestion des étapes</h2>
           <p class="admin-hint">Cliquez sur une étape pour la modifier. Changez le statut pour marquer une étape comme visitée.</p>
           <div class="admin-form-actions" style="margin-bottom:1rem;">
-            <button id="etape-add-btn" class="admin-btn admin-btn--primary">
+            <button id="etape-add-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-plus"></i> Nouvelle étape
             </button>
           </div>
@@ -286,10 +292,10 @@ import etapesData from '../data/terrain-etapes.json';
               <textarea id="etape-edit-desc" rows="3"></textarea>
             </div>
             <div class="admin-form-actions">
-              <button id="etape-save-btn" class="admin-btn admin-btn--primary">
+              <button id="etape-save-btn" class="admin-btn admin-btn--accent">
                 <i class="fas fa-check"></i> Valider
               </button>
-              <button id="etape-cancel-btn" class="admin-btn admin-btn--outline">
+              <button id="etape-cancel-btn" class="admin-btn">
                 <i class="fas fa-times"></i> Annuler
               </button>
             </div>
@@ -327,7 +333,7 @@ import etapesData from '../data/terrain-etapes.json';
             <label>Tags (séparés par des virgules)</label>
             <input type="text" id="journal-tags" placeholder="rencontre, diagnostic, data, sponsor" />
           </div>
-          <button id="journal-add-btn" class="admin-btn admin-btn--primary">
+          <button id="journal-add-btn" class="admin-btn admin-btn--accent">
             <i class="fas fa-plus"></i> Ajouter au journal
           </button>
         </div>
@@ -363,10 +369,10 @@ import etapesData from '../data/terrain-etapes.json';
             <input type="text" id="photo-path-input" placeholder="/Images/terrain/nom-du-fichier.jpg" />
           </div>
           <div class="admin-form-actions">
-            <button id="photo-add-btn" class="admin-btn admin-btn--primary">
+            <button id="photo-add-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-plus"></i> Ajouter la photo
             </button>
-            <button id="photo-download-btn" class="admin-btn admin-btn--secondary" style="display:none;">
+            <button id="photo-download-btn" class="admin-btn" style="display:none;">
               <i class="fas fa-download"></i> Télécharger (pour upload FTP)
             </button>
           </div>
@@ -415,10 +421,10 @@ import etapesData from '../data/terrain-etapes.json';
           <div id="gpx-map" class="admin-gpx-map" style="display:none;"></div>
 
           <div id="gpx-actions" class="admin-form-actions" style="display:none;">
-            <button id="gpx-download-btn" class="admin-btn admin-btn--secondary">
+            <button id="gpx-download-btn" class="admin-btn">
               <i class="fas fa-download"></i> Télécharger le GPX
             </button>
-            <button id="gpx-add-btn" class="admin-btn admin-btn--primary">
+            <button id="gpx-add-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-plus"></i> Ajouter au parcours
             </button>
           </div>
@@ -439,10 +445,10 @@ import etapesData from '../data/terrain-etapes.json';
           <p class="admin-hint">Voici le JSON complet tel qu'il sera exporté. Vérifiez les données avant de les exporter.</p>
           <pre id="preview-json" class="admin-json-preview"></pre>
           <div class="admin-form-actions">
-            <button id="preview-copy-btn" class="admin-btn admin-btn--primary">
+            <button id="preview-copy-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-copy"></i> Copier le JSON
             </button>
-            <button id="preview-export-btn" class="admin-btn admin-btn--secondary">
+            <button id="preview-export-btn" class="admin-btn">
               <i class="fas fa-download"></i> Exporter en fichier
             </button>
           </div>
@@ -483,7 +489,7 @@ import etapesData from '../data/terrain-etapes.json';
           <h2><i class="fas fa-building"></i> Espaces de coworking</h2>
           <p class="admin-hint">Gérez les espaces de coworking. Ils apparaissent comme <i class="fas fa-flag"></i> drapeaux sur la carte terrain.</p>
           <div class="admin-form-actions" style="margin-bottom:1rem;">
-            <button id="cw-add-btn" class="admin-btn admin-btn--primary">
+            <button id="cw-add-btn" class="admin-btn admin-btn--accent">
               <i class="fas fa-plus"></i> Nouveau coworking
             </button>
           </div>
@@ -541,10 +547,10 @@ import etapesData from '../data/terrain-etapes.json';
               <label><input type="checkbox" id="cw-edit-visible" checked /> Afficher sur la carte terrain</label>
             </div>
             <div class="admin-form-actions">
-              <button id="cw-save-btn" class="admin-btn admin-btn--primary">
+              <button id="cw-save-btn" class="admin-btn admin-btn--accent">
                 <i class="fas fa-check"></i> Valider
               </button>
-              <button id="cw-cancel-btn" class="admin-btn admin-btn--outline">
+              <button id="cw-cancel-btn" class="admin-btn">
                 <i class="fas fa-times"></i> Annuler
               </button>
             </div>
@@ -710,69 +716,75 @@ import etapesData from '../data/terrain-etapes.json';
     white-space: nowrap;
   }
 
+  .admin-topbar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
   .admin-topbar-actions {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
+
+  .admin-visibility-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-light);
+  }
+  .admin-visibility-btn:hover { background: rgba(255,255,255,0.08); }
+  .vis-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .admin-visibility-btn.is-private .vis-dot { background: #f87171; box-shadow: 0 0 5px rgba(248,113,113,0.6); }
+  .admin-visibility-btn.is-public  .vis-dot { background: #34d399; box-shadow: 0 0 5px rgba(52,211,153,0.6); }
+  .admin-visibility-btn.is-private .vis-label::before { content: 'Privé'; }
+  .admin-visibility-btn.is-public  .vis-label::before { content: 'Public'; }
 
   /* Buttons */
   .admin-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.85rem;
     border-radius: var(--radius-sm);
     font-size: var(--text-sm);
     font-weight: 600;
     font-family: var(--font-primary);
     cursor: pointer;
-    transition: var(--transition-fast);
-    border: 1.5px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-light);
     text-decoration: none;
+    white-space: nowrap;
   }
+  .admin-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.18); }
+  .admin-btn i { opacity: 0.7; font-size: 0.8rem; }
 
-  .admin-btn--primary {
-    background: rgba(77, 184, 212, 0.15);
-    border-color: rgba(77, 184, 212, 0.4);
+  .admin-btn--accent {
+    border-color: rgba(77,184,212,0.45);
     color: var(--accent-cyan);
+    background: rgba(77,184,212,0.08);
   }
-  .admin-btn--primary:hover {
-    background: rgba(77, 184, 212, 0.25);
-  }
-
-  .admin-btn--secondary {
-    background: rgba(150, 100, 55, 0.15);
-    border-color: rgba(150, 100, 55, 0.4);
-    color: #d4915a;
-  }
-  .admin-btn--secondary:hover {
-    background: rgba(150, 100, 55, 0.25);
-  }
-
-  .admin-btn--outline {
-    background: transparent;
-    border-color: rgba(45, 130, 170, 0.2);
-    color: var(--text-muted);
-  }
-  .admin-btn--outline:hover {
-    border-color: rgba(45, 130, 170, 0.4);
-    color: var(--white);
-  }
-
-  .admin-btn--sm {
-    padding: 0.3rem 0.6rem;
-    font-size: var(--text-xs);
-  }
-
-  .admin-btn--danger {
-    background: rgba(248, 113, 113, 0.1);
-    border-color: rgba(248, 113, 113, 0.3);
-    color: #f87171;
-  }
-  .admin-btn--danger:hover {
-    background: rgba(248, 113, 113, 0.2);
-  }
+  .admin-btn--accent:hover { background: rgba(77,184,212,0.16); border-color: rgba(77,184,212,0.65); }
+  .admin-btn--accent i { opacity: 1; }
 
   /* Tabs */
   .admin-tabs {
