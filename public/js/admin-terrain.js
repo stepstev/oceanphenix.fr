@@ -147,7 +147,6 @@
     if (!btn) return;
     var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
     btn.className = 'admin-visibility-btn ' + (isPublic ? 'is-public' : 'is-private');
-    btn.querySelector('.vis-label').textContent = isPublic ? 'Public' : 'Privé';
   }
 
   function toggleVisibility() {
