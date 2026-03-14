@@ -62,12 +62,16 @@ import etapesData from '../data/terrain-etapes.json';
 
       <!-- Workflow banner -->
       <div class="admin-workflow-banner">
-        <strong><i class="fas fa-info-circle"></i> Workflow build :</strong>
-        &nbsp;1️⃣ Modifie les données
-        &nbsp;<span class="wf-sep">→</span> 2️⃣ <strong>Sauvegarder</strong> <span class="wf-note">(localStorage — ce navigateur seulement)</span>
-        &nbsp;<span class="wf-sep">→</span> 3️⃣ <strong>Exporter JSON</strong> → remplace <code>src/data/terrain-etapes.json</code>
-        &nbsp;<span class="wf-sep">→</span> 4️⃣ <code>npx astro build</code> + <code>git push</code>
-        &nbsp;<span class="wf-sep">→</span> 5️⃣ <strong>Réinitialiser le cache</strong> pour lire le nouveau build
+        <i class="fas fa-code-branch wf-icon"></i>
+        <span class="wf-item"><span class="wf-n">1</span> Modifier</span>
+        <span class="wf-arr">›</span>
+        <span class="wf-item"><span class="wf-n">2</span> Sauvegarder</span>
+        <span class="wf-arr">›</span>
+        <span class="wf-item wf-item--key"><span class="wf-n">3</span> Exporter JSON</span>
+        <span class="wf-arr">›</span>
+        <span class="wf-item wf-item--key"><span class="wf-n">4</span> <code>astro build</code> + <code>git push</code></span>
+        <span class="wf-arr">›</span>
+        <span class="wf-item wf-item--reset"><span class="wf-n">5</span> Réinitialiser le cache</span>
       </div>
 
       <!-- Tabs -->
@@ -634,25 +638,50 @@ import etapesData from '../data/terrain-etapes.json';
 
   /* Topbar */
   .admin-workflow-banner {
-    background: rgba(77, 184, 212, 0.07);
-    border: 1px solid rgba(77, 184, 212, 0.2);
-    border-radius: var(--radius-sm);
-    padding: 0.65rem 1rem;
-    font-size: var(--text-xs);
-    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    background: transparent;
+    border: none;
+    border-left: 3px solid var(--accent-cyan);
+    padding: 0.4rem 1rem;
     margin-bottom: 1.5rem;
-    line-height: 1.8;
+    font-size: 0.82rem;
   }
-  .admin-workflow-banner strong { color: var(--accent-cyan); }
+  .wf-icon { color: var(--accent-cyan); font-size: 0.75rem; margin-right: 0.2rem; }
+  .wf-arr { color: rgba(77,184,212,0.5); font-size: 1.1rem; line-height: 1; }
+  .wf-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .wf-item--key { color: var(--accent-cyan); font-weight: 700; }
+  .wf-item--reset { color: #f87171; font-weight: 700; }
+  .wf-n {
+    background: rgba(77,184,212,0.18);
+    color: var(--accent-cyan);
+    font-weight: 800;
+    font-size: 0.6rem;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .wf-item--reset .wf-n { background: rgba(248,113,113,0.18); color: #f87171; }
   .admin-workflow-banner code {
-    background: rgba(77,184,212,0.1);
+    background: rgba(77,184,212,0.12);
     padding: 1px 5px;
     border-radius: 3px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #6ec5d6;
   }
-  .admin-workflow-banner .wf-sep { color: rgba(77,184,212,0.4); margin: 0 2px; }
-  .admin-workflow-banner .wf-note { color: #5a7a96; font-style: italic; }
 
   .admin-topbar {
     display: flex;
