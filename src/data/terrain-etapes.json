@@ -175,42 +175,6 @@
       "distanceDepuisDepart": 2100,
       "description": "Lyon — industrie pharma, fintech, data platforms, pôle Lumière.",
       "dateEstimee": "2026-06-19"
-    },
-    {
-      "id": 12,
-      "ville": "Grenoble",
-      "region": "Auvergne-Rhône-Alpes",
-      "lat": 45.1885,
-      "lng": 5.7245,
-      "type": "etape",
-      "statut": "planifie",
-      "distanceDepuisDepart": 2220,
-      "description": "Grenoble — semi-conducteurs, énergie, recherche scientifique et data.",
-      "dateEstimee": "2026-06-24"
-    },
-    {
-      "id": 13,
-      "ville": "Strasbourg",
-      "region": "Grand Est",
-      "lat": 48.5734,
-      "lng": 7.7521,
-      "type": "etape",
-      "statut": "planifie",
-      "distanceDepuisDepart": 2650,
-      "description": "Strasbourg — carrefour européen, institutions, data transfrontalière.",
-      "dateEstimee": "2026-07-03"
-    },
-    {
-      "id": 14,
-      "ville": "Lille",
-      "region": "Hauts-de-France",
-      "lat": 50.6292,
-      "lng": 3.0573,
-      "type": "etape",
-      "statut": "planifie",
-      "distanceDepuisDepart": 3150,
-      "description": "Lille — distribution, e-commerce, French Tech et retour vers l'Île-de-France.",
-      "dateEstimee": "2026-07-12"
     }
   ],
   "journal": [
