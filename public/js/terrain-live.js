@@ -72,10 +72,14 @@
 
     // --- Route info (hero) ---
     const proj = d.projet || {};
-    if (proj.kmTotal != null) setText('live-km-total', proj.kmTotal);
+    if (proj.kmTotal != null) {
+      setText('live-km-total', proj.kmTotal);
+      setText('live-km-total2', proj.kmTotal);
+    }
     if (proj.nbEtapes != null) {
       setText('live-nb-etapes', proj.nbEtapes);
-      setText('live-nb-villes', proj.nbEtapes + ' villes fran\u00e7aises');
+      setText('live-nb-villes', proj.nbEtapes + ' villes françaises');
+      setText('live-nb-villes2', proj.nbEtapes);
     }
     if (proj.periode != null) setText('live-periode', proj.periode);
 

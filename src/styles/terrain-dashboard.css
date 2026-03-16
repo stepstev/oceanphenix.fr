@@ -133,6 +133,57 @@
   text-decoration: underline;
 }
 
+/* ---- Suivi entreprises ---- */
+.tdash-suivi {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(77, 184, 212, 0.04);
+  border: 1px solid rgba(77, 184, 212, 0.12);
+  border-radius: var(--radius-sm);
+  margin-top: 0.25rem;
+}
+
+.tdash-suivi-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.tdash-suivi-title i { color: var(--accent-cyan); font-size: 0.68rem; }
+
+.tdash-suivi-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tdash-suivi-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--accent-cyan);
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.25);
+  border-radius: 20px;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.tdash-suivi-link:hover {
+  background: rgba(77, 184, 212, 0.18);
+  border-color: rgba(77, 184, 212, 0.5);
+}
+.tdash-suivi-link i { font-size: 0.65rem; opacity: 0.85; }
+
 /* ---- Sidebar ---- */
 .tdash-sidebar {
   padding: 0 0 0 1rem;
