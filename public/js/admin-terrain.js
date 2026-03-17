@@ -190,6 +190,12 @@
   function updateVisibilityBtn() {
     var btn = document.getElementById('admin-visibility-btn');
     if (!btn) return;
+    // Si aucune entrée localStorage, on initialise depuis la valeur baked du JSON
+    if (localStorage.getItem(PUBLIC_KEY) === null) {
+      if (etapesData.isPublic === true) {
+        localStorage.setItem(PUBLIC_KEY, '1');
+      }
+    }
     var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
     btn.className = 'admin-visibility-btn ' + (isPublic ? 'is-public' : 'is-private');
   }

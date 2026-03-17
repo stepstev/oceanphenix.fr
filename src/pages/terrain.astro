@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import terrainData from '../data/terrain-etapes.json';
-const buildPublic = terrainData.isPublic === true;
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import CopyrightBar from '../components/CopyrightBar.astro';
@@ -12,6 +10,7 @@ import '../styles/terrain.css';
 import '../styles/terrain-dashboard.css';
 import etapesData from '../data/terrain-etapes.json';
 
+const buildPublic = etapesData.isPublic === true;
 const etapes = etapesData.etapes;
 const position = etapesData.positionActuelle;
 const journal = etapesData.journal;
@@ -96,7 +95,7 @@ const gpxFiles = etapesData.gpxFiles || [];
         <div class="terrain-hero-manifesto">
 
           <p class="thm-date">
-            Avril&nbsp;2026. Je prends mon vélo. Et je traverse la France.
+            Avril&nbsp;2026. à 58 ans, Je prends mon vélo. Et je traverse la France.
           </p>
 
           <div class="thm-tension">
@@ -155,14 +154,13 @@ const gpxFiles = etapesData.gpxFiles || [];
             <div class="terrain-vision-icon"><i class="fas fa-ear-listen"></i></div>
             <h3>Écouter le terrain</h3>
             <p>
-              En plus de 20&nbsp;ans dans l’IT, un constat s’impose&nbsp;: dans toutes les
-              organisations où je suis passé, <strong>les personnes qui connaissent vraiment
-              les problèmes ne sont pas celles qu’on écoute en réunion.</strong>
+              En plus de 20&nbsp;ans d'IT, j'ai fait un constat honnête. Le monde s'emballe.
+              Les crises s'enchaînent. Et dans les organisations comme partout ailleurs,
+              <strong>ceux qui connaissent vraiment les problèmes ne sont pas ceux qu'on écoute.</strong>
             </p>
             <p class="terrain-vision-card-detail">
-              Ce voyage, c’est une tentative d’inverser ça.
-              Aller vers vous. Pas vers vos slides.
-              Vers ce que vous vivez vraiment.
+              Ce voyage, c'est une tentative d'inverser ça.<br />
+              Aller vers vous. Vers ce que vous vivez vraiment.
             </p>
           </div>
 
@@ -170,13 +168,13 @@ const gpxFiles = etapesData.gpxFiles || [];
             <div class="terrain-vision-icon"><i class="fas fa-puzzle-piece"></i></div>
             <h3>Identifier les pain&nbsp;points</h3>
             <p>
-              Vous savez exactement où ça coince. La donnée qu’on n’ose pas remettre en question.
+              Vous savez exactement où ça coince. Les problèmes qu'on n'ose pas remettre en question.
               Le rapport que tout le monde reçoit <strong>et que personne ne lit.</strong>
-              L’outil acheté trop vite, adopté trop tard, <em>abandonné en silence.</em>
+              L'outil acheté trop vite &mdash; et trop cher &mdash; adopté trop tard, <em>abandonné en silence.</em> Politiquement.
             </p>
             <p class="terrain-vision-card-detail">
-              Ces choses-là, certains les portent souvent seuls.
-              Ce projet existe pour ces raisons.
+              Ces choses-là, certains les portent seuls depuis des années.<br />
+              C'est pour eux que ce projet est imaginé.
             </p>
           </div>
 
@@ -184,13 +182,14 @@ const gpxFiles = etapesData.gpxFiles || [];
             <div class="terrain-vision-icon"><i class="fas fa-network-wired"></i></div>
             <h3>Connecter les acteurs</h3>
             <p>
-              Des équipes data qui n’en peuvent plus de chercher le bon profil.
-              Des consultants expérimentés qu’on ghoste sans explication.
-              <strong>Deux mondes qui ont besoin l’un de l’autre… et qui ne se trouvent pas.</strong>
+              Les crises nous rappellent une vérité simple&nbsp;: ce qui tient, ce sont les liens humains.
+              Des équipes data qui n'en peuvent plus de chercher. Des consultants expérimentés
+              qu'on ghoste sans explication.
+              <strong>Deux mondes qui ont besoin l'un de l'autre &mdash; et qui ne se trouvent pas.</strong>
             </p>
             <p class="terrain-vision-card-detail">
-              Peut-être que l’important, c’est de faire le chemin entre les deux.
-              À vélo si nécessaire&nbsp;!
+              Peut-être que l'important, c'est juste de faire le chemin entre les deux.<br />
+              À vélo si nécessaire.
             </p>
           </div>
 
@@ -198,14 +197,13 @@ const gpxFiles = etapesData.gpxFiles || [];
             <div class="terrain-vision-icon"><i class="fas fa-bicycle"></i></div>
             <h3>Le vélo comme vecteur</h3>
             <p>
-              À vélo, on n’impressionne personne. On arrive essoufflé, on accepte le café,
-              on s’assoit vraiment et on écoute.
-              <strong>C’est dans ces moments sans agenda que les gens disent ce qu’ils pensent
-              vraiment.</strong>
+              Quand tout s'emballe, le vélo impose la lenteur. À vélo, on n'impressionne personne.
+              On arrive fatigué. On accepte le café. On s'assoit vraiment. On écoute.
+              <strong>C'est dans ces moments sans agenda que les gens disent ce qu'ils pensent vraiment.</strong>
             </p>
             <p class="terrain-vision-card-detail">
-              Pas ce qu’il faut dire. Ce qu’ils ressentent.
-              C’est pour ça que j’ai choisi le vélo.
+              Pas ce qu'il faudrait dire. Ce qu'ils ressentent.<br />
+              J'ai choisi le vélo pour ça.
             </p>
           </div>
 
@@ -214,15 +212,18 @@ const gpxFiles = etapesData.gpxFiles || [];
         <!-- Bloc de clôture -->
         <div class="terrain-vision-closing">
           <p class="terrain-vision-closing-main">
-            Si vous vous reconnaissez dans l’un de ces situations…
-            <strong>écrivez-moi.</strong> Ou partagez ce projet à quelqu’un qui cherche sans trouver.
+            Si vous êtes CDO, DSI, Data Manager, responsable BI &mdash; et que vous vous reconnaissez ici&nbsp;:
+            <a href="#contact-terrain" class="tvc-link"><strong>écrivez-moi.</strong></a><br />
+            Si vous êtes consultant, freelance, Data Analyst, Data Engineer, PO data &mdash; disponible ou bientôt&nbsp;:
+            <a href="#contact-terrain" class="tvc-link"><strong>écrivez-moi aussi.</strong></a>
           </p>
           <p class="terrain-vision-closing-sub">
-            Ce n’est pas commercial. C’est humain.
+            Ou commentez sur LinkedIn. Republiez. Partagez à quelqu'un qui cherche sans trouver.<br />
+            Ce n'est pas un acte commercial. C'est humain.
           </p>
           <p class="terrain-vision-closing-sign">
-            <em>C’est comme ça qu’on change les choses. Kilomètre après kilomètre.</em><br />
-            En tout cas — de mon côté, j’essaierai.
+            <em>On peut changer les choses. Petit à petit. Kilomètre après kilomètre.</em><br />
+            En tout cas &mdash; de mon côté, j'essaierai. Et j'en ai besoin.
           </p>
         </div>
       </div>
