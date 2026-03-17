@@ -124,10 +124,22 @@ const gpxFiles = etapesData.gpxFiles || [];
           <a href="#carte" class="terrain-cta terrain-cta--primary">
             <i class="fas fa-map"></i> Voir la carte
           </a>
+          <a href="https://cal.com/stephanetourdata2026" target="_blank" rel="noopener" class="terrain-cta terrain-cta--rdv">
+            <i class="fas fa-calendar-check"></i> Prendre RDV
+          </a>
           <a href="#contact-terrain" class="terrain-cta terrain-cta--secondary">
             <i class="fas fa-handshake"></i> Me contacter
           </a>
         </div>
+
+        <!-- Scroll indicator -->
+        <a href="#vision" class="terrain-scroll-indicator" aria-label="Défiler vers le bas">
+          <svg class="terrain-scroll-svg" viewBox="0 0 30 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="1" y="1" width="28" height="48" rx="14" ry="14"
+              fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            <circle class="terrain-scroll-dot" cx="15" cy="12" r="4" fill="currentColor"/>
+          </svg>
+        </a>
 
       </div>
     </section>
@@ -213,9 +225,9 @@ const gpxFiles = etapesData.gpxFiles || [];
         <div class="terrain-vision-closing">
           <p class="terrain-vision-closing-main">
             Si vous êtes CDO, DSI, Data Manager, responsable BI &mdash; et que vous vous reconnaissez ici&nbsp;:
-            <a href="#contact-terrain" class="tvc-link"><strong>écrivez-moi.</strong></a><br />
+            <a href="#rdv" class="tvc-link"><strong>prenez rendez-vous.</strong></a><br />
             Si vous êtes consultant, freelance, Data Analyst, Data Engineer, PO data &mdash; disponible ou bientôt&nbsp;:
-            <a href="#contact-terrain" class="tvc-link"><strong>écrivez-moi aussi.</strong></a>
+            <a href="#rdv" class="tvc-link"><strong>réservez un créneau.</strong></a>
           </p>
           <p class="terrain-vision-closing-sub">
             Ou commentez sur LinkedIn. Republiez. Partagez à quelqu'un qui cherche sans trouver.<br />
@@ -269,6 +281,71 @@ const gpxFiles = etapesData.gpxFiles || [];
             <span class="legend-switch"></span>
           </label>
 
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== -->
+    <!-- RDV / CAL.COM                  -->
+    <!-- ============================== -->
+    <section class="terrain-section terrain-section--rdv" id="rdv">
+      <div class="terrain-container">
+        <div class="terrain-section-badge">
+          <i class="fas fa-calendar-check"></i> PRISE DE RENDEZ-VOUS
+        </div>
+        <h2 class="terrain-section-title">
+          <span class="gradient-text">Rencontrons-nous</span>
+        </h2>
+        <p class="terrain-section-desc">
+          Vous êtes sur mon parcours&nbsp;? Envie d'échanger autour de vos besoins data, d'une opportunité de
+          collaboration, ou simplement de parler du projet&nbsp;? Réservez directement un créneau dans mon agenda.
+        </p>
+
+        <div class="terrain-rdv-card">
+          <div class="terrain-rdv-card-left">
+            <img src="/Images/moi_detour.png" alt="Stéphane Celton" class="terrain-rdv-avatar" loading="lazy" />
+            <div class="terrain-rdv-info">
+              <strong>Stéphane Celton</strong>
+              <span>Data Product Manager</span>
+              <span class="terrain-rdv-info-sub">OceanPhenix · Parcours Terrain 2026</span>
+            </div>
+          </div>
+
+          <div class="terrain-rdv-card-right">
+            <div class="terrain-rdv-options">
+              <div class="terrain-rdv-option">
+                <i class="fas fa-building"></i>
+                <div>
+                  <span>Entreprise / DSI / CDO</span>
+                  <small>Diagnostic data, échanges terrain</small>
+                </div>
+              </div>
+              <div class="terrain-rdv-option">
+                <i class="fas fa-code"></i>
+                <div>
+                  <span>Consultant · Freelance · Data</span>
+                  <small>Mise en relation, réseau</small>
+                </div>
+              </div>
+              <div class="terrain-rdv-option">
+                <i class="fas fa-handshake"></i>
+                <div>
+                  <span>Sponsor · Partenaire</span>
+                  <small>Soutenir le projet</small>
+                </div>
+              </div>
+            </div>
+
+            <a
+              href="https://cal.com/stephanetourdata2026"
+              target="_blank"
+              rel="noopener"
+              class="terrain-cta terrain-cta--rdv terrain-cta--rdv-large"
+            >
+              <i class="fas fa-calendar-check"></i>
+              Réserver un créneau
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -355,7 +432,7 @@ const gpxFiles = etapesData.gpxFiles || [];
                 <span class="terrain-journal-ville">— {entry.ville}</span>
               </div>
               <h3 class="terrain-journal-titre">{entry.titre}</h3>
-              <p>{entry.contenu}</p>
+              <p class="terrain-journal-contenu" set:html={entry.contenu.replace(/\n/g, '<br>')}></p>
               <div class="terrain-journal-tags">
                 {entry.tags.map((tag: string) => (
                   <span class="terrain-tag">{tag}</span>

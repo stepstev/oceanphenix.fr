@@ -31,10 +31,7 @@
     "etapeEnCours": null,
     "prochaineEtape": "Caen",
     "joursPrevus": 3,
-    "photos": [
-      "/Images/terrain/velo-01.jpg",
-      "/Images/terrain/terrain-01.jpg"
-    ]
+    "photos": []
   },
   "positionActuelle": {
     "ville": "Fontenay-lès-Briis",

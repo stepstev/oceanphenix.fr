@@ -150,7 +150,7 @@
           '<span class="terrain-journal-ville">— ' + escapeHtml(entry.ville || '') + '</span>' +
           '</div>' +
           '<h3 class="terrain-journal-titre">' + escapeHtml(entry.titre || '') + '</h3>' +
-          '<p>' + escapeHtml(entry.contenu || '') + '</p>';
+          '<p class="terrain-journal-contenu">' + escapeHtml(entry.contenu || '').replace(/\n/g, '<br>') + '</p>';
         if (entry.tags?.length) {
           jhtml += '<div class="terrain-journal-tags">';
           entry.tags.forEach(function (tag) {
