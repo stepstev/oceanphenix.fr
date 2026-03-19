@@ -339,6 +339,21 @@ import etapesData from '../data/terrain-etapes.json';
           <button id="journal-add-btn" class="admin-btn admin-btn--accent">
             <i class="fas fa-plus"></i> Ajouter au journal
           </button>
+
+          <div class="admin-export-journal-box">
+            <div class="admin-export-journal-info">
+              <i class="fas fa-info-circle"></i>
+              Les entrées du journal sont stockées dans votre navigateur. Cliquez le bouton ci-dessous — le journal est écrit dans le source et le build se lance automatiquement. Il ne reste plus qu'à uploader <code>dist/</code> sur O2switch.
+            </div>
+            <div class="admin-export-journal-steps">
+              <span><strong>1.</strong> Cliquez le bouton</span>
+              <span style="opacity:0.4">› • • • ›</span>
+              <span><strong>4.</strong> Uploadez <code>dist/</code> sur O2switch</span>
+            </div>
+            <button id="journal-export-btn" class="admin-btn admin-btn--export-journal">
+              <i class="fas fa-file-export"></i> Exporter Journal → terrain-etapes.json
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1043,6 +1058,61 @@ import etapesData from '../data/terrain-etapes.json';
     font-size: var(--text-sm);
     color: var(--text-muted);
     line-height: 1.6;
+  }
+
+  /* Export Journal Box */
+  .admin-export-journal-box {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(77, 184, 212, 0.07);
+    border: 1px solid rgba(77, 184, 212, 0.25);
+    border-radius: var(--radius-md, 12px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+
+  .admin-export-journal-info {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .admin-export-journal-info i {
+    color: var(--accent-cyan, #4db8d4);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .admin-export-journal-steps {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.6rem;
+    font-size: 0.78rem;
+    color: var(--text-light);
+  }
+
+  .admin-export-journal-steps span { display: flex; align-items: center; gap: 0.25rem; }
+  .admin-export-journal-steps code {
+    background: rgba(255,255,255,0.07);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.74rem;
+    color: var(--accent-cyan, #4db8d4);
+  }
+
+  .admin-btn--export-journal {
+    background: rgba(77, 184, 212, 0.15);
+    border: 1.5px solid rgba(77, 184, 212, 0.5);
+    color: var(--accent-cyan, #4db8d4);
+    align-self: flex-start;
+  }
+
+  .admin-btn--export-journal:hover {
+    background: rgba(77, 184, 212, 0.28);
   }
 
   .admin-journal-tags {

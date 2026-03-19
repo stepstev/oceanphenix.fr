@@ -52,7 +52,7 @@ style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.clou
 font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; \
 img-src 'self' data: https:; \
 frame-src https://www.youtube.com https://www.youtube-nocookie.com https://giscus.app; \
-connect-src 'self' https://*.tile.openstreetmap.org https://*.cyclosm.openstreetmap.fr https://tile.waymarkedtrails.org; \
+connect-src 'self' http://localhost:4399 https://*.tile.openstreetmap.org https://*.cyclosm.openstreetmap.fr https://tile.waymarkedtrails.org; \
 media-src 'self'"
 
   # Autres headers de sécurité
@@ -75,6 +75,10 @@ media-src 'self'"
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
+
+# ── Page d'entrée : racine → /terrain/ ──────────────────────
+# Redirige uniquement "/" vers "/terrain/" (les autres URLs ne sont pas affectées)
+RedirectMatch 301 ^/$ /terrain/
 
 # ── Bloc accès fichiers sensibles ────────────────────────────
 <FilesMatch "\.(md|env|lock|yml|yaml)$">

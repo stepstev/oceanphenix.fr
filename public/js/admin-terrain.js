@@ -175,7 +175,41 @@
     a.download = 'terrain-etapes.json';
     a.click();
     URL.revokeObjectURL(url);
-    showToast('\u2705 JSON export\u00e9 \u2014 1) remplacez src/data/terrain-etapes.json  2) npx astro build  3) git push');
+    showToast('\u2705 JSON export\u00e9 \u2014 1) remplacez src/data/terrain-etapes.json  2) npm run build  3) uploadez dist/ sur O2switch');
+  }
+
+  function exportJournalJson() {
+    collectDashboard();
+    collectPosition();
+    const exportData = cleanExportData();
+    const nbJournal = (exportData.journal || []).length;
+    const json = JSON.stringify(exportData, null, 2);
+
+    // Tente envoi direct vers l'API locale (node admin-api.cjs)
+    var btn = document.getElementById('journal-export-btn');
+    if (btn) { btn.disabled = true; btn.textContent = '\u23f3 Build en cours...'; }
+
+    fetch('http://localhost:4399/update-journal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: json
+    }).then(function(r) { return r.json(); }).then(function(result) {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-export"></i> Exporter Journal \u2192 terrain-etapes.json'; }
+      if (result.ok) {
+        showToast('\u2705 ' + nbJournal + ' entr\u00e9e(s) écrites + build termin\u00e9 \u2014 uploadez dist/ sur O2switch');
+      } else {
+        showToast('\u26a0\ufe0f Erreur build : ' + result.error);
+      }
+    }).catch(function() {
+      // API locale non d\u00e9marr\u00e9e — fallback : t\u00e9l\u00e9chargement
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-export"></i> Exporter Journal \u2192 terrain-etapes.json'; }
+      var blob = new Blob([json], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'terrain-etapes.json'; a.click();
+      URL.revokeObjectURL(url);
+      showToast('\u26a0\ufe0f API locale non d\u00e9marr\u00e9e (node admin-api.cjs) \u2014 JSON t\u00e9l\u00e9charg\u00e9 manuellement');
+    });
   }
 
   function resetCache() {
@@ -627,6 +661,9 @@
       collectDashboard();
       collectPosition();
       exportJson();
+    });
+    document.getElementById('journal-export-btn').addEventListener('click', function() {
+      exportJournalJson();
     });
     document.getElementById('admin-import-btn').addEventListener('click', function() {
       document.getElementById('admin-import-file').click();
