@@ -22,9 +22,9 @@
 
     <ul class="nav-links" id="nav-links">
       <li id="nav-terrain"><a href="/terrain"><i class="fas fa-bicycle"></i> TourData</a></li>
-      <li><a href="/index.html#home"><i class="fas fa-home"></i> Accueil</a></li>
+      <li><a href="/strava"><i class="fab fa-strava"></i> Strava</a></li>
+      <li><a href="/index.html#home"><i class="fas fa-home"></i> Solutions</a></li>
       <li><a href="/expertises"><i class="fas fa-briefcase"></i> Expertises</a></li>
-      <li><a href="/index.html#platforms"><i class="fas fa-chart-bar"></i> Data BI &amp; AI</a></li>
       <li><a href="/admin-terrain" class="nav-admin-link" title="Administration"><i class="fas fa-cog"></i> Admin</a></li>
       <li>
         <a href="https://www.linkedin.com/in/stephane-celton" target="_blank" rel="noopener">
@@ -58,7 +58,7 @@
           } catch(e) {}
         }
         if (!ok) {
-          var el = document.getElementById('nav-terrain');
+          const el = document.getElementById('nav-terrain');
           if (el) el.style.display = 'none';
         }
       })();

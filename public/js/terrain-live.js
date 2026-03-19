@@ -15,10 +15,10 @@
 
   const statusConfig = {
     'Pr\u00e9paration': { css: 'terrain-status-badge--preparation', icon: 'fa-tools' },
-    'En route':       { css: 'terrain-status-badge--enroute',      icon: 'fa-bicycle' },
-    '\u00c9tape':     { css: 'terrain-status-badge--etape',        icon: 'fa-map-pin' },
-    'Repos':          { css: 'terrain-status-badge--repos',        icon: 'fa-bed' },
-    'Termin\u00e9':   { css: 'terrain-status-badge--termine',      icon: 'fa-check-circle' }
+    'En route':         { css: 'terrain-status-badge--enroute',      icon: 'fa-bicycle' },
+    '\u00c9tape':       { css: 'terrain-status-badge--etape',        icon: 'fa-map-pin' },
+    'Repos':            { css: 'terrain-status-badge--repos',        icon: 'fa-bed' },
+    'Termin\u00e9':     { css: 'terrain-status-badge--termine',      icon: 'fa-check-circle' }
   };
 
   function updatePositionBadge(statut) {
@@ -47,131 +47,131 @@
     const el = document.getElementById('live-position-info');
     if (!el) return;
     const dateStr = pos.dateDepart || '';
-    const desc = statusTexts[pos.statut] || statusTexts['Préparation'];
+    const desc = statusTexts[pos.statut] || statusTexts['Pr\u00e9paration'];
     el.innerHTML = 'D\u00e9part pr\u00e9vu le <strong id="live-position-depart">' + escapeHtml(dateStr) + '</strong>. ' + escapeHtml(desc);
+  }
+
+  // ── Helpers extracted from applyLiveData ──────────────────────────────────
+
+  function applyLastSaved(lastSaved) {
+    if (!lastSaved) return;
+    const updEl = document.getElementById('live-updated-at');
+    if (!updEl) return;
+    try {
+      const dt = new Date(lastSaved);
+      updEl.textContent = '\u26a1 Donn\u00e9es live \u2014 maj : ' + dt.toLocaleString('fr-FR');
+      updEl.style.display = 'block';
+    } catch { /* skip */ }
+  }
+
+  function applyProjectStats(proj) {
+    if (proj.kmTotal != null) {
+      setText('live-km-total',  proj.kmTotal);
+      setText('live-km-total2', proj.kmTotal);
+    }
+    if (proj.nbEtapes != null) {
+      setText('live-nb-etapes',  proj.nbEtapes);
+      setText('live-nb-villes',  proj.nbEtapes + ' villes fran\u00e7aises');
+      setText('live-nb-villes2', proj.nbEtapes);
+    }
+    if (proj.periode != null) setText('live-periode', proj.periode);
+  }
+
+  function applyDashStats(dash, pos) {
+    setText('live-km',            dash.kmParcourus ?? '');
+    setText('live-jours',         dash.joursPrevus ?? '');
+    setText('live-jours-route',   dash.joursRoute ?? '');
+    setText('live-jours-bar',     dash.joursPrevus ?? '');
+    setText('live-besoins',       dash.besoinsIdentifies ?? '');
+    setText('live-rencontres',    dash.rencontresEntreprises ?? '');
+    setText('live-besoins-m',     dash.besoinsIdentifies ?? '');
+    setText('live-rencontres-m',  dash.rencontresEntreprises ?? '');
+    setText('live-status',        dash.etapeEnCours || pos.statut || '');
+    const prochaine = dash.prochaineEtape || '';
+    setText('live-prochaine',     prochaine);
+    setText('live-route-arrivee', prochaine);
+  }
+
+  function findDepartVille(etapes, pos) {
+    for (const etape of etapes) {
+      if (etape.statut === 'depart' || etape.statut === 'actuel') return etape.ville;
+    }
+    return pos.ville || '';
+  }
+
+  function applyPhotos(photosEl, photos) {
+    if (!photosEl || !photos) return;
+    photosEl.innerHTML = '';
+    photos.forEach(function (src) {
+      const thumb = document.createElement('div');
+      thumb.className = 'tdash-thumb';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'Photo terrain';
+      img.loading = 'lazy';
+      img.addEventListener('error', function () { thumb.style.display = 'none'; });
+      thumb.appendChild(img);
+      photosEl.appendChild(thumb);
+    });
+  }
+
+  function applyJournal(journalEl, journal) {
+    if (!journalEl || !journal.length) return;
+    let jhtml = '';
+    journal.forEach(function (entry) {
+      jhtml += '<div class="terrain-journal-entry">' +
+        '<div class="terrain-journal-date">' +
+        '<i class="fas fa-calendar-day"></i> ' + escapeHtml(entry.date || '') +
+        '<span class="terrain-journal-ville">\u2014 ' + escapeHtml(entry.ville || '') + '</span>' +
+        '</div>' +
+        '<h3 class="terrain-journal-titre">' + escapeHtml(entry.titre || '') + '</h3>' +
+        '<p class="terrain-journal-contenu">' + escapeHtml(entry.contenu || '').replaceAll('\n', '<br>') + '</p>';
+      if (entry.tags?.length) {
+        jhtml += '<div class="terrain-journal-tags">';
+        entry.tags.forEach(function (tag) {
+          jhtml += '<span class="terrain-tag">' + escapeHtml(tag) + '</span>';
+        });
+        jhtml += '</div>';
+      }
+      jhtml += '</div>';
+    });
+    journalEl.innerHTML = jhtml;
+  }
+
+  function applyMaps(etapes) {
+    if (!etapes.length) return;
+    if (globalThis._terrainMainMap) {
+      rebuildMapMarkers(globalThis._terrainMainMap, etapes, false);
+      addCwFlags(globalThis._terrainMainMap, false);
+    }
+    if (globalThis._terrainDashMap) {
+      rebuildMapMarkers(globalThis._terrainDashMap, etapes, true);
+      addCwFlags(globalThis._terrainDashMap, true);
+    }
   }
 
   function applyLiveData(d) {
     if (!d) return;
-    const dash = d.dashboard || {};
-    const pos = d.positionActuelle || {};
-    const etapes = d.etapes || [];
+    const dash    = d.dashboard || {};
+    const pos     = d.positionActuelle || {};
+    const etapes  = d.etapes || [];
     const journal = d.journal || [];
 
-    // --- Show last-updated indicator ---
-    if (d._lastSaved) {
-      const updEl = document.getElementById('live-updated-at');
-      if (updEl) {
-        try {
-          const dt = new Date(d._lastSaved);
-          updEl.textContent = '\u26a1 Donn\u00e9es live \u2014 maj : ' + dt.toLocaleString('fr-FR');
-          updEl.style.display = 'block';
-        } catch { /* skip */ }
-      }
-    }
+    applyLastSaved(d._lastSaved);
+    applyProjectStats(d.projet || {});
+    applyDashStats(dash, pos);
 
-    // --- Route info (hero) ---
-    const proj = d.projet || {};
-    if (proj.kmTotal != null) {
-      setText('live-km-total', proj.kmTotal);
-      setText('live-km-total2', proj.kmTotal);
-    }
-    if (proj.nbEtapes != null) {
-      setText('live-nb-etapes', proj.nbEtapes);
-      setText('live-nb-villes', proj.nbEtapes + ' villes françaises');
-      setText('live-nb-villes2', proj.nbEtapes);
-    }
-    if (proj.periode != null) setText('live-periode', proj.periode);
-
-    // --- Dashboard stats ---
-    setText('live-km', dash.kmParcourus != null ? dash.kmParcourus : '');
-    setText('live-jours', dash.joursPrevus != null ? dash.joursPrevus : '');
-    setText('live-jours-route', dash.joursRoute != null ? dash.joursRoute : '');
-    setText('live-jours-bar', dash.joursPrevus != null ? dash.joursPrevus : '');
-    setText('live-besoins', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
-    setText('live-rencontres', dash.rencontresEntreprises != null ? dash.rencontresEntreprises : '');
-    setText('live-besoins-m', dash.besoinsIdentifies != null ? dash.besoinsIdentifies : '');
-    setText('live-rencontres-m', dash.rencontresEntreprises != null ? dash.rencontresEntreprises : '');
-    setText('live-status', dash.etapeEnCours || pos.statut || '');
-
-    // Prochaine étape
-    const prochaine = dash.prochaineEtape || '';
-    setText('live-prochaine', prochaine);
-    setText('live-route-arrivee', prochaine);
-
-    // Départ
-    let departVille = '';
-    for (const etape of etapes) {
-      if (etape.statut === 'depart' || etape.statut === 'actuel') {
-        departVille = etape.ville;
-        break;
-      }
-    }
-    if (!departVille && pos.ville) departVille = pos.ville;
-    setText('live-route-depart', departVille);
-
-    // --- Position section ---
-    setText('live-position-ville', pos.ville || '');
-    setText('live-position-statut', pos.statut || '');
+    setText('live-route-depart',   findDepartVille(etapes, pos));
+    setText('live-position-ville',  pos.ville      || '');
+    setText('live-position-statut', pos.statut     || '');
     setText('live-position-depart', pos.dateDepart || '');
     setText('live-depart-date-bar', pos.dateDepart || '');
-
-    // --- Position badge: class + icon based on statut ---
     updatePositionBadge(pos.statut || '');
-
-    // --- Position info text ---
     updatePositionInfo(pos);
 
-    // --- Photos (using DOM API to avoid inline onerror) ---
-    const photosEl = document.getElementById('live-photos');
-    if (photosEl && dash.photos) {
-      photosEl.innerHTML = '';
-      dash.photos.forEach(function (src) {
-        const thumb = document.createElement('div');
-        thumb.className = 'tdash-thumb';
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = 'Photo terrain';
-        img.loading = 'lazy';
-        img.addEventListener('error', function () { thumb.style.display = 'none'; });
-        thumb.appendChild(img);
-        photosEl.appendChild(thumb);
-      });
-    }
-
-    // --- Journal ---
-    const journalEl = document.getElementById('live-journal');
-    if (journalEl && journal.length > 0) {
-      let jhtml = '';
-      journal.forEach(function (entry) {
-        jhtml += '<div class="terrain-journal-entry">' +
-          '<div class="terrain-journal-date">' +
-          '<i class="fas fa-calendar-day"></i> ' + escapeHtml(entry.date || '') +
-          '<span class="terrain-journal-ville">— ' + escapeHtml(entry.ville || '') + '</span>' +
-          '</div>' +
-          '<h3 class="terrain-journal-titre">' + escapeHtml(entry.titre || '') + '</h3>' +
-          '<p class="terrain-journal-contenu">' + escapeHtml(entry.contenu || '').replace(/\n/g, '<br>') + '</p>';
-        if (entry.tags?.length) {
-          jhtml += '<div class="terrain-journal-tags">';
-          entry.tags.forEach(function (tag) {
-            jhtml += '<span class="terrain-tag">' + escapeHtml(tag) + '</span>';
-          });
-          jhtml += '</div>';
-        }
-        jhtml += '</div>';
-      });
-      journalEl.innerHTML = jhtml;
-    }
-
-    // --- Update Leaflet map markers if maps exist ---
-    if (etapes.length && globalThis._terrainMainMap) {
-      rebuildMapMarkers(globalThis._terrainMainMap, etapes, false);
-      addCwFlags(globalThis._terrainMainMap, false);
-    }
-    if (etapes.length && globalThis._terrainDashMap) {
-      rebuildMapMarkers(globalThis._terrainDashMap, etapes, true);
-      addCwFlags(globalThis._terrainDashMap, true);
-    }
+    applyPhotos(document.getElementById('live-photos'), dash.photos);
+    applyJournal(document.getElementById('live-journal'), journal);
+    applyMaps(etapes);
   }
 
   function rebuildMapMarkers(map, etapes, compact) {
@@ -185,7 +185,7 @@
     etapes.forEach(function (etape) {
       if (etape.visible === false) return;
       const color = colors[etape.statut] || colors.planifie;
-      const baseRadius = compact ? 5 : 7;
+      const baseRadius   = compact ? 5 : 7;
       const activeRadius = compact ? 8 : 10;
       const radius = etape.statut === 'actuel' ? activeRadius : baseRadius;
       const marker = L.circleMarker([etape.lat, etape.lng], {
@@ -200,31 +200,31 @@
         }).addTo(map);
         map._routeLayers.push(halo);
       }
-      if (!compact) {
+      if (compact) {
+        marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
+      } else {
         marker.bindPopup(
           '<div style="font-family:Inter,sans-serif;min-width:200px;">' +
           '<strong style="font-size:14px;color:#0b1a2e;">' + etape.ville + '</strong>' +
           '<br><span style="color:#666;font-size:12px;">' + etape.region + '</span>' +
-          '<br><span style="color:#888;font-size:11px;">Étape ' + etape.id + ' / 14 — ' + etape.distanceDepuisDepart + ' km</span>' +
+          '<br><span style="color:#888;font-size:11px;">\u00c9tape ' + etape.id + ' / 14 \u2014 ' + etape.distanceDepuisDepart + ' km</span>' +
           '<hr style="margin:6px 0;border:0;border-top:1px solid #e5e7eb;">' +
           '<p style="font-size:12px;color:#444;margin:0;">' + etape.description + '</p>' +
-          '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estimée : ' + etape.dateEstimee + '</p></div>'
+          '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estim\u00e9e : ' + etape.dateEstimee + '</p></div>'
         );
-      } else {
-        marker.bindTooltip(etape.ville, { permanent: false, direction: 'top', className: 'tdash-tooltip' });
       }
       routeCoords.push({ lat: etape.lat, lng: etape.lng, statut: etape.statut });
     });
     // Draw segmented route: green solid for realized, dark blue dashed for planned
     for (let i = 0; i < routeCoords.length - 1; i++) {
       const from = routeCoords[i];
-      const to = routeCoords[i + 1];
+      const to   = routeCoords[i + 1];
       const realized = (from.statut === 'visite' || from.statut === 'actuel' || from.statut === 'depart') &&
-                     (to.statut === 'visite' || to.statut === 'actuel');
+                       (to.statut === 'visite' || to.statut === 'actuel');
       const seg = L.polyline([[from.lat, from.lng], [to.lat, to.lng]], {
-        color: realized ? '#22c55e' : '#1a6b8a',
-        weight: compact ? 2 : 2.5,
-        opacity: realized ? 0.8 : 0.5,
+        color:     realized ? '#22c55e' : '#1a6b8a',
+        weight:    compact ? 2 : 2.5,
+        opacity:   realized ? 0.8 : 0.5,
         dashArray: realized ? null : '8, 8',
       }).addTo(map);
       map._routeLayers.push(seg);
@@ -269,9 +269,9 @@
     if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'rtept');
     if (pts.length === 0) pts = doc.getElementsByTagNameNS('*', 'wpt');
     const coords = [];
-    for (let i = 0; i < pts.length; i++) {
-      const lat = Number.parseFloat(pts[i].getAttribute('lat'));
-      const lon = Number.parseFloat(pts[i].getAttribute('lon'));
+    for (const pt of pts) {
+      const lat = Number.parseFloat(pt.getAttribute('lat'));
+      const lon = Number.parseFloat(pt.getAttribute('lon'));
       if (!Number.isNaN(lat) && !Number.isNaN(lon)) coords.push([lat, lon]);
     }
     return coords;
@@ -282,7 +282,7 @@
     if (coords.length < 2) return;
     const layer = L.polyline(coords, {
       color: '#f59e0b', weight: 3, opacity: 0.8,
-    }).addTo(map).bindTooltip(name || 'Tracé GPX', { sticky: true });
+    }).addTo(map).bindTooltip(name || 'Trac\u00e9 GPX', { sticky: true });
     map._gpxLayers.push(layer);
   }
 
@@ -347,7 +347,9 @@
           iconAnchor: compact ? [2, 14] : [3, 18],
         });
         const m = L.marker([cw.lat, cw.lng], { icon: flagIcon }).addTo(map);
-        if (!compact) {
+        if (compact) {
+          m.bindTooltip(cw.nom || 'Coworking', { permanent: false, direction: 'top' });
+        } else {
           let popup = '<div style="font-family:Inter,sans-serif;min-width:180px;">' +
             '<strong style="font-size:13px;color:#0b1a2e;">' + (cw.nom || '') + '</strong>' +
             '<br><span style="color:#666;font-size:12px;"><i class="fas fa-map-marker-alt"></i> ' + (cw.ville || '') + '</span>';
@@ -355,8 +357,6 @@
           if (cw.url) popup += '<br><a href="' + cw.url + '" target="_blank" rel="noopener" style="font-size:11px;">Site web</a>';
           popup += '</div>';
           m.bindPopup(popup);
-        } else {
-          m.bindTooltip(cw.nom || 'Coworking', { permanent: false, direction: 'top' });
         }
         map._cwMarkers.push(m);
       });

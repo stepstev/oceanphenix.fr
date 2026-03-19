@@ -2,10 +2,10 @@
 // Usage : node admin-api.cjs  (ou : npm run api)
 // Reçoit le JSON du panel admin, écrit src/data/terrain-etapes.json, lance npm run build
 
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const { exec } = require('child_process');
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const { exec } = require('node:child_process');
 
 const PORT = 4399;
 const JSON_PATH = path.join(__dirname, 'src', 'data', 'terrain-etapes.json');

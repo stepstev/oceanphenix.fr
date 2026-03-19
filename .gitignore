@@ -17,5 +17,9 @@ Thumbs.db
 # FTP
 .ftpquota
 
+# Strava credentials — upload manuel sur serveur, jamais dans le repo
+public/api/strava-env.php
+public/api/strava-cache.json
+
 # Deploy archive
 dist-deploy.zip

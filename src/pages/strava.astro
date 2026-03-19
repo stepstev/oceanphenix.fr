@@ -1,0 +1,1246 @@
+---
+// src/pages/strava.astro — Suivi activités Strava en temps réel
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import CopyrightBar from '../components/CopyrightBar.astro';
+import OceanBackground from '../components/OceanBackground.astro';
+---
+
+<BaseLayout
+  title="Progression Strava — TourData 2026 | OceanPhenix"
+  description="Suivi en temps réel des activités Strava de Stéphane Celton — km parcourus, dénivelé, carte des parcours TourData 2026."
+  lastModified="19/03/2026 12:00"
+>
+  <link slot="head" rel="stylesheet" href="/lib/leaflet.min.css" />
+  <OceanBackground />
+  <Nav />
+
+  <main class="strava-page">
+    <div class="strava-container">
+
+      <!-- ══════════════════════════════════════════════════════
+           HERO — Profil athlète
+      ══════════════════════════════════════════════════════ -->
+      <header class="strava-hero">
+        <div class="strava-hero-brand">
+          <i class="fab fa-strava strava-brand-icon"></i>
+          <span class="strava-brand-label">TourData 2026</span>
+        </div>
+
+        <div class="strava-hero-profile">
+          <img id="strava-avatar" class="strava-avatar" src="" alt="Avatar Strava" style="display:none" />
+          <div class="strava-hero-info">
+            <h1 id="strava-athlete-name" class="strava-hero-name">
+              <span class="strava-name-loading">Chargement&hellip;</span>
+            </h1>
+            <p class="strava-hero-sub">
+              <i class="fas fa-map-marker-alt"></i>
+              <span id="strava-athlete-city">—</span>
+              &ensp;·&ensp;
+              <i class="fas fa-bicycle"></i> Activités via API Strava
+            </p>
+          </div>
+          <div class="strava-hero-status">
+            <button id="strava-refresh-btn" class="strava-refresh-btn" title="Rafraîchir">
+              <i class="fas fa-sync-alt" id="strava-refresh-icon"></i>
+            </button>
+            <div class="strava-status-row">
+              <span id="strava-status-dot" class="status-dot status-loading"></span>
+              <span id="strava-updated-at" class="strava-updated-label">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Erreur inline -->
+        <div id="strava-error" class="strava-error" style="display:none">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="strava-error-msg">Erreur de chargement</span>
+          <a id="strava-setup-link" href="#setup-guide" class="strava-link" style="display:none">
+            Voir la configuration →
+          </a>
+        </div>
+      </header>
+
+      <!-- ══════════════════════════════════════════════════════
+           STATS — 30 derniers jours
+      ══════════════════════════════════════════════════════ -->
+      <section class="strava-section" id="strava-stats-section">
+        <h2 class="strava-section-title">
+          <i class="fas fa-chart-line"></i> 30 derniers jours
+        </h2>
+        <div class="strava-kpi-grid">
+          <div class="strava-kpi strava-kpi--cyan">
+            <div class="kpi-header">
+              <i class="fas fa-route kpi-icon"></i>
+              <span class="kpi-label">Parcourus</span>
+            </div>
+            <div class="kpi-body">
+              <span class="kpi-value" id="stat-km">—</span>
+              <span class="kpi-unit">km</span>
+            </div>
+          </div>
+          <div class="strava-kpi strava-kpi--orange">
+            <div class="kpi-header">
+              <i class="fas fa-mountain kpi-icon"></i>
+              <span class="kpi-label">Dénivelé +</span>
+            </div>
+            <div class="kpi-body">
+              <span class="kpi-value" id="stat-elev">—</span>
+              <span class="kpi-unit">m</span>
+            </div>
+          </div>
+          <div class="strava-kpi strava-kpi--blue">
+            <div class="kpi-header">
+              <i class="fas fa-clock kpi-icon"></i>
+              <span class="kpi-label">Temps actif</span>
+            </div>
+            <div class="kpi-body">
+              <span class="kpi-value" id="stat-time">—</span>
+              <span class="kpi-unit">h</span>
+            </div>
+          </div>
+          <div class="strava-kpi strava-kpi--green">
+            <div class="kpi-header">
+              <i class="fas fa-bolt kpi-icon"></i>
+              <span class="kpi-label">Séances</span>
+            </div>
+            <div class="kpi-body">
+              <span class="kpi-value" id="stat-count">—</span>
+              <span class="kpi-unit">réalisées</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           CUMUL 2026 (YTD)
+      ══════════════════════════════════════════════════════ -->
+      <section class="strava-section" id="strava-ytd-section" style="display:none">
+        <h2 class="strava-section-title">
+          <i class="fas fa-trophy"></i> Cumul 2026
+        </h2>
+        <div class="strava-ytd-grid" id="strava-ytd-grid">
+          <div class="strava-ytd-item">
+            <span class="ytd-icon"><i class="fas fa-bicycle"></i></span>
+            <div class="ytd-body">
+              <span class="ytd-val" id="ytd-ride">—</span>
+              <span class="ytd-unit">km vélo</span>
+            </div>
+          </div>
+          <div class="strava-ytd-item">
+            <span class="ytd-icon ytd-icon--run"><i class="fas fa-running"></i></span>
+            <div class="ytd-body">
+              <span class="ytd-val" id="ytd-run">—</span>
+              <span class="ytd-unit">km run</span>
+            </div>
+          </div>
+          <div class="strava-ytd-item">
+            <span class="ytd-icon ytd-icon--elev"><i class="fas fa-mountain"></i></span>
+            <div class="ytd-body">
+              <span class="ytd-val" id="ytd-elev">—</span>
+              <span class="ytd-unit">m D+</span>
+            </div>
+          </div>
+          <div class="strava-ytd-item" id="ytd-swim-wrap" style="display:none">
+            <span class="ytd-icon ytd-icon--swim"><i class="fas fa-swimmer"></i></span>
+            <div class="ytd-body">
+              <span class="ytd-val" id="ytd-swim">—</span>
+              <span class="ytd-unit">m nage</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           CARTE — Dernier parcours
+      ══════════════════════════════════════════════════════ -->
+      <section class="strava-section" id="strava-map-section" style="display:none">
+        <h2 class="strava-section-title">
+          <i class="fas fa-map-marked-alt"></i> Dernier parcours
+        </h2>
+        <div id="strava-map" class="strava-map-container"></div>
+        <p class="strava-map-caption" id="strava-map-caption"></p>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           TABLEAU — Activités récentes
+      ══════════════════════════════════════════════════════ -->
+      <section class="strava-section">
+        <h2 class="strava-section-title">
+          <i class="fas fa-table"></i> Activités récentes
+          <span class="strava-count-badge" id="strava-activities-count"></span>
+        </h2>
+        <div class="strava-table-wrap">
+          <table class="strava-table">
+            <thead>
+              <tr>
+                <th class="col-sport"></th>
+                <th class="col-name">Activité</th>
+                <th class="col-date">Date</th>
+                <th class="col-dist">Distance</th>
+                <th class="col-elev">D+</th>
+                <th class="col-dur">Durée</th>
+                <th class="col-speed">Vitesse</th>
+                <th class="col-hr">FC moy</th>
+                <th class="col-link"></th>
+              </tr>
+            </thead>
+            <tbody id="strava-activity-tbody">
+              <tr>
+                <td colspan="9" class="strava-loading-cell">
+                  <span class="strava-spinner"></span> Chargement des activités&hellip;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════
+           GUIDE CONFIGURATION (repliable)
+      ══════════════════════════════════════════════════════ -->
+      <details class="strava-section strava-setup-section" id="setup-guide">
+        <summary class="strava-section-title strava-setup-summary">
+          <i class="fas fa-cog"></i> Configuration Strava API
+          <i class="fas fa-chevron-down setup-chevron"></i>
+        </summary>
+        <div class="strava-setup-steps">
+          <div class="setup-step">
+            <span class="setup-num">1</span>
+            <div>
+              <strong>Créer une application Strava</strong><br>
+              <a href="https://www.strava.com/settings/api" target="_blank" rel="noopener">strava.com/settings/api</a>
+              — Callback URL&nbsp;: <code>http://localhost/</code>
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">2</span>
+            <div>
+              <strong>Obtenir le code d'autorisation</strong><br>
+              <code class="setup-code">https://www.strava.com/oauth/authorize?client_id=<strong>VOTRE_ID</strong>&response_type=code&redirect_uri=http://localhost/&approval_prompt=force&scope=activity:read_all</code>
+              <br>Copier le paramètre <code>code=</code> dans l'URL de redirection.
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">3</span>
+            <div>
+              <strong>Échanger contre un refresh token</strong><br>
+              <code class="setup-code">curl.exe -X POST https://www.strava.com/oauth/token -d "client_id=X&client_secret=Y&code=Z&grant_type=authorization_code"</code>
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">4</span>
+            <div>
+              <strong>Uploader <code>public/api/strava-env.php</code> sur le serveur via FTP</strong><br>
+              <em>(jamais dans le repo — protégé par .htaccess)</em>
+              <pre class="setup-code">&lt;?php
+$STRAVA_CLIENT_ID     = 'VOTRE_CLIENT_ID';
+$STRAVA_CLIENT_SECRET = 'VOTRE_SECRET';
+$STRAVA_REFRESH_TOKEN = 'VOTRE_REFRESH_TOKEN';
+$STRAVA_CRON_SECRET   = 'secret-cron-aleatoire';</pre>
+            </div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </main>
+
+  <Footer />
+  <CopyrightBar />
+</BaseLayout>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     STYLES — alignés 1:1 sur terrain-dashboard.css (.tdash-*)
+════════════════════════════════════════════════════════════════════════════ -->
+<style is:global>
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.strava-page {
+  min-height: 100vh;
+  padding: 5rem 0 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.strava-container {
+  max-width: 960px; /* = .tdash-outer max-width */
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+/* ── Carte externe (= .tdash-outer exact) ────────────────────────────────── */
+.strava-section {
+  background: rgba(12, 20, 36, 0.92);
+  border: 1px solid rgba(45, 130, 170, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+}
+
+/* Light mode = .tdash-outer light exact */
+[data-theme="light"] .strava-section {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(10, 24, 44, 0.1);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+}
+
+/* Titre de section (= .tdash-card-label + .tdash-current-label style) */
+.strava-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(45, 130, 170, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Icône cyan (identique .tdash-stat i) */
+.strava-section-title > i:first-child {
+  color: var(--accent-cyan);
+  font-size: 0.7rem;
+}
+
+[data-theme="light"] .strava-section-title {
+  border-bottom-color: rgba(10, 24, 44, 0.08);
+}
+
+/* ── HERO (= .tdash-outer + border-left brand) ───────────────────────────── */
+.strava-hero {
+  background: rgba(12, 20, 36, 0.92);
+  border: 1px solid rgba(45, 130, 170, 0.12);
+  border-left: 3px solid #fc4c02;
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] .strava-hero {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(10, 24, 44, 0.1);
+  border-left-color: #fc4c02;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand bar (= .tdash-brand) */
+.strava-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(45, 130, 170, 0.08);
+}
+
+[data-theme="light"] .strava-hero-brand {
+  border-bottom-color: rgba(10, 24, 44, 0.08);
+}
+
+.strava-brand-icon { color: #fc4c02; font-size: 1rem; }
+
+/* = .tdash-brand text */
+.strava-brand-label {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--white);
+}
+
+[data-theme="light"] .strava-brand-label { color: var(--text-light); }
+
+/* Profil (= .tdash-profile inline) */
+.strava-hero-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Avatar (= .tdash-avatar) */
+.strava-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(77, 184, 212, 0.3);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.strava-hero-info { flex: 1; min-width: 0; }
+
+/* Nom (= .tdash-profile-info strong) */
+.strava-hero-name {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 0.15rem;
+  display: block;
+}
+
+[data-theme="light"] .strava-hero-name { color: var(--text-light); }
+
+.strava-name-loading {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Sous-infos (= .tdash-profile-info span) */
+.strava-hero-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.strava-hero-sub i { color: var(--accent-cyan); font-size: 0.65rem; }
+
+/* Contrôles à droite (= .tdash-profile-links) */
+.strava-hero-status {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+/* Bouton refresh (= .tdash-profile-links a) */
+.strava-refresh-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.2);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: var(--transition-fast);
+}
+
+.strava-refresh-btn:hover {
+  color: var(--accent-cyan);
+  background: rgba(77, 184, 212, 0.2);
+  border-color: rgba(77, 184, 212, 0.4);
+}
+
+.strava-refresh-btn.spinning i { animation: spin 0.8s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Statut */
+.strava-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.status-loading { background: #f59e0b; animation: blink 1.2s infinite; }
+.status-dot.status-ok      { background: #22c55e; }
+.status-dot.status-stale   { background: #f59e0b; }
+.status-dot.status-error   { background: #ef4444; }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Erreur */
+.strava-error {
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem;
+  color: #fca5a5;
+  margin-top: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+}
+
+.strava-link { color: var(--accent-cyan); font-size: var(--text-sm); }
+
+/* ── KPI Grid (= .tdash-card) ────────────────────────────────────────────── */
+.strava-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+/* Inner card = .tdash-card exact */
+.strava-kpi {
+  background: rgba(20, 32, 56, 0.7);
+  border: 1px solid rgba(45, 130, 170, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: background var(--transition-fast);
+}
+
+/* Barre couleur haut (distingue les 4 cards) */
+.strava-kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.strava-kpi--cyan::before   { background: var(--accent-cyan); }
+.strava-kpi--orange::before { background: var(--accent-orange); }
+.strava-kpi--blue::before   { background: var(--accent-blue); }
+.strava-kpi--green::before  { background: #22c55e; }
+
+/* Light = .tdash-card light */
+[data-theme="light"] .strava-kpi {
+  background: rgba(240, 245, 249, 0.8);
+  border-color: rgba(10, 24, 44, 0.08);
+}
+
+.strava-kpi:hover { background: rgba(26, 40, 68, 0.85); }
+[data-theme="light"] .strava-kpi:hover { background: rgba(228, 236, 244, 0.9); }
+
+/* Header label + icon (= .tdash-card-label + icône) */
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Label = .tdash-card-label exact */
+.kpi-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Icône = .tdash-stat i / .tdash-metric i */
+.kpi-icon { font-size: 0.75rem; color: var(--accent-cyan); opacity: 0.7; }
+.strava-kpi--orange .kpi-icon { color: var(--accent-orange); }
+.strava-kpi--blue   .kpi-icon { color: var(--accent-blue); }
+.strava-kpi--green  .kpi-icon { color: #22c55e; }
+
+/* Valeur = .tdash-metric strong */
+.kpi-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  line-height: 1;
+}
+
+.kpi-value {
+  font-size: var(--text-lg); /* = .tdash-metric strong */
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+[data-theme="light"] .kpi-value { color: var(--text-light); }
+
+.kpi-unit {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  align-self: flex-end;
+  padding-bottom: 0.1rem;
+}
+
+/* ── YTD Cumul (= .tdash-card avec icône) ────────────────────────────────── */
+.strava-ytd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 0.5rem;
+}
+
+/* = .tdash-card exact */
+.strava-ytd-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(20, 32, 56, 0.7);
+  border: 1px solid rgba(45, 130, 170, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  transition: background var(--transition-fast);
+}
+
+.strava-ytd-item:hover { background: rgba(26, 40, 68, 0.85); }
+
+/* Light = .tdash-card light */
+[data-theme="light"] .strava-ytd-item {
+  background: rgba(240, 245, 249, 0.8);
+  border-color: rgba(10, 24, 44, 0.08);
+}
+
+[data-theme="light"] .strava-ytd-item:hover { background: rgba(228, 236, 244, 0.9); }
+
+/* Icône (= .tdash-metric i encadrée) */
+.ytd-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.ytd-icon--run  { background: rgba(34,197,94,0.08);  border-color: rgba(34,197,94,0.2);  color: #22c55e; }
+.ytd-icon--elev { background: rgba(212,132,90,0.08); border-color: rgba(212,132,90,0.2); color: var(--accent-orange); }
+.ytd-icon--swim { background: rgba(45,139,181,0.08); border-color: rgba(45,139,181,0.2); color: var(--accent-blue); }
+
+.ytd-body { display: flex; flex-direction: column; gap: 0; min-width: 0; }
+
+/* = .tdash-metric strong */
+.ytd-val {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+[data-theme="light"] .ytd-val { color: var(--text-light); }
+
+/* = .tdash-card-label */
+.ytd-unit {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 0.1rem;
+}
+
+/* ── Carte Leaflet (= .tdash-map) ────────────────────────────────────────── */
+.strava-map-container {
+  height: 320px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(45, 130, 170, 0.12);
+  background: var(--primary-dark);
+}
+
+.strava-map-caption {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── Badge count (= .tdash-suivi-link) ──────────────────────────────────── */
+.strava-count-badge {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.25);
+  border-radius: 20px;
+  padding: 0.15rem 0.6rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Tableau activités ───────────────────────────────────────────────────── */
+/* Wrapper = .tdash-suivi style */
+.strava-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(45, 130, 170, 0.1);
+  background: rgba(77, 184, 212, 0.03);
+}
+
+[data-theme="light"] .strava-table-wrap {
+  background: rgba(77, 184, 212, 0.02);
+  border-color: rgba(10, 24, 44, 0.07);
+}
+
+.strava-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+/* Thead = .tdash-card condensé */
+.strava-table thead tr {
+  background: rgba(20, 32, 56, 0.5);
+  border-bottom: 1px solid rgba(45, 130, 170, 0.1);
+}
+
+[data-theme="light"] .strava-table thead tr {
+  background: rgba(240, 245, 249, 0.6);
+  border-bottom-color: rgba(10, 24, 44, 0.08);
+}
+
+/* Th = .tdash-card-label exact */
+.strava-table th {
+  padding: 0.55rem 0.875rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.strava-table tbody tr {
+  border-bottom: 1px solid rgba(45, 130, 170, 0.06);
+  transition: background var(--transition-fast);
+}
+
+.strava-table tbody tr:last-child { border-bottom: none; }
+
+/* Hover = .tdash-etapes-table tr hover */
+.strava-table tbody tr:hover { background: rgba(77, 184, 212, 0.05); }
+
+.strava-table td {
+  padding: 0.6rem 0.875rem;
+  color: var(--text-light);
+  vertical-align: middle;
+  font-size: var(--text-sm);
+}
+
+/* Colonnes */
+.col-sport { width: 38px; }
+.col-name  { min-width: 150px; }
+.col-date  { white-space: nowrap; color: var(--text-muted); font-size: 0.75rem; }
+.col-dist  { white-space: nowrap; font-weight: 700; color: var(--white); }
+.col-elev  { white-space: nowrap; color: var(--accent-orange) !important; }
+.col-dur   { white-space: nowrap; color: var(--text-muted); }
+.col-speed { white-space: nowrap; }
+.col-hr    { white-space: nowrap; }
+.col-link  { width: 32px; text-align: center; }
+
+[data-theme="light"] .col-dist { color: var(--text-light) !important; }
+
+/* Icône sport (= .tdash-profile-links a) */
+.act-sport-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.15);
+  color: var(--accent-cyan);
+  font-size: 0.72rem;
+}
+
+/* Nom activité (= .tdash-card-city style) */
+.act-name-link {
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 600;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  transition: color var(--transition-fast);
+}
+
+[data-theme="light"] .act-name-link { color: var(--text-light); }
+.act-name-link:hover { color: var(--accent-cyan); }
+
+/* Tag type (= .tdash-suivi-link mini) */
+.act-type-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--accent-cyan);
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.25);
+  border-radius: 20px;
+  padding: 0.05rem 0.38rem;
+  margin-top: 0.12rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* FC moyen */
+.act-hr-val {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #f87171;
+  font-weight: 600;
+}
+
+/* Lien Strava (= .tdash-profile-links a style orange) */
+.act-ext-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(252, 76, 2, 0.07);
+  border: 1px solid rgba(252, 76, 2, 0.18);
+  color: #fc4c02;
+  text-decoration: none;
+  font-size: 0.72rem;
+  transition: var(--transition-fast);
+}
+
+.act-ext-btn:hover {
+  background: rgba(252, 76, 2, 0.18);
+  border-color: rgba(252, 76, 2, 0.4);
+}
+
+/* Chargement */
+.strava-loading-cell {
+  text-align: center;
+  padding: 1.75rem !important;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: var(--text-sm);
+}
+
+.strava-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(77, 184, 212, 0.18);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  margin-right: 0.35rem;
+}
+
+/* ── Guide config (= .tdash-outer section repliable) ─────────────────────── */
+.strava-setup-section {
+  border-color: rgba(45, 130, 170, 0.08);
+  padding: 0;
+}
+
+[data-theme="light"] .strava-setup-section {
+  border-color: rgba(10, 24, 44, 0.07);
+}
+
+.strava-setup-summary {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast);
+}
+
+.strava-setup-summary:hover { background: rgba(77, 184, 212, 0.04); }
+.strava-setup-summary::-webkit-details-marker { display: none; }
+
+details[open] .strava-setup-summary {
+  border-bottom: 1px solid rgba(45, 130, 170, 0.08);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+[data-theme="light"] details[open] .strava-setup-summary {
+  border-bottom-color: rgba(10, 24, 44, 0.08);
+}
+
+.setup-chevron {
+  margin-left: auto;
+  font-size: 0.62rem;
+  transition: transform var(--transition-fast);
+  color: var(--text-muted);
+}
+
+details[open] .setup-chevron { transform: rotate(180deg); }
+
+.strava-setup-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 1rem 1.5rem;
+}
+
+.setup-step {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+/* Numéro (= .tdash-arrow style) */
+.setup-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(77, 184, 212, 0.12);
+  border: 1px solid rgba(77, 184, 212, 0.25);
+  color: var(--accent-cyan);
+  font-weight: 800;
+  font-size: 0.62rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.18rem;
+}
+
+.setup-step > div {
+  font-size: var(--text-sm);
+  color: var(--text-light);
+  line-height: 1.65;
+}
+
+.setup-step a { color: var(--accent-cyan); }
+
+.setup-code {
+  display: block;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(45, 130, 170, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.72rem;
+  color: #a8d8e8;
+  margin: 0.4rem 0;
+  word-break: break-all;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+[data-theme="light"] .setup-code {
+  background: rgba(240, 245, 249, 0.8);
+  border-color: rgba(10, 24, 44, 0.1);
+  color: #1a5c7a;
+}
+
+code {
+  background: rgba(77, 184, 212, 0.08);
+  border: 1px solid rgba(77, 184, 212, 0.15);
+  border-radius: 3px;
+  padding: 0.08em 0.3em;
+  font-size: 0.8em;
+  color: var(--accent-cyan);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .strava-ytd-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .strava-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .col-speed, .col-dur { display: none; }
+  .act-name-link { max-width: 140px; }
+}
+
+@media (max-width: 480px) {
+  .strava-hero, .strava-section { padding: 1rem; }
+  .strava-kpi-grid { gap: 0.4rem; }
+  .col-hr { display: none; }
+  .strava-hero-status { display: none; }
+  .strava-ytd-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SCRIPT CLIENT-SIDE
+════════════════════════════════════════════════════════════════════════════ -->
+<script is:inline>
+(function () {
+  'use strict';
+
+  const IS_LOCAL         = globalThis.location?.hostname === 'localhost' || globalThis.location?.hostname === '127.0.0.1';
+  const STRAVA_API       = IS_LOCAL ? '/api/strava-mock.json' : '/api/strava.php';
+  const REFRESH_INTERVAL = IS_LOCAL ? 0 : 60000;
+
+  // ── Icônes par sport ────────────────────────────────────────────────────
+  const SPORT_ICONS = {
+    Ride              : 'fas fa-bicycle',
+    VirtualRide       : 'fas fa-bicycle',
+    MountainBikeRide  : 'fas fa-bicycle',
+    GravelRide        : 'fas fa-bicycle',
+    EMountainBikeRide : 'fas fa-bicycle',
+    Run               : 'fas fa-running',
+    TrailRun          : 'fas fa-running',
+    VirtualRun        : 'fas fa-running',
+    Walk              : 'fas fa-walking',
+    Hike              : 'fas fa-hiking',
+    Swim              : 'fas fa-swimmer',
+    Yoga              : 'fas fa-heart',
+    WeightTraining    : 'fas fa-dumbbell',
+    Workout           : 'fas fa-dumbbell',
+    Kayaking          : 'fas fa-water',
+    Rowing            : 'fas fa-water',
+    Canoeing          : 'fas fa-water',
+    Skiing            : 'fas fa-skiing',
+    NordicSki         : 'fas fa-skiing-nordic',
+  };
+
+  const SPORT_LABELS = {
+    Ride: 'Vélo route', VirtualRide: 'Vélo virtuel', MountainBikeRide: 'VTT',
+    GravelRide: 'Gravel', EMountainBikeRide: 'E-VTT', Run: 'Course à pied',
+    TrailRun: 'Trail', VirtualRun: 'Run virtuel', Walk: 'Marche', Hike: 'Randonnée',
+    Swim: 'Natation', Yoga: 'Yoga', WeightTraining: 'Musculation',
+    Workout: 'Entraînement', Kayaking: 'Kayak', Rowing: 'Aviron',
+    Canoeing: 'Canoë', Skiing: 'Ski', NordicSki: 'Ski nordique',
+  };
+
+  // ── Décodage Google Polyline ────────────────────────────────────────────
+  function decodePolyline(encoded) {
+    const coords = [];
+    let index = 0, lat = 0, lng = 0;
+    while (index < encoded.length) {
+      let shift = 0, result = 0, b;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+      shift = 0; result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+      coords.push([lat / 1e5, lng / 1e5]);
+    }
+    return coords;
+  }
+
+  // ── Formatage ───────────────────────────────────────────────────────────
+  function fmtDuration(sec) {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    return h > 0 ? h + 'h' + String(m).padStart(2, '0') : m + '\u202fmin';
+  }
+
+  function fmtDate(str) {
+    return new Date(str).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
+
+  function fmtNum(n) {
+    return typeof n === 'number' ? n.toLocaleString('fr-FR') : '\u2014';
+  }
+
+  // ── Helpers DOM ─────────────────────────────────────────────────────────
+  function setElText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function setStatus(state, label) {
+    const dot     = document.getElementById('strava-status-dot');
+    const updated = document.getElementById('strava-updated-at');
+    if (dot)     dot.className = 'status-dot status-' + state;
+    if (updated) updated.textContent = label;
+  }
+
+  function setRefreshSpinning(on) {
+    const btn = document.getElementById('strava-refresh-btn');
+    if (btn) btn.classList.toggle('spinning', on);
+  }
+
+  // ── Chargement Leaflet ──────────────────────────────────────────────────
+  function loadLeaflet() {
+    return new Promise(function (resolve, reject) {
+      if (globalThis.L) { resolve(globalThis.L); return; }
+      const s = document.createElement('script');
+      s.src = '/lib/leaflet.min.js';
+      s.onload  = function () { resolve(globalThis.L); };
+      s.onerror = function () { reject(new Error('Leaflet non disponible')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  // ── Rendu carte Leaflet ─────────────────────────────────────────────────
+  function renderMap(activity) {
+    if (!activity?.polyline) return;
+    const coords = decodePolyline(activity.polyline);
+    if (coords.length === 0) return;
+
+    const mapSection = document.getElementById('strava-map-section');
+    if (mapSection) mapSection.style.display = '';
+
+    loadLeaflet().then(function (L) {
+      if (globalThis._stravaMap) { globalThis._stravaMap.remove(); globalThis._stravaMap = null; }
+      globalThis._stravaMap = L.map('strava-map', {
+        zoomControl: true, scrollWheelZoom: false, attributionControl: true,
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18,
+      }).addTo(globalThis._stravaMap);
+
+      const poly = L.polyline(coords, { color: '#fc4c02', weight: 3.5, opacity: 0.85 });
+      poly.addTo(globalThis._stravaMap);
+      globalThis._stravaMap.fitBounds(poly.getBounds(), { padding: [28, 28] });
+
+      // Marqueurs départ / arrivée
+      const startIcon = L.divIcon({ className: '', html: '<div style="width:10px;height:10px;border-radius:50%;background:#10b981;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>', iconAnchor: [5,5] });
+      const endIcon   = L.divIcon({ className: '', html: '<div style="width:10px;height:10px;border-radius:50%;background:#ef4444;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>', iconAnchor: [5,5] });
+      L.marker(coords[0], { icon: startIcon }).addTo(globalThis._stravaMap);
+      L.marker(coords[coords.length - 1], { icon: endIcon }).addTo(globalThis._stravaMap);
+
+      const caption = document.getElementById('strava-map-caption');
+      if (caption) {
+        caption.textContent =
+          activity.name + '\u2002\u00b7\u2002' + fmtDate(activity.date) +
+          '\u2002\u00b7\u2002' + activity.distance_km + '\u202fkm' +
+          '\u2002\u00b7\u2002\u2191\u202f' + fmtNum(activity.elevation_m) + '\u202fm';
+      }
+    }).catch(function (err) {
+      console.warn('[Strava] Leaflet:', err);
+      const sec = document.getElementById('strava-map-section');
+      if (sec) sec.style.display = 'none';
+    });
+  }
+
+  // ── Rendu tableau activités ─────────────────────────────────────────────
+  function renderActivities(activities) {
+    const tbody = document.getElementById('strava-activity-tbody');
+    if (!tbody) return;
+
+    if (!activities || activities.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" class="strava-loading-cell">Aucune activit\u00e9 r\u00e9cente.</td></tr>';
+      return;
+    }
+
+    const count = document.getElementById('strava-activities-count');
+    if (count) count.textContent = activities.length + '\u202factivit\u00e9s';
+
+    let html = '';
+    for (const act of activities) {
+      const icon  = SPORT_ICONS[act.type]  || 'fas fa-running';
+      const label = SPORT_LABELS[act.type] || act.type;
+      const hr    = act.avg_hr
+        ? '<span class="act-hr-val"><i class="fas fa-heartbeat"></i>' + act.avg_hr + '\u202fbpm</span>'
+        : '<span style="color:var(--text-muted)">\u2014</span>';
+      html +=
+        '<tr>' +
+          '<td><span class="act-sport-icon"><i class="' + icon + '"></i></span></td>' +
+          '<td class="col-name">' +
+            '<a class="act-name-link" href="' + act.strava_url + '" target="_blank" rel="noopener">' + act.name + '</a>' +
+            '<span class="act-type-tag">' + label + '</span>' +
+          '</td>' +
+          '<td class="col-date">' + fmtDate(act.date) + '</td>' +
+          '<td class="col-dist"><strong>' + act.distance_km + '</strong>\u202fkm</td>' +
+          '<td class="col-elev">\u2191\u202f' + fmtNum(act.elevation_m) + '\u202fm</td>' +
+          '<td class="col-dur">' + fmtDuration(act.duration_s) + '</td>' +
+          '<td class="col-speed">' + act.avg_speed_kmh + '\u202fkm/h</td>' +
+          '<td class="col-hr">' + hr + '</td>' +
+          '<td class="col-link"><a class="act-ext-btn" href="' + act.strava_url + '" target="_blank" rel="noopener" title="Voir sur Strava"><i class="fab fa-strava"></i></a></td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  // ── Helpers de rendu fetch ───────────────────────────────────────────────
+  function renderAthlete(athlete) {
+    const avatar = document.getElementById('strava-avatar');
+    if (athlete?.avatar && avatar) { avatar.src = athlete.avatar; avatar.style.display = ''; }
+    setElText('strava-athlete-name', athlete?.name || 'St\u00e9phane Celton');
+    setElText('strava-athlete-city', athlete?.city || 'France');
+  }
+
+  function renderStats30(r) {
+    setElText('stat-km',    r.total_km          ?? '\u2014');
+    setElText('stat-elev',  r.total_elevation_m != null ? fmtNum(r.total_elevation_m) : '\u2014');
+    setElText('stat-time',  r.total_time_h      ?? '\u2014');
+    setElText('stat-count', r.count             ?? '\u2014');
+  }
+
+  function renderYtd(ytd) {
+    if (!ytd) return;
+    const ytdSection = document.getElementById('strava-ytd-section');
+    if (ytdSection) ytdSection.style.display = '';
+    setElText('ytd-ride', ytd.ride_km);
+    setElText('ytd-run',  ytd.run_km);
+    setElText('ytd-elev', fmtNum(ytd.total_elevation_m));
+    if (ytd.swim_m > 0) {
+      const swimWrap = document.getElementById('ytd-swim-wrap');
+      if (swimWrap) swimWrap.style.display = '';
+      setElText('ytd-swim', fmtNum(ytd.swim_m));
+    }
+  }
+
+  // ── Fetch principal ─────────────────────────────────────────────────────
+  function fetchStrava() {
+    setStatus('loading', 'Actualisation\u2026');
+    setRefreshSpinning(true);
+
+    return fetch(STRAVA_API)
+      .then(function (resp) {
+        const cacheHeader = resp.headers.get('X-Strava-Cache');
+        return resp.json().then(function (data) {
+          if (data.error) throw new Error(data.error);
+
+          renderAthlete(data.athlete);
+          renderStats30(data.recent_30 || {});
+          renderYtd(data.ytd);
+
+          const withMap = data.activities?.find(function (a) { return a.polyline; });
+          if (withMap) renderMap(withMap);
+          renderActivities(data.activities);
+
+          const updatedAt = data.updated_at
+            ? new Date(data.updated_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            : '\u2014';
+          const isMock = data._mock ? ' (mock)' : '';
+          setStatus(cacheHeader === 'STALE' ? 'stale' : 'ok', 'Mis \u00e0 jour\u00a0' + updatedAt + isMock);
+
+          const errEl = document.getElementById('strava-error');
+          if (errEl) errEl.style.display = 'none';
+        });
+      })
+      .catch(function (err) {
+        console.warn('[Strava] Erreur:', err.message);
+        setStatus('error', 'Erreur');
+        const errEl  = document.getElementById('strava-error');
+        const errMsg = document.getElementById('strava-error-msg');
+        const setup  = document.getElementById('strava-setup-link');
+        if (errMsg) errMsg.textContent = 'Impossible de charger les donn\u00e9es Strava\u00a0: ' + err.message;
+        if (setup)  setup.style.display = err.message.toLowerCase().includes('configur\u00e9') ? '' : 'none';
+        if (errEl)  errEl.style.display = '';
+      })
+      .finally(function () { setRefreshSpinning(false); });
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function () {
+    fetchStrava();
+    if (REFRESH_INTERVAL > 0) setInterval(fetchStrava, REFRESH_INTERVAL);
+    document.getElementById('strava-refresh-btn')?.addEventListener('click', fetchStrava);
+  });
+
+})();
+</script>

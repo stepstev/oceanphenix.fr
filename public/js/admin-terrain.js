@@ -108,14 +108,14 @@
   function saveGpxData() {
     try {
       localStorage.setItem(STORAGE_GPX_KEY, JSON.stringify(gpxFiles));
-    } catch(e) {
+    } catch {
       showToast('\u26a0 Fichier GPX trop volumineux pour le navigateur. R\u00e9duisez le nombre de points.');
     }
   }
 
   function cleanExportData() {
     // Strip internal admin fields before exporting to terrain-etapes.json
-    const clean = JSON.parse(JSON.stringify(data));
+    const clean = structuredClone(data);
     delete clean._lastSaved;
     delete clean._deletedVilles;
     // Bake current visibility state into the build
@@ -125,14 +125,14 @@
     if (gpxRaw) {
       try {
         const gpxArr = JSON.parse(gpxRaw);
-        if (gpxArr && gpxArr.length) {
+        if (gpxArr?.length) {
           clean.gpxFiles = gpxArr.map(function(g) {
-            let safeName = (g.name || 'track').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+            let safeName = (g.name || 'track').replaceAll(/\s+/g, '_').replaceAll(/[^a-zA-Z0-9._-]/g, '');
             if (!safeName.toLowerCase().endsWith('.gpx')) safeName += '.gpx';
             return { name: g.name || 'Tracé', path: '/gpx/' + safeName, visible: g.visible !== false };
           });
         }
-      } catch(e) {}
+      } catch { /* ignore */ }
     }
     return clean;
   }
@@ -157,7 +157,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      let safeName = (g.name || 'track').replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
+      let safeName = (g.name || 'track').replaceAll(/\s+/g, '_').replaceAll(/[^a-zA-Z0-9._-]/g, '');
       if (!safeName.toLowerCase().endsWith('.gpx')) safeName += '.gpx';
       a.download = safeName;
       a.click();
@@ -186,7 +186,7 @@
     const json = JSON.stringify(exportData, null, 2);
 
     // Tente envoi direct vers l'API locale (node admin-api.cjs)
-    var btn = document.getElementById('journal-export-btn');
+    let btn = document.getElementById('journal-export-btn');
     if (btn) { btn.disabled = true; btn.textContent = '\u23f3 Build en cours...'; }
 
     fetch('http://localhost:4399/update-journal', {
@@ -203,9 +203,9 @@
     }).catch(function() {
       // API locale non d\u00e9marr\u00e9e — fallback : t\u00e9l\u00e9chargement
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-export"></i> Exporter Journal \u2192 terrain-etapes.json'; }
-      var blob = new Blob([json], { type: 'application/json' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
+      let blob = new Blob([json], { type: 'application/json' });
+      let url = URL.createObjectURL(blob);
+      let a = document.createElement('a');
       a.href = url; a.download = 'terrain-etapes.json'; a.click();
       URL.revokeObjectURL(url);
       showToast('\u26a0\ufe0f API locale non d\u00e9marr\u00e9e (node admin-api.cjs) \u2014 JSON t\u00e9l\u00e9charg\u00e9 manuellement');
@@ -218,11 +218,11 @@
     localStorage.removeItem(STORAGE_GPX_KEY);
     localStorage.removeItem('op-terrain-coworking');
     showToast('\u2705 Cache local réinitialisé — les données viennent maintenant du build');
-    setTimeout(function() { window.location.reload(); }, 1200);
+    setTimeout(function() { globalThis.location.reload(); }, 1200);
   }
 
   function updateVisibilityBtn() {
-    var btn = document.getElementById('admin-visibility-btn');
+    let btn = document.getElementById('admin-visibility-btn');
     if (!btn) return;
     // Si aucune entrée localStorage, on initialise depuis la valeur baked du JSON
     if (localStorage.getItem(PUBLIC_KEY) === null) {
@@ -230,18 +230,18 @@
         localStorage.setItem(PUBLIC_KEY, '1');
       }
     }
-    var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
+    const isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
     btn.className = 'admin-visibility-btn ' + (isPublic ? 'is-public' : 'is-private');
   }
 
   function toggleVisibility() {
-    var isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
-    if (!isPublic) {
-      localStorage.setItem(PUBLIC_KEY, '1');
-      showToast('🌍 Page Terrain maintenant PUBLIQUE — visible par tous les visiteurs');
-    } else {
+    const isPublic = localStorage.getItem(PUBLIC_KEY) === '1';
+    if (isPublic) {
       localStorage.removeItem(PUBLIC_KEY);
       showToast('🔒 Page Terrain maintenant PRIVÉE — accessible uniquement via admin');
+    } else {
+      localStorage.setItem(PUBLIC_KEY, '1');
+      showToast('🌍 Page Terrain maintenant PUBLIQUE — visible par tous les visiteurs');
     }
     updateVisibilityBtn();
   }
@@ -371,9 +371,9 @@
   const VILLES_FR = [
     {v:'Paris',r:'Île-de-France',lat:48.8566,lng:2.3522},
     {v:'Marseille',r:'Provence-Alpes-Côte d\'Azur',lat:43.2965,lng:5.3698},
-    {v:'Lyon',r:'Auvergne-Rhône-Alpes',lat:45.7640,lng:4.8357},
+    {v:'Lyon',r:'Auvergne-Rhône-Alpes',lat:45.764,lng:4.8357},
     {v:'Toulouse',r:'Occitanie',lat:43.6047,lng:1.4442},
-    {v:'Nice',r:'Provence-Alpes-Côte d\'Azur',lat:43.7102,lng:7.2620},
+    {v:'Nice',r:'Provence-Alpes-Côte d\'Azur',lat:43.7102,lng:7.262},
     {v:'Nantes',r:'Pays de la Loire',lat:47.2184,lng:-1.5536},
     {v:'Strasbourg',r:'Grand Est',lat:48.5734,lng:7.7521},
     {v:'Montpellier',r:'Occitanie',lat:43.6108,lng:3.8767},
@@ -383,13 +383,13 @@
     {v:'Reims',r:'Grand Est',lat:49.2583,lng:3.2794},
     {v:'Saint-Étienne',r:'Auvergne-Rhône-Alpes',lat:45.4397,lng:4.3872},
     {v:'Le Havre',r:'Normandie',lat:49.4944,lng:0.1079},
-    {v:'Toulon',r:'Provence-Alpes-Côte d\'Azur',lat:43.1242,lng:5.9280},
+    {v:'Toulon',r:'Provence-Alpes-Côte d\'Azur',lat:43.1242,lng:5.928},
     {v:'Grenoble',r:'Auvergne-Rhône-Alpes',lat:45.1885,lng:5.7245},
-    {v:'Dijon',r:'Bourgogne-Franche-Comté',lat:47.3220,lng:5.0415},
+    {v:'Dijon',r:'Bourgogne-Franche-Comté',lat:47.322,lng:5.0415},
     {v:'Angers',r:'Pays de la Loire',lat:47.4784,lng:-0.5632},
     {v:'Nîmes',r:'Occitanie',lat:43.8367,lng:4.3601},
     {v:'Villeurbanne',r:'Auvergne-Rhône-Alpes',lat:45.7667,lng:4.8799},
-    {v:'Clermont-Ferrand',r:'Auvergne-Rhône-Alpes',lat:45.7772,lng:3.0870},
+    {v:'Clermont-Ferrand',r:'Auvergne-Rhône-Alpes',lat:45.7772,lng:3.087},
     {v:'Aix-en-Provence',r:'Provence-Alpes-Côte d\'Azur',lat:43.5297,lng:5.4474},
     {v:'Brest',r:'Bretagne',lat:48.3904,lng:-4.4861},
     {v:'Tours',r:'Centre-Val de Loire',lat:47.3941,lng:0.6848},
@@ -414,32 +414,37 @@
     {v:'Poitiers',r:'Nouvelle-Aquitaine',lat:46.5802,lng:0.3404},
     {v:'Antibes',r:'Provence-Alpes-Côte d\'Azur',lat:43.5808,lng:7.1239},
     {v:'Cannes',r:'Provence-Alpes-Côte d\'Azur',lat:43.5528,lng:7.0174},
-    {v:'Béziers',r:'Occitanie',lat:43.3448,lng:3.2150},
+    {v:'Béziers',r:'Occitanie',lat:43.3448,lng:3.215},
     {v:'Versailles',r:'Île-de-France',lat:48.8014,lng:2.1301},
     {v:'Le Mans',r:'Pays de la Loire',lat:48.0061,lng:0.1996},
     {v:'Ajaccio',r:'Corse',lat:41.9192,lng:8.7386},
     {v:'Bastia',r:'Corse',lat:42.6977,lng:9.4529},
     {v:'Bayonne',r:'Nouvelle-Aquitaine',lat:43.4929,lng:-1.4748},
     {v:'Boulogne-sur-Mer',r:'Hauts-de-France',lat:50.7264,lng:1.6147},
-    {v:'Bourges',r:'Centre-Val de Loire',lat:47.0810,lng:2.3988},
+    {v:'Bourges',r:'Centre-Val de Loire',lat:47.081,lng:2.3988},
     {v:'Brive-la-Gaillarde',r:'Nouvelle-Aquitaine',lat:45.1587,lng:1.5321},
     {v:'Chambéry',r:'Auvergne-Rhône-Alpes',lat:45.5646,lng:5.9178},
     {v:'Chartres',r:'Centre-Val de Loire',lat:48.4561,lng:1.4832},
     {v:'Colmar',r:'Grand Est',lat:48.0794,lng:7.3584},
     {v:'Épinal',r:'Grand Est',lat:48.1727,lng:6.4511},
-    {v:'Évreux',r:'Normandie',lat:49.0270,lng:1.1508},
+    {v:'Évreux',r:'Normandie',lat:49.027,lng:1.1508},
     {v:'La Roche-sur-Yon',r:'Pays de la Loire',lat:46.6706,lng:-1.4269},
     {v:'Laval',r:'Pays de la Loire',lat:48.0735,lng:-0.7714},
     {v:'Lorient',r:'Bretagne',lat:47.7482,lng:-3.3702},
-    {v:'Quimper',r:'Bretagne',lat:47.9960,lng:-4.0958},
+    {v:'Quimper',r:'Bretagne',lat:47.996,lng:-4.0958},
     {v:'Sophia Antipolis',r:'Provence-Alpes-Côte d\'Azur',lat:43.6163,lng:7.0554},
-    {v:'Saint-Malo',r:'Bretagne',lat:48.6493,lng:-1.9990},
+    {v:'Saint-Malo',r:'Bretagne',lat:48.6493,lng:-1.999},
     {v:'Saint-Nazaire',r:'Pays de la Loire',lat:47.2736,lng:-2.2137},
     {v:'Tarbes',r:'Occitanie',lat:43.2328,lng:0.0781},
     {v:'Troyes',r:'Grand Est',lat:48.2973,lng:4.0744},
     {v:'Valence',r:'Auvergne-Rhône-Alpes',lat:44.9334,lng:4.8924},
-    {v:'Vannes',r:'Bretagne',lat:47.6559,lng:-2.7600}
+    {v:'Vannes',r:'Bretagne',lat:47.6559,lng:-2.76}
   ];
+
+  function markCopyBtn(btn) {
+    btn.innerHTML = '<i class="fas fa-check"></i> Copi\u00e9!';
+    setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 1500);
+  }
 
   let villesRendered = false;
   function renderVilles(filter) {
@@ -469,10 +474,7 @@
       btn.addEventListener('click', function() {
         const coords = btn.dataset.copyCoords;
         if (navigator.clipboard) {
-          navigator.clipboard.writeText(coords).then(function() {
-            btn.innerHTML = '<i class="fas fa-check"></i> Copi\u00e9!';
-            setTimeout(function() { btn.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 1500);
-          });
+          navigator.clipboard.writeText(coords).then(function() { markCopyBtn(btn); });
         } else {
           globalThis.prompt('Coordonn\u00e9es :', coords);
         }
@@ -509,7 +511,7 @@
       html += '<td style="color:#9ab0c4;">' + (cw.ville || '') + '</td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (cw.lat || '') + '</td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (cw.lng || '') + '</td>';
-      html += '<td style="text-align:center;">' + (cw.visible !== false ? '<i class="fas fa-flag" style="color:#d4845a;"></i>' : '<i class="fas fa-eye-slash" style="color:#666;"></i>') + '</td>';
+      html += '<td style="text-align:center;">' + (cw.visible === false ? '<i class="fas fa-eye-slash" style="color:#666;"></i>' : '<i class="fas fa-flag" style="color:#d4845a;"></i>') + '</td>';
       html += '<td style="text-align:center;white-space:nowrap;">';
       html += '<button class="admin-btn admin-btn--sm" data-cw-edit="' + idx + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
       html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-cw-del="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';
@@ -590,25 +592,25 @@
   if (cwData.length === 0) {
     cwData = [
       {nom:'Station F',ville:'Paris',adresse:'5 Parvis Alan Turing, 75013',lat:48.8341,lng:2.3716,visible:true,url:'https://stationf.co'},
-      {nom:'La Cord\u00e9e Libert\u00e9',ville:'Lyon',adresse:'2 Rue de Cond\u00e9, 69002',lat:45.7580,lng:4.8320,visible:true,url:'https://www.la-cordee.net'},
+      {nom:'La Cord\u00e9e Libert\u00e9',ville:'Lyon',adresse:'2 Rue de Cond\u00e9, 69002',lat:45.758,lng:4.832,visible:true,url:'https://www.la-cordee.net'},
       {nom:'WeWork La Fayette',ville:'Paris',adresse:'33 Rue La Fayette, 75009',lat:48.8748,lng:2.3493,visible:true,url:'https://www.wework.com'},
-      {nom:'La Cantine',ville:'Toulouse',adresse:'27 Rue d\'Aubuisson, 31000',lat:43.6060,lng:1.4500,visible:true,url:''},
+      {nom:'La Cantine',ville:'Toulouse',adresse:'27 Rue d\'Aubuisson, 31000',lat:43.606,lng:1.45,visible:true,url:''},
       {nom:'Le Wagon',ville:'Marseille',adresse:'Place de la Joliette, 13002',lat:43.3049,lng:5.3652,visible:true,url:'https://www.lewagon.com'},
-      {nom:'La Ruche',ville:'Bordeaux',adresse:'3 Rue du Chai des Farines, 33000',lat:44.8396,lng:-0.5710,visible:true,url:'https://la-ruche.net'},
-      {nom:'Le Palace',ville:'Nantes',adresse:'4 Rue Voltaire, 44000',lat:47.2140,lng:-1.5564,visible:true,url:''},
+      {nom:'La Ruche',ville:'Bordeaux',adresse:'3 Rue du Chai des Farines, 33000',lat:44.8396,lng:-0.571,visible:true,url:'https://la-ruche.net'},
+      {nom:'Le Palace',ville:'Nantes',adresse:'4 Rue Voltaire, 44000',lat:47.214,lng:-1.5564,visible:true,url:''},
       {nom:'La Plage Digitale',ville:'Strasbourg',adresse:'13 Rue Jacques Peirotes, 67000',lat:48.5818,lng:7.7365,visible:true,url:''},
-      {nom:'Le 144 Coworking',ville:'Rennes',adresse:'144 Rue de Chateaugiron, 35000',lat:48.0930,lng:-1.6490,visible:true,url:''},
-      {nom:'La French Tech',ville:'Nice',adresse:'61 Rte de Grenoble, 06200',lat:43.6835,lng:7.2050,visible:true,url:''},
-      {nom:'Blue Coworking',ville:'Montpellier',adresse:'296 Avenue du Mar\u00e9chal Leclerc, 34000',lat:43.6056,lng:3.8760,visible:true,url:''},
+      {nom:'Le 144 Coworking',ville:'Rennes',adresse:'144 Rue de Chateaugiron, 35000',lat:48.093,lng:-1.649,visible:true,url:''},
+      {nom:'La French Tech',ville:'Nice',adresse:'61 Rte de Grenoble, 06200',lat:43.6835,lng:7.205,visible:true,url:''},
+      {nom:'Blue Coworking',ville:'Montpellier',adresse:'296 Avenue du Mar\u00e9chal Leclerc, 34000',lat:43.6056,lng:3.876,visible:true,url:''},
       {nom:'Now Coworking',ville:'Lille',adresse:'1 Place Nelson Mandela, 59000',lat:50.6356,lng:3.0653,visible:true,url:'https://now-coworking.com'},
       {nom:'SophiaTech',ville:'Sophia Antipolis',adresse:'450 Route des Chappes, 06410',lat:43.6163,lng:7.0554,visible:true,url:''},
       {nom:'Le 107',ville:'Grenoble',adresse:'107 Avenue de la R\u00e9publique, 38000',lat:45.1812,lng:5.7245,visible:true,url:''},
-      {nom:'La Miel',ville:'Dijon',adresse:'10 Rue de Soissons, 21000',lat:47.3210,lng:5.0400,visible:true,url:''},
+      {nom:'La Miel',ville:'Dijon',adresse:'10 Rue de Soissons, 21000',lat:47.321,lng:5.04,visible:true,url:''},
       {nom:'Le Connecteur',ville:'Biarritz',adresse:'20 Av. Edouard VII, 64200',lat:43.4832,lng:-1.5586,visible:true,url:''},
-      {nom:'La Coque',ville:'Reims',adresse:'3 Rue de Caron, 51100',lat:49.2500,lng:3.2900,visible:true,url:''},
+      {nom:'La Coque',ville:'Reims',adresse:'3 Rue de Caron, 51100',lat:49.25,lng:3.29,visible:true,url:''},
       {nom:'Anticaf\u00e9',ville:'Paris',adresse:'79 Rue Quincampoix, 75003',lat:48.8622,lng:2.3515,visible:true,url:'https://www.anticafe.eu'},
-      {nom:'Le Lawo',ville:'Caen',adresse:'12 Rue Basse, 14000',lat:49.1826,lng:-0.3710,visible:true,url:''},
-      {nom:'La Fabrique',ville:'Angers',adresse:'2 Quai Monge, 49000',lat:47.4710,lng:-0.5530,visible:true,url:''}
+      {nom:'Le Lawo',ville:'Caen',adresse:'12 Rue Basse, 14000',lat:49.1826,lng:-0.371,visible:true,url:''},
+      {nom:'La Fabrique',ville:'Angers',adresse:'2 Quai Monge, 49000',lat:47.471,lng:-0.553,visible:true,url:''}
     ];
     saveCoworking();
   }
@@ -746,6 +748,10 @@
   }
 
   // ---- Étapes tab ----
+  function reindexEtapes() {
+    data.etapes.forEach(function(e, i) { e.id = i + 1; });
+  }
+
   function renderEtapes() {
     const list = document.getElementById('etapes-list');
     list.innerHTML = '';
@@ -763,7 +769,7 @@
       html += '<td style="text-align:center;white-space:nowrap;"><i class="fas ' + (statusIcons[etape.statut] || 'fa-circle') + '" style="color:' + sc + ';"></i> <span style="color:' + sc + ';font-weight:600;">' + (statusLabels[etape.statut] || etape.statut) + '</span></td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lat || '') + '</td>';
       html += '<td style="text-align:center;font-family:monospace;font-size:0.85rem;">' + (etape.lng || '') + '</td>';
-      var vis = etape.visible !== false;
+      const vis = etape.visible !== false;
       html += '<td style="text-align:center;"><label class="admin-gpx-toggle"><input type="checkbox" data-vis-idx="' + idx + '"' + (vis ? ' checked' : '') + ' /><span class="admin-gpx-switch"></span></label></td>';
       html += '<td style="text-align:center;white-space:nowrap;">';
       html += '<button class="admin-btn admin-btn--sm" data-edit="' + etape.id + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
@@ -778,7 +784,7 @@
     });
     list.querySelectorAll('[data-vis-idx]').forEach(function(cb) {
       cb.addEventListener('change', function() {
-        var idx = Number.parseInt(cb.dataset.visIdx);
+        const idx = Number.parseInt(cb.dataset.visIdx);
         if (data.etapes[idx]) {
           data.etapes[idx].visible = cb.checked;
           saveData(true);
@@ -796,7 +802,7 @@
           if (!data._deletedVilles) data._deletedVilles = [];
           if (ville && !data._deletedVilles.includes(ville)) data._deletedVilles.push(ville);
           data.etapes.splice(idx, 1);
-          data.etapes.forEach(function(e, i) { e.id = i + 1; });
+          reindexEtapes();
           renderEtapes();
           refreshProchaineSelect();
           saveData();
@@ -807,24 +813,27 @@
   }
 
   function updateEtapesSummary() {
-    var el = document.getElementById('etapes-summary');
+    const el = document.getElementById('etapes-summary');
     if (!el) return;
-    var total = data.etapes.length;
-    var visible = 0, hidden = 0, actuel = 0, visite = 0, planifie = 0;
+    const total = data.etapes.length;
+    let visible = 0, hidden = 0, actuel = 0, visite = 0, planifie = 0;
     data.etapes.forEach(function(e) {
       if (e.visible === false) { hidden++; } else { visible++; }
       if (e.statut === 'actuel') actuel++;
       else if (e.statut === 'visite') visite++;
       else planifie++;
     });
-    var visibleVilles = data.etapes.filter(function(e) { return e.visible !== false; }).map(function(e) { return e.ville; });
+    const visibleVilles = data.etapes.filter(function(e) { return e.visible !== false; }).map(function(e) { return e.ville; });
+    const hiddenBadge = hidden > 0 ? '<span class="summary-badge sb-hidden"><i class="fas fa-eye-slash"></i> ' + hidden + ' masqu\u00e9e' + (hidden > 1 ? 's' : '') + '</span>' : '';
+    const actuelBadge = actuel > 0 ? '<span class="summary-badge sb-actuel"><i class="fas fa-location-dot"></i> ' + actuel + ' actuelle' + (actuel > 1 ? 's' : '') + '</span>' : '';
+    const visiteBadge = visite > 0 ? '<span class="summary-badge sb-visite"><i class="fas fa-check-circle"></i> ' + visite + ' visit\u00e9e' + (visite > 1 ? 's' : '') + '</span>' : '';
     el.innerHTML =
       '<span class="summary-badge sb-total"><i class="fas fa-map-marked-alt"></i> ' + total + ' \u00e9tapes</span>' +
       '<span class="summary-badge sb-visible"><i class="fas fa-eye"></i> ' + visible + ' visible' + (visible > 1 ? 's' : '') + '</span>' +
-      (hidden > 0 ? '<span class="summary-badge sb-hidden"><i class="fas fa-eye-slash"></i> ' + hidden + ' masqu\u00e9e' + (hidden > 1 ? 's' : '') + '</span>' : '') +
+      hiddenBadge +
       '<span class="summary-badge sb-planifie"><i class="fas fa-circle"></i> ' + planifie + ' planifi\u00e9e' + (planifie > 1 ? 's' : '') + '</span>' +
-      (actuel > 0 ? '<span class="summary-badge sb-actuel"><i class="fas fa-location-dot"></i> ' + actuel + ' actuelle' + (actuel > 1 ? 's' : '') + '</span>' : '') +
-      (visite > 0 ? '<span class="summary-badge sb-visite"><i class="fas fa-check-circle"></i> ' + visite + ' visit\u00e9e' + (visite > 1 ? 's' : '') + '</span>' : '') +
+      actuelBadge +
+      visiteBadge +
       '<br><span class="summary-itinerary"><i class="fas fa-route"></i> Itin\u00e9raire affich\u00e9 : <strong>' + visibleVilles.join(' \u2192 ') + '</strong></span>';
   }
 
@@ -1090,10 +1099,10 @@
     let trkpts = doc.getElementsByTagNameNS('*', 'trkpt');
     if (trkpts.length === 0) trkpts = doc.getElementsByTagNameNS('*', 'rtept');
     if (trkpts.length === 0) trkpts = doc.getElementsByTagNameNS('*', 'wpt');
-    for (let i = 0; i < trkpts.length; i++) {
-      const lat = Number.parseFloat(trkpts[i].getAttribute('lat'));
-      const lon = Number.parseFloat(trkpts[i].getAttribute('lon'));
-      const eleEls = trkpts[i].getElementsByTagNameNS('*', 'ele');
+    for (const trkpt of trkpts) {
+      const lat = Number.parseFloat(trkpt.getAttribute('lat'));
+      const lon = Number.parseFloat(trkpt.getAttribute('lon'));
+      const eleEls = trkpt.getElementsByTagNameNS('*', 'ele');
       const ele = eleEls.length > 0 ? Number.parseFloat(eleEls[0].textContent) : null;
       if (!Number.isNaN(lat) && !Number.isNaN(lon)) points.push({ lat: lat, lng: lon, ele: ele });
     }
@@ -1185,6 +1194,23 @@
     showToast('\u2705 GPX ajout\u00e9 (' + coords.length + ' points) — visible sur /terrain');
   });
 
+  function showGpxOnMap(idx) {
+    const g = gpxFiles[idx];
+    if (!g) return;
+    let coords = null;
+    if (g.coords && g.coords.length >= 2) {
+      coords = g.coords;
+    } else if (g.gpxContent) {
+      const pts = parseGpx(g.gpxContent);
+      coords = pts.map(function(p) { return [p.lat, p.lng]; });
+    }
+    if (!coords || coords.length < 2) { showToast('Pas de coordonn\u00e9es pour ce fichier'); return; }
+    if (!gpxMap) initGpxMap();
+    if (gpxLayer) gpxMap.removeLayer(gpxLayer);
+    gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
+    gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
+  }
+
   function renderGpxList() {
     const list = document.getElementById('gpx-list');
     list.innerHTML = '';
@@ -1195,7 +1221,7 @@
     gpxFiles.forEach(function(g, idx) {
       const div = document.createElement('div');
       div.className = 'admin-gpx-item';
-      const visChecked = g.visible !== false ? ' checked' : '';
+      const visChecked = g.visible === false ? '' : ' checked';
       div.innerHTML =
         '<label class="admin-gpx-toggle" title="Afficher/masquer sur la carte Terrain">' +
         '<input type="checkbox" data-gpx-vis="' + idx + '"' + visChecked + ' />' +
@@ -1226,21 +1252,7 @@
     // Show on admin map
     list.querySelectorAll('[data-show-gpx]').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        const idx = Number.parseInt(btn.dataset.showGpx);
-        const g = gpxFiles[idx];
-        if (!g) return;
-        let coords = null;
-        if (g.coords && g.coords.length >= 2) {
-          coords = g.coords;
-        } else if (g.gpxContent) {
-          const pts = parseGpx(g.gpxContent);
-          coords = pts.map(function(p) { return [p.lat, p.lng]; });
-        }
-        if (!coords || coords.length < 2) { showToast('Pas de coordonn\u00e9es pour ce fichier'); return; }
-        if (!gpxMap) initGpxMap();
-        if (gpxLayer) gpxMap.removeLayer(gpxLayer);
-        gpxLayer = L.polyline(coords, { color: '#f59e0b', weight: 3.5, opacity: 0.85 }).addTo(gpxMap);
-        gpxMap.fitBounds(gpxLayer.getBounds(), { padding: [30, 30] });
+        showGpxOnMap(Number.parseInt(btn.dataset.showGpx));
       });
     });
     // Delete
