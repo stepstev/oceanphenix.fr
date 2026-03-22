@@ -115,49 +115,44 @@
 .about-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.80);
+  background: rgba(0, 0, 0, 0.75);
   z-index: 1100;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  padding: 1rem;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease;
+  overflow-y: auto;
 }
 .about-overlay[hidden] { display: none; }
 
 /* ── Sheet ───────────────────────────────────────────────── */
 .about-sheet {
   background: var(--dark-charcoal);
-  border: 1px solid rgba(62, 148, 180, 0.20);
-  border-bottom: none;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border: 1px solid rgba(62, 148, 180, 0.25);
+  border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 700px;
-  max-height: 85vh;
+  max-width: 660px;
+  max-height: 88vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(77,184,212,0.06);
+  animation: slideUp 0.25s ease;
   scrollbar-width: thin;
   scrollbar-color: rgba(77,184,212,.3) transparent;
+  margin: auto;
 }
-.about-sheet::-webkit-scrollbar { width: 8px; }
-.about-sheet::-webkit-scrollbar-track { background: rgba(77,184,212,.05); border-radius: 4px; }
-.about-sheet::-webkit-scrollbar-thumb { background: rgba(77,184,212,.3); border-radius: 4px; }
+.about-sheet::-webkit-scrollbar { width: 6px; }
+.about-sheet::-webkit-scrollbar-track { background: transparent; }
+.about-sheet::-webkit-scrollbar-thumb { background: rgba(77,184,212,.3); border-radius: 3px; }
 .about-sheet::-webkit-scrollbar-thumb:hover { background: rgba(77,184,212,.5); }
 
-/* ── Handle ──────────────────────────────────────────────── */
-.about-handle {
-  width: 40px;
-  height: 4px;
-  background: rgba(77, 184, 212, 0.25);
-  border-radius: 2px;
-  margin: 12px auto 0;
-  flex-shrink: 0;
-}
+/* ── Handle — masqué (plus de bottom sheet) ──────────────── */
+.about-handle { display: none; }
 
 /* ── Header (style CGU) ──────────────────────────────────── */
 .about-hero {
@@ -408,11 +403,18 @@
 (function () {
   function openAbout() {
     var m = document.getElementById('about-modal');
-    if (m) { m.removeAttribute('hidden'); document.body.style.overflow = 'hidden'; }
+    if (!m) return;
+    var sb = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.paddingRight = sb + 'px';
+    document.body.style.overflow = 'hidden';
+    m.removeAttribute('hidden');
   }
   function closeAbout() {
     var m = document.getElementById('about-modal');
-    if (m) { m.setAttribute('hidden', ''); document.body.style.overflow = ''; }
+    if (!m) return;
+    m.setAttribute('hidden', '');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#about-link, .about-trigger').forEach(function (el) {
