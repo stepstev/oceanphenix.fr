@@ -1,6 +1,6 @@
 ---
 // src/pages/radar.astro — Radar Terrain TourData 2026
-// Localise en temps réel : campings, coworkings, douches, entreprises data/IT
+// Localise en temps réel : campings, coworkings, entreprises data/IT, événements
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import CguModal from '../components/CguModal.astro';
@@ -9,7 +9,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
 <BaseLayout
   title="Radar Terrain — Campings, Coworkings & Entreprises | TourData 2026"
-  description="Localisez en temps réel autour de votre position : campings, douches, coworkings et entreprises data/IT. Outil terrain TourData 2026 — Stéphane Celton."
+  description="Localisez en temps réel autour de votre position : campings, coworkings, entreprises data/IT et événements IT/emploi. Outil terrain TourData 2026 — Stéphane Celton."
   lastModified="22/03/2026 12:00"
 >
   <link slot="head" rel="stylesheet" href="/lib/leaflet.min.css" />
@@ -27,7 +27,7 @@ import OceanBackground from '../components/OceanBackground.astro';
         <i class="fas fa-satellite-dish"></i> Outil Terrain — TourData 2026
       </div>
       <h2 class="page-title"><i class="fas fa-crosshairs page-title-icon"></i> Radar Terrain</h2>
-      <p class="page-sub">Localisez en temps réel : campings, douches, coworkings, entreprises data/IT et événements IT/emploi autour de votre position — TourData 2026</p>
+      <p class="page-sub">Localisez en temps réel : campings, coworkings, entreprises data/IT et événements IT/emploi autour de votre position — TourData 2026</p>
     </section>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -112,6 +112,16 @@ import OceanBackground from '../components/OceanBackground.astro';
           <i class="fas fa-location-dot"></i> Je suis ici
         </button>
         <div class="rd-toolbar-sep" aria-hidden="true"></div>
+        <!-- Toggle vue PRO / CYCLO -->
+        <div class="rd-view-toggle" role="group" aria-label="Vue">
+          <button class="rd-view-btn rd-view-btn--active" id="btn-view-pro" data-view="pro" type="button">
+            <i class="fas fa-briefcase"></i> Pro
+          </button>
+          <button class="rd-view-btn" id="btn-view-cyclo" data-view="cyclo" type="button">
+            <i class="fas fa-bicycle"></i> Cyclo
+          </button>
+        </div>
+        <div class="rd-toolbar-sep" aria-hidden="true"></div>
         <div class="rd-radius-inline">
           <span class="rd-radius-label"><i class="fas fa-circle-dot"></i> <strong id="radius-val">10</strong> km</span>
           <input type="range" id="radius-slider" min="2" max="25" value="10" step="1"
@@ -146,11 +156,6 @@ import OceanBackground from '../components/OceanBackground.astro';
               <input type="checkbox" class="rd-cat-cb" data-type="coworking" checked>
               <i class="fas fa-laptop" style="color:#8b5cf6"></i>
               <span>Coworkings</span>
-            </label>
-            <label class="rd-cat-item">
-              <input type="checkbox" class="rd-cat-cb" data-type="douche">
-              <i class="fas fa-droplet" style="color:#0ea5e9"></i>
-              <span>Douches / Piscines</span>
             </label>
             <label class="rd-cat-item">
               <input type="checkbox" class="rd-cat-cb" data-type="entreprise" checked>
@@ -193,11 +198,6 @@ import OceanBackground from '../components/OceanBackground.astro';
           <i class="fas fa-laptop" style="color:#8b5cf6"></i> Coworkings
           <span class="rd-tab-count" id="count-coworking">0</span>
         </button>
-        <button class="rd-tab" data-tab="douche" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#0ea5e9"></span>
-          <i class="fas fa-droplet" style="color:#0ea5e9"></i> Douches
-          <span class="rd-tab-count" id="count-douche">0</span>
-        </button>
         <button class="rd-tab" data-tab="entreprise" role="tab" aria-selected="false">
           <span class="rd-tab-dot" style="--dot-color:#f59e0b"></span>
           <i class="fas fa-microchip" style="color:#f59e0b"></i> Entreprises
@@ -224,9 +224,6 @@ import OceanBackground from '../components/OceanBackground.astro';
               </button>
               <button class="chip active" data-type="coworking" aria-pressed="true" style="--dot:#8b5cf6;--chip-color:#8b5cf6">
                 <i class="fas fa-laptop"></i>Coworking
-              </button>
-              <button class="chip chip--hidden" data-type="douche" aria-pressed="false" style="--dot:#0ea5e9;--chip-color:#0ea5e9">
-                <i class="fas fa-droplet"></i>Douche
               </button>
               <button class="chip active" data-type="entreprise" aria-pressed="true" style="--dot:#f59e0b;--chip-color:#f59e0b">
                 <i class="fas fa-microchip"></i>Entreprise
@@ -267,17 +264,6 @@ import OceanBackground from '../components/OceanBackground.astro';
             <span class="rd-card-hint">Sources : OpenStreetMap + données référencées</span>
           </div>
           <ul class="rd-list" id="list-coworking" aria-label="Liste des coworkings"></ul>
-        </div>
-      </div>
-
-      <!-- TAB: Douches -->
-      <div class="rd-tab-content" id="tab-douche" role="tabpanel">
-        <div class="rd-card">
-          <div class="rd-card-header">
-            <h3><i class="fas fa-droplet" style="color:#0ea5e9"></i> Douches & Piscines</h3>
-            <span class="rd-card-hint">Sources : OpenStreetMap</span>
-          </div>
-          <ul class="rd-list" id="list-douche" aria-label="Liste des douches et piscines"></ul>
         </div>
       </div>
 
@@ -323,7 +309,7 @@ import OceanBackground from '../components/OceanBackground.astro';
         <strong>Votre position reste dans votre navigateur.</strong>
         Le bouton « Je suis ici » utilise l'API <code>navigator.geolocation</code> du navigateur — aucune coordonnée GPS n'est envoyée à un serveur OceanPhenix.
         Les coordonnées sont transmises directement aux sources de données :
-        <strong>OpenStreetMap / Overpass</strong> pour campings, douches et coworkings ;
+        <strong>OpenStreetMap / Overpass</strong> pour campings et coworkings ;
         <strong>OpenDataSoft / Atout France</strong> pour les hébergements classés ;
         <strong>INSEE SIRENE</strong> pour les entreprises Data &amp; IT ;
         <strong>OpenAgenda</strong> pour les événements IT, salons emploi et meetups tech (proxy PHP, clé API requise).
@@ -374,11 +360,10 @@ import OceanBackground from '../components/OceanBackground.astro';
 
     // ── Constantes ────────────────────────────────────────────
     const TYPE_COLORS = {
-      camping:     '#10b981',
-      coworking:   '#8b5cf6',
-      douche:      '#0ea5e9',
-      entreprise:  '#f59e0b',
-      evenement:   '#f43f5e',
+      camping:    '#10b981',
+      coworking:  '#8b5cf6',
+      entreprise: '#f59e0b',
+      evenement:  '#f43f5e',
       warmshowers: '#ff8c42',
     };
     // Coworkings statiques enrichis
@@ -413,7 +398,7 @@ import OceanBackground from '../components/OceanBackground.astro';
     let currentLon = null;
     let currentRadius = 10;
     let minEffectifTranche = '';
-    let activeFilters = new Set(['coworking', 'entreprise', 'evenement']); // Vue Pro par défaut
+    let activeFilters = new Set(); // Initialisé par applyView('pro') au boot
     let allResults = [];
     let leafletMap = null;
     let mapMarkers = [];
@@ -428,9 +413,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       { id: 'mock-camp-3', nom: 'Camping Municipal des Saules', type: 'camping', lat: 48.625, lon: 2.110, adresse: 'Allée des Saules, 91580', source: 'Mock Dev', dist: 3.5 },
       { id: 'mock-cw-1', nom: 'CoWork Valley', type: 'coworking', lat: 48.636, lon: 2.102, adresse: '5 Rue du Commerce, 91580 Fontenay-lès-Briis', source: 'Mock Dev', dist: 0.8 },
       { id: 'mock-cw-2', nom: 'La Ruche Numérique', type: 'coworking', lat: 48.648, lon: 2.088, adresse: '18 Boulevard Central, 91580', source: 'Mock Dev', dist: 1.9 },
-      { id: 'mock-douche-1', nom: 'Piscine Municipale', type: 'douche', lat: 48.640, lon: 2.091, adresse: 'Parc des Sports, 91580 Fontenay-lès-Briis', source: 'Mock Dev', dist: 0.5 },
-      { id: 'mock-douche-2', nom: 'Douches Camping Accueil Libre', type: 'douche', lat: 48.633, lon: 2.105, adresse: 'Zone Accueil, 91580', source: 'Mock Dev', dist: 1.6 },
-      { id: 'mock-ent-1', nom: 'DataFlow Consulting', type: 'entreprise', lat: 48.644, lon: 2.087, adresse: '24 Rue de la Tech, 91580 Fontenay-lès-Briis', siren: '123456789', naf: '6311Z', nafLabel: 'Traitement de données, hébergement', source: 'Mock Dev', dist: 1.4 },
+{ id: 'mock-ent-1', nom: 'DataFlow Consulting', type: 'entreprise', lat: 48.644, lon: 2.087, adresse: '24 Rue de la Tech, 91580 Fontenay-lès-Briis', siren: '123456789', naf: '6311Z', nafLabel: 'Traitement de données, hébergement', source: 'Mock Dev', dist: 1.4 },
       { id: 'mock-ent-2', nom: 'CloudBridge Solutions', type: 'entreprise', lat: 48.630, lon: 2.100, adresse: '7 Avenue de l\'Innovation, 91580', siren: '987654321', naf: '6202A', nafLabel: 'Conseil en systèmes informatiques', source: 'Mock Dev', dist: 2.1 },
       { id: 'mock-ent-3', nom: 'BI Analytics France', type: 'entreprise', lat: 48.653, lon: 2.082, adresse: '42 Place de la Data, 91580', siren: '456789123', naf: '7022Z', nafLabel: 'Conseil pour les affaires', source: 'Mock Dev', dist: 3.0 },
       { id: 'mock-ws-1', nom: 'WarmShowers — Jean D.', type: 'warmshowers', lat: 48.639, lon: 2.096, adresse: 'Fontenay-lès-Briis (hôte vérifié)', source: 'Mock Dev', dist: 0.3 },
@@ -543,8 +526,6 @@ import OceanBackground from '../components/OceanBackground.astro';
 
         let type = 'autre';
         if (el.tags?.tourism === 'camp_site') type = 'camping';
-        else if (el.tags?.amenity === 'shower') type = 'douche';
-        else if (el.tags?.leisure === 'swimming_pool') type = 'douche';
         else if (el.tags?.amenity === 'coworking_space') type = 'coworking';
 
         const adresseParts = [
@@ -681,7 +662,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       showLoading(true);
       clearMapMarkers();
       // Show skeletons in all lists
-      ['results-list', 'list-camping', 'list-coworking', 'list-douche', 'list-entreprise', 'list-evenement'].forEach(id => {
+      ['results-list', 'list-camping', 'list-coworking', 'list-entreprise', 'list-evenement'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = skeletonHTML(3);
       });
@@ -804,7 +785,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
       countEl.textContent = `${filtered.length} résultat${filtered.length !== 1 ? 's' : ''} — rayon ${currentRadius} km`;
 
-      const types = ['camping', 'coworking', 'douche', 'entreprise', 'evenement'];
+      const types = ['camping', 'coworking', 'entreprise', 'evenement'];
       types.forEach(type => {
         const items = allResults.filter(r => r.type === type && effectifMatch(r));
         const listEl = document.getElementById('list-' + type);
@@ -918,7 +899,7 @@ import OceanBackground from '../components/OceanBackground.astro';
     }
 
     function labelForType(type) {
-      return { camping: 'Camping', coworking: 'Coworking', douche: 'Douche / Piscine', entreprise: 'Entreprise', warmshowers: 'WarmShowers' }[type] || type;
+      return { camping: 'Camping', coworking: 'Coworking', entreprise: 'Entreprise', evenement: 'Événement' }[type] || type;
     }
 
     function escHtml(str) {
@@ -1050,6 +1031,8 @@ import OceanBackground from '../components/OceanBackground.astro';
       catPanel.querySelectorAll('.rd-cat-cb').forEach(cb => {
         cb.addEventListener('change', () => {
           toggleFilter(cb.dataset.type, cb.checked);
+          // Si l'utilisateur modifie manuellement → aucun preset actif
+          setViewActive(null);
         });
       });
 
@@ -1059,6 +1042,32 @@ import OceanBackground from '../components/OceanBackground.astro';
           catPanel.classList.remove('rd-cat-panel--open');
         }
       });
+
+      // ── Toggle PRO / CYCLO ─────────────────────────────────
+      const VIEWS = {
+        pro:   ['coworking', 'entreprise', 'evenement'],
+        cyclo: ['camping'],
+      };
+      const ALL_TYPES = ['camping', 'coworking', 'entreprise', 'evenement'];
+
+      function setViewActive(view) {
+        document.querySelectorAll('.rd-view-btn').forEach(b => {
+          b.classList.toggle('rd-view-btn--active', b.dataset.view === view);
+        });
+      }
+
+      function applyView(view) {
+        const active = VIEWS[view] || [];
+        ALL_TYPES.forEach(t => toggleFilter(t, active.includes(t)));
+        setViewActive(view);
+      }
+
+      document.querySelectorAll('.rd-view-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyView(btn.dataset.view));
+      });
+
+      // Vue Pro active au démarrage
+      applyView('pro');
 
     });
 
@@ -1291,6 +1300,56 @@ import OceanBackground from '../components/OceanBackground.astro';
   .rd-btn--ghost:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
   .rd-btn--ghost:disabled { opacity: .35; cursor: not-allowed; }
   .rd-btn--full { width: 100%; justify-content: center; }
+
+  /* ── Toggle vue PRO / CYCLO ──────────────────────────────── */
+  .rd-view-toggle {
+    display: flex;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(77, 184, 212, 0.3);
+    overflow: hidden;
+    height: 34px;
+  }
+  .rd-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 13px;
+    height: 100%;
+    background: rgba(20, 40, 68, 0.7);
+    color: var(--text-muted);
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, color .15s;
+    border-right: 1px solid rgba(77, 184, 212, 0.2);
+  }
+  .rd-view-btn:last-child { border-right: none; }
+  .rd-view-btn i { font-size: 0.75rem; }
+  .rd-view-btn:hover {
+    background: rgba(30, 58, 95, 0.9);
+    color: var(--text-light);
+  }
+  .rd-view-btn--active {
+    background: rgba(77, 184, 212, 0.18);
+    color: var(--accent-cyan);
+  }
+  .rd-view-btn--active:hover {
+    background: rgba(77, 184, 212, 0.26);
+  }
+  /* Light mode */
+  [data-theme="light"] .rd-view-toggle { border-color: rgba(26,127,160,.3); }
+  [data-theme="light"] .rd-view-btn {
+    background: #fff;
+    color: #4a6275;
+    border-right-color: rgba(26,127,160,.15);
+  }
+  [data-theme="light"] .rd-view-btn:hover { background: #f0f8ff; color: #1a2535; }
+  [data-theme="light"] .rd-view-btn--active { background: rgba(26,127,160,.12); color: #0e7fa8; }
+  [data-theme="light"] .rd-view-btn--active:hover { background: rgba(26,127,160,.2); }
 
   .rd-radius-inline {
     display: flex;
