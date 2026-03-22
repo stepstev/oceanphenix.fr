@@ -46,6 +46,34 @@ $radius = max(1, min(50, $radius));
 if ($lat !== null && ($lat < -90 || $lat > 90)) { jsonError('Latitude invalide'); }
 if ($lon !== null && ($lon < -180 || $lon > 180)) { jsonError('Longitude invalide'); }
 
+// ── Cache fichier (tmp, 5 min par défaut) ────────────────────────────────────
+function cacheGet(string $key, int $ttl = 300): ?string {
+    $path = sys_get_temp_dir() . '/radar_' . md5($key) . '.json';
+    if (!file_exists($path)) return null;
+    if ((time() - filemtime($path)) > $ttl) return null;
+    return file_get_contents($path) ?: null;
+}
+
+function cacheSet(string $key, string $data): void {
+    $path = sys_get_temp_dir() . '/radar_' . md5($key) . '.json';
+    @file_put_contents($path, $data);
+}
+
+function proxyFetchCached(string $url, string $cacheKey, int $ttl = 300): void {
+    $cached = cacheGet($cacheKey, $ttl);
+    if ($cached !== null) {
+        echo $cached;
+        exit;
+    }
+    $body = httpGet($url, 12);
+    if ($body === false) {
+        jsonError('Erreur lors de la requête vers la source externe', 502);
+    }
+    cacheSet($cacheKey, $body);
+    echo $body;
+    exit;
+}
+
 // ── Routage ───────────────────────────────────────────────────────────────────
 switch ($type) {
 
@@ -56,12 +84,16 @@ switch ($type) {
             . '?where=%s&limit=20&select=nom_commercial,adresse,code_postal,commune,coordonnees_geo,classement,nombre_emplacements',
             urlencode("distance(coordonnees_geo, geom'POINT($lon $lat)', {$radius}km) AND type_hebergement = \"Camping\"")
         );
-        proxyFetch($url);
+        // Cache 10 min — campings ne changent pas en cours de journée
+        proxyFetchCached($url, "campings_{$lat}_{$lon}_{$radius}", 600);
         break;
 
     case 'entreprises':
         if (empty($dept)) jsonError('dept requis');
-        // Codes NAF data/IT
+        $cacheKey = "entreprises_{$dept}";
+        $cached = cacheGet($cacheKey, 1800); // Cache 30 min — très stable
+        if ($cached !== null) { echo $cached; exit; }
+
         $nafs = ['6311Z', '6202A', '7022Z', '6201Z', '5829A'];
         $results = [];
         foreach ($nafs as $naf) {
@@ -75,13 +107,16 @@ switch ($type) {
                 }
             }
         }
-        echo json_encode(['results' => $results], JSON_UNESCAPED_UNICODE);
+        $out = json_encode(['results' => $results], JSON_UNESCAPED_UNICODE);
+        cacheSet($cacheKey, $out);
+        echo $out;
         break;
 
     case 'commune':
         if ($lat === null || $lon === null) jsonError('lat/lon requis');
         $url = "https://geo.api.gouv.fr/communes?lat={$lat}&lon={$lon}&fields=codeDepartement,nom&format=json";
-        proxyFetch($url);
+        // Cache 1h — la commune ne change pas
+        proxyFetchCached($url, "commune_{$lat}_{$lon}", 3600);
         break;
 
     default:
@@ -89,14 +124,6 @@ switch ($type) {
 }
 
 // ── Fonctions utilitaires ─────────────────────────────────────────────────────
-function proxyFetch(string $url): void {
-    $body = httpGet($url, 12);
-    if ($body === false) {
-        jsonError('Erreur lors de la requête vers la source externe', 502);
-    }
-    echo $body;
-    exit;
-}
 
 function httpGet(string $url, int $timeout = 10): string|false {
     $ctx = stream_context_create([

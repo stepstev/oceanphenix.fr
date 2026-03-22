@@ -23,6 +23,9 @@ import OceanBackground from '../components/OceanBackground.astro';
     <!-- HERO — cohérent avec strava / terrain                 -->
     <!-- ══════════════════════════════════════════════════════ -->
     <section class="rd-hero">
+      <div class="rd-hero-badge">
+        <i class="fas fa-satellite-dish"></i> Outil Terrain — TourData 2026
+      </div>
       <h2 class="page-title"><i class="fas fa-crosshairs page-title-icon"></i> Radar Terrain</h2>
       <p class="page-sub">Localisez en temps réel : campings, douches, coworkings et entreprises data/IT autour de votre position — TourData 2026</p>
     </section>
@@ -75,29 +78,24 @@ import OceanBackground from '../components/OceanBackground.astro';
           <i class="fas fa-map-marked-alt"></i> Carte
         </button>
         <button class="rd-tab" data-tab="camping" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#3de8a0"></span>
+          <span class="rd-tab-dot" style="--dot-color:#5a9e82"></span>
           <i class="fas fa-campground"></i> Campings
           <span class="rd-tab-count" id="count-camping">0</span>
         </button>
         <button class="rd-tab" data-tab="coworking" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#a078f8"></span>
+          <span class="rd-tab-dot" style="--dot-color:#7268a8"></span>
           <i class="fas fa-building"></i> Coworkings
           <span class="rd-tab-count" id="count-coworking">0</span>
         </button>
         <button class="rd-tab" data-tab="douche" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#38c8f8"></span>
+          <span class="rd-tab-dot" style="--dot-color:#4a9dbf"></span>
           <i class="fas fa-shower"></i> Douches
           <span class="rd-tab-count" id="count-douche">0</span>
         </button>
         <button class="rd-tab" data-tab="entreprise" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#e2f94c"></span>
+          <span class="rd-tab-dot" style="--dot-color:#9a9245"></span>
           <i class="fas fa-briefcase"></i> Entreprises
           <span class="rd-tab-count" id="count-entreprise">0</span>
-        </button>
-        <button class="rd-tab" data-tab="warmshowers" role="tab" aria-selected="false">
-          <span class="rd-tab-dot" style="--dot-color:#ff8c42"></span>
-          <i class="fas fa-hand-holding-heart"></i> WarmShowers
-          <span class="rd-tab-count" id="count-warmshowers">0</span>
         </button>
         <button class="rd-tab" data-tab="tous" role="tab" aria-selected="false">
           <i class="fas fa-list"></i> Tous
@@ -110,21 +108,19 @@ import OceanBackground from '../components/OceanBackground.astro';
           <div class="rd-card-header">
             <h3><i class="fas fa-map"></i> Carte interactive</h3>
             <div class="rd-card-badges filter-chips" role="group" aria-label="Filtres carte">
-              <button class="chip active" data-type="camping" aria-pressed="true" style="--dot:#3de8a0">
+              <button class="chip active" data-type="camping" aria-pressed="true" style="--dot:#5a9e82">
                 <span class="chip-dot"></span>Camping
               </button>
-              <button class="chip active" data-type="coworking" aria-pressed="true" style="--dot:#a078f8">
+              <button class="chip active" data-type="coworking" aria-pressed="true" style="--dot:#7268a8">
                 <span class="chip-dot"></span>Coworking
               </button>
-              <button class="chip active" data-type="douche" aria-pressed="true" style="--dot:#38c8f8">
+              <button class="chip active" data-type="douche" aria-pressed="true" style="--dot:#4a9dbf">
                 <span class="chip-dot"></span>Douche
               </button>
-              <button class="chip active" data-type="entreprise" aria-pressed="true" style="--dot:#e2f94c">
+              <button class="chip active" data-type="entreprise" aria-pressed="true" style="--dot:#9a9245">
                 <span class="chip-dot"></span>Entreprise
               </button>
-              <button class="chip active" data-type="warmshowers" aria-pressed="true" style="--dot:#ff8c42">
-                <span class="chip-dot"></span>WarmShowers
-              </button>
+
             </div>
           </div>
           <div class="rd-map-frame">
@@ -142,7 +138,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       <div class="rd-tab-content" id="tab-camping" role="tabpanel">
         <div class="rd-card">
           <div class="rd-card-header">
-            <h3><i class="fas fa-campground" style="color:#3de8a0"></i> Campings à proximité</h3>
+            <h3><i class="fas fa-campground" style="color:#5a9e82"></i> Campings à proximité</h3>
             <span class="rd-card-hint">Sources : OpenStreetMap + Atout France</span>
           </div>
           <ul class="rd-list" id="list-camping" aria-label="Liste des campings"></ul>
@@ -153,7 +149,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       <div class="rd-tab-content" id="tab-coworking" role="tabpanel">
         <div class="rd-card">
           <div class="rd-card-header">
-            <h3><i class="fas fa-building" style="color:#a078f8"></i> Coworkings</h3>
+            <h3><i class="fas fa-building" style="color:#7268a8"></i> Coworkings</h3>
             <span class="rd-card-hint">Sources : OpenStreetMap + données référencées</span>
           </div>
           <ul class="rd-list" id="list-coworking" aria-label="Liste des coworkings"></ul>
@@ -164,7 +160,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       <div class="rd-tab-content" id="tab-douche" role="tabpanel">
         <div class="rd-card">
           <div class="rd-card-header">
-            <h3><i class="fas fa-shower" style="color:#38c8f8"></i> Douches & Piscines</h3>
+            <h3><i class="fas fa-shower" style="color:#4a9dbf"></i> Douches & Piscines</h3>
             <span class="rd-card-hint">Sources : OpenStreetMap</span>
           </div>
           <ul class="rd-list" id="list-douche" aria-label="Liste des douches et piscines"></ul>
@@ -175,21 +171,10 @@ import OceanBackground from '../components/OceanBackground.astro';
       <div class="rd-tab-content" id="tab-entreprise" role="tabpanel">
         <div class="rd-card">
           <div class="rd-card-header">
-            <h3><i class="fas fa-briefcase" style="color:#e2f94c"></i> Entreprises Data / IT</h3>
+            <h3><i class="fas fa-briefcase" style="color:#9a9245"></i> Entreprises Data / IT</h3>
             <span class="rd-card-hint">Source : INSEE SIRENE — codes NAF Data, IT, Conseil</span>
           </div>
           <ul class="rd-list" id="list-entreprise" aria-label="Liste des entreprises"></ul>
-        </div>
-      </div>
-
-      <!-- TAB: WarmShowers -->
-      <div class="rd-tab-content" id="tab-warmshowers" role="tabpanel">
-        <div class="rd-card">
-          <div class="rd-card-header">
-            <h3><i class="fas fa-hand-holding-heart" style="color:#ff8c42"></i> WarmShowers</h3>
-            <span class="rd-card-hint">Réseau d'hospitalité pour cyclistes — données simulées (API OAuth2 requise)</span>
-          </div>
-          <ul class="rd-list" id="list-warmshowers" aria-label="Liste WarmShowers"></ul>
         </div>
       </div>
 
@@ -211,77 +196,24 @@ import OceanBackground from '../components/OceanBackground.astro';
     <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════ -->
-    <!-- MODAL ÉVALUATION — bottom sheet                       -->
-    <!-- ══════════════════════════════════════════════════════ -->
-    <div id="eval-modal" class="modal-overlay hidden"
-      role="dialog" aria-modal="true" aria-labelledby="eval-title">
-      <div class="modal-sheet">
-
-        <div class="modal-handle"></div>
-        <button class="modal-close" id="modal-close" aria-label="Fermer">
-          <i class="fas fa-xmark"></i>
-        </button>
-
-        <div class="modal-header">
-          <span class="modal-icon"><i class="fas fa-star"></i></span>
-          <div>
-            <h3 id="eval-title" class="modal-title">Évaluer ce lieu</h3>
-            <p id="eval-place-name" class="modal-subtitle"></p>
-          </div>
-        </div>
-
-        <div class="eval-fields">
-          <label class="eval-field">
-            <span class="eval-label">🧹 Propreté</span>
-            <div class="slider-row">
-              <input type="range" min="1" max="5" value="3" id="eval-proprete" />
-              <span class="slider-val" id="val-proprete">3</span>
-            </div>
-          </label>
-          <label class="eval-field">
-            <span class="eval-label">🤝 Accueil</span>
-            <div class="slider-row">
-              <input type="range" min="1" max="5" value="3" id="eval-accueil" />
-              <span class="slider-val" id="val-accueil">3</span>
-            </div>
-          </label>
-          <label class="eval-field">
-            <span class="eval-label">🔒 Sécurité vélo</span>
-            <div class="slider-row">
-              <input type="range" min="1" max="5" value="3" id="eval-securite" />
-              <span class="slider-val" id="val-securite">3</span>
-            </div>
-          </label>
-          <label class="eval-field">
-            <span class="eval-label">💶 Prix</span>
-            <div class="slider-row">
-              <input type="range" min="1" max="5" value="3" id="eval-prix" />
-              <span class="slider-val" id="val-prix">3</span>
-            </div>
-          </label>
-          <label class="eval-field eval-field--full">
-            <span class="eval-label">📝 Commentaire</span>
-            <textarea id="eval-note" rows="2"
-              placeholder="Impression, conseil, avertissement…"></textarea>
-          </label>
-        </div>
-
-        <button class="rd-btn rd-btn--primary rd-btn--full" id="eval-save">
-          <i class="fas fa-floppy-disk"></i> Sauvegarder l'évaluation
-        </button>
-
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!-- MICRO-FOOTER intégré (page outil plein écran)         -->
+    <!-- FOOTER RADAR — nav + copyright                         -->
     <!-- ══════════════════════════════════════════════════════ -->
     <footer class="rd-footer">
-      <span class="rd-footer-copy">© 2025–2026 <strong>OceanPhenix™</strong> · Stéphane Celton</span>
-      <span class="rd-footer-sep">·</span>
-      <span class="rd-footer-project"><i class="fas fa-bicycle"></i> TourData 2026</span>
-      <span class="rd-footer-sep">·</span>
-      <a href="#" id="cgu-link" class="rd-footer-link">CGU &amp; RGPD</a>
+      <nav class="rd-footer-nav" aria-label="Navigation OceanPhenix">
+        <a href="/terrain"><i class="fas fa-bicycle"></i> TourData</a>
+        <a href="/tourdata"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        <a href="/strava"><i class="fab fa-strava"></i> Strava</a>
+        <a href="/radar" class="rd-footer-nav--active" aria-current="page"><i class="fas fa-crosshairs"></i> Radar</a>
+        <a href="/expertises"><i class="fas fa-briefcase"></i> Expertises</a>
+        <a href="/index.html"><i class="fas fa-home"></i> Accueil</a>
+      </nav>
+      <div class="rd-footer-copy-row">
+        <span class="rd-footer-copy">© 2025–2026 <strong>OceanPhenix™</strong> · Stéphane Celton</span>
+        <span class="rd-footer-sep">·</span>
+        <span class="rd-footer-project"><i class="fas fa-bicycle"></i> TourData 2026</span>
+        <span class="rd-footer-sep">·</span>
+        <a href="#" id="cgu-link" class="rd-footer-link">CGU &amp; RGPD</a>
+      </div>
     </footer>
 
   </main>
@@ -300,12 +232,11 @@ import OceanBackground from '../components/OceanBackground.astro';
     'use strict';
 
     // ── Constantes ────────────────────────────────────────────
-    const EVAL_KEY = 'td_evals';
     const TYPE_COLORS = {
-      camping:     '#3de8a0',
-      coworking:   '#a078f8',
-      douche:      '#38c8f8',
-      entreprise:  '#e2f94c',
+      camping:     '#5a9e82',
+      coworking:   '#7268a8',
+      douche:      '#4a9dbf',
+      entreprise:  '#9a9245',
       warmshowers: '#ff8c42',
     };
     const NAF_CODES = ['6311Z', '6202A', '7022Z', '6201Z', '5829A'];
@@ -344,12 +275,11 @@ import OceanBackground from '../components/OceanBackground.astro';
     let currentLat = null;
     let currentLon = null;
     let currentRadius = 10;
-    let activeFilters = new Set(['camping', 'coworking', 'douche', 'entreprise', 'warmshowers']);
+    let activeFilters = new Set(['camping', 'coworking', 'douche', 'entreprise']);
     let allResults = [];
     let leafletMap = null;
     let mapMarkers = [];
     let radiusCircle = null;
-    let currentEvalId = null;
     let recognition = null;
 
     // ── Mode dev : détection + mock data ──────────────────────
@@ -431,7 +361,7 @@ import OceanBackground from '../components/OceanBackground.astro';
           };
           showMapInfo('🔒', msgs[err.code] || 'Erreur de géolocalisation', 'error', 5000);
         },
-        { timeout: 10000, maximumAge: 60000, enableHighAccuracy: true }
+        { timeout: 15000, maximumAge: 300000, enableHighAccuracy: true }
       );
     }
 
@@ -504,13 +434,9 @@ import OceanBackground from '../components/OceanBackground.astro';
     }
 
     async function fetchCampingsGouv(lat, lon, radiusKm) {
-      const url = new URL('https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/hebergements-classes/records');
-      url.searchParams.set('where', `distance(coordonnees_geo, geom'POINT(${lon} ${lat})', ${radiusKm}km) AND type_hebergement = "Camping"`);
-      url.searchParams.set('limit', '20');
-      url.searchParams.set('select', 'nom_commercial,adresse,code_postal,commune,coordonnees_geo,classement,nombre_emplacements');
-
-      const resp = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
-      if (!resp.ok) throw new Error(`Atout France HTTP ${resp.status}`);
+      const url = `/api/radar-proxy.php?type=campings&lat=${lat}&lon=${lon}&radius=${radiusKm}`;
+      const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      if (!resp.ok) throw new Error(`Campings proxy HTTP ${resp.status}`);
       const data = await resp.json();
 
       return (data.results || [])
@@ -529,46 +455,43 @@ import OceanBackground from '../components/OceanBackground.astro';
     }
 
     async function fetchEntreprises(lat, lon) {
-      // 1. Récupérer le code département depuis les coordonnées
+      // 1. Code département via proxy (évite appel direct depuis mobile)
       const geoResp = await fetch(
-        `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=codeDepartement&format=json`,
+        `/api/radar-proxy.php?type=commune&lat=${lat}&lon=${lon}`,
         { signal: AbortSignal.timeout(8000) }
       );
+      if (!geoResp.ok) throw new Error(`Commune proxy HTTP ${geoResp.status}`);
       const geoData = await geoResp.json();
       const dept = geoData[0]?.codeDepartement;
       if (!dept) throw new Error('Département introuvable');
 
-      // 2. Interroger chaque code NAF en parallèle
-      const queries = NAF_CODES.map(naf =>
-        fetch(
-          `https://recherche-entreprises.api.gouv.fr/search?activite_principale=${naf}&departement=${dept}&per_page=5&page=1`,
-          { signal: AbortSignal.timeout(12000) }
-        ).then(r => r.ok ? r.json() : Promise.reject(r.status))
+      // 2. Entreprises via proxy (le proxy gère les 5 codes NAF côté serveur)
+      const entResp = await fetch(
+        `/api/radar-proxy.php?type=entreprises&dept=${encodeURIComponent(dept)}`,
+        { signal: AbortSignal.timeout(20000) }
       );
-      const settled = await Promise.allSettled(queries);
+      if (!entResp.ok) throw new Error(`Entreprises proxy HTTP ${entResp.status}`);
+      const entData = await entResp.json();
 
       const seen = new Set();
       const results = [];
-      for (const r of settled) {
-        if (r.status !== 'fulfilled') continue;
-        for (const e of (r.value?.results || [])) {
-          if (!e.siren || seen.has(e.siren)) continue;
-          const siege = e.siege;
-          if (!siege?.latitude || !siege?.longitude) continue;
-          seen.add(e.siren);
-          results.push({
-            id: `siren-${e.siren}`,
-            nom: e.nom_complet || e.nom_raison_sociale || 'Entreprise',
-            type: 'entreprise',
-            lat: parseFloat(siege.latitude),
-            lon: parseFloat(siege.longitude),
-            adresse: [siege.adresse, siege.code_postal, siege.libelle_commune].filter(Boolean).join(' '),
-            source: 'INSEE SIRENE',
-            siren: e.siren,
-            naf: e.activite_principale,
-            nafLabel: e.libelle_activite_principale_libelle_65 || e.activite_principale,
-          });
-        }
+      for (const e of (entData.results || [])) {
+        if (!e.siren || seen.has(e.siren)) continue;
+        const siege = e.siege;
+        if (!siege?.latitude || !siege?.longitude) continue;
+        seen.add(e.siren);
+        results.push({
+          id: `siren-${e.siren}`,
+          nom: e.nom_complet || e.nom_raison_sociale || 'Entreprise',
+          type: 'entreprise',
+          lat: parseFloat(siege.latitude),
+          lon: parseFloat(siege.longitude),
+          adresse: [siege.adresse, siege.code_postal, siege.libelle_commune].filter(Boolean).join(' '),
+          source: 'INSEE SIRENE',
+          siren: e.siren,
+          naf: e.activite_principale,
+          nafLabel: e.libelle_activite_principale_libelle_65 || e.activite_principale,
+        });
       }
       return results;
     }
@@ -602,7 +525,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       showLoading(true);
       clearMapMarkers();
       // Show skeletons in all lists
-      ['results-list', 'list-camping', 'list-coworking', 'list-douche', 'list-entreprise', 'list-warmshowers'].forEach(id => {
+      ['results-list', 'list-camping', 'list-coworking', 'list-douche', 'list-entreprise'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = skeletonHTML(3);
       });
@@ -642,7 +565,6 @@ import OceanBackground from '../components/OceanBackground.astro';
         ...(resCampings.status    === 'fulfilled' ? resCampings.value    : []),
         ...(resEntreprises.status === 'fulfilled' ? resEntreprises.value : []),
         ...(resCw.status          === 'fulfilled' ? resCw.value         : []),
-        ...getWarmshowersNearby(currentLat, currentLon, currentRadius),
       ];
 
       // Dédupliquer par id, calculer distance, filtrer rayon, trier
@@ -665,12 +587,9 @@ import OceanBackground from '../components/OceanBackground.astro';
     }
 
     // ── Rendu résultats ───────────────────────────────────────
-    function renderItemHTML(r, evals) {
-      const ev = evals[r.id];
-      const avgStars = ev ? ((ev.proprete + ev.accueil + ev.securite + ev.prix) / 4).toFixed(1) : null;
-      const evalBadge = avgStars ? `<span class="eval-badge">★ ${avgStars}</span>` : '';
+    function renderItemHTML(r) {
       const ficheBtn = r.type === 'entreprise' && r.siren
-        ? `<a href="https://annuaire-entreprises.data.gouv.fr/entreprise/${encodeURIComponent(r.siren)}" target="_blank" rel="noopener" class="result-btn btn-fiche">🔗 Fiche</a>`
+        ? `<a href="https://annuaire-entreprises.data.gouv.fr/entreprise/${encodeURIComponent(r.siren)}" target="_blank" rel="noopener" class="result-btn btn-fiche"><i class="fas fa-external-link-alt"></i> Fiche</a>`
         : '';
       const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}&travelmode=bicycling`;
       const color = TYPE_COLORS[r.type] || '#888';
@@ -683,7 +602,6 @@ import OceanBackground from '../components/OceanBackground.astro';
           <div class="result-body">
             <div class="result-header-row">
               <span class="result-nom">${escHtml(r.nom)}</span>
-              ${evalBadge}
               <span class="result-dist">${r.dist.toFixed(1)} km</span>
             </div>
             ${r.adresse ? `<div class="result-adresse"><i class="fas fa-map-pin"></i> ${escHtml(r.adresse)}</div>` : ''}
@@ -691,11 +609,8 @@ import OceanBackground from '../components/OceanBackground.astro';
             ${r.classement ? `<div class="result-meta"><i class="fas fa-star"></i> ${escHtml(String(r.classement))}</div>` : ''}
             ${r.source ? `<div class="result-source">Source : ${escHtml(r.source)}</div>` : ''}
             <div class="result-actions">
-              <a href="${mapsUrl}" target="_blank" rel="noopener" class="result-btn btn-go">🧭 Y aller</a>
+              <a href="${mapsUrl}" target="_blank" rel="noopener" class="result-btn btn-go"><i class="fas fa-route"></i> Itinéraire</a>
               ${ficheBtn}
-              <button class="result-btn btn-eval"
-                data-id="${r.id}"
-                data-nom="${escHtml(r.nom)}">⭐ Évaluer</button>
             </div>
           </div>
         </li>`;
@@ -703,39 +618,27 @@ import OceanBackground from '../components/OceanBackground.astro';
 
     function renderResults() {
       const countEl = document.getElementById('results-count');
-      const evals = getEvals();
       const filtered = allResults.filter(r => activeFilters.has(r.type));
 
       countEl.textContent = `${filtered.length} résultat${filtered.length !== 1 ? 's' : ''} — rayon ${currentRadius} km`;
 
-      // Remplir les listes par catégorie
-      const types = ['camping', 'coworking', 'douche', 'entreprise', 'warmshowers'];
+      const types = ['camping', 'coworking', 'douche', 'entreprise'];
       types.forEach(type => {
         const items = allResults.filter(r => r.type === type);
         const listEl = document.getElementById('list-' + type);
         const countBadge = document.getElementById('count-' + type);
         if (countBadge) countBadge.textContent = items.length;
         if (listEl) {
-          if (items.length === 0) {
-            listEl.innerHTML = '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat dans cette catégorie.</li>';
-          } else {
-            listEl.innerHTML = items.map(r => renderItemHTML(r, evals)).join('');
-          }
+          listEl.innerHTML = items.length === 0
+            ? '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat dans cette catégorie.</li>'
+            : items.map(r => renderItemHTML(r)).join('');
         }
       });
 
-      // Remplir la liste "tous"
       const allList = document.getElementById('results-list');
-      if (filtered.length === 0) {
-        allList.innerHTML = '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat. Sélectionnez une étape ou géolocalisez-vous.</li>';
-      } else {
-        allList.innerHTML = filtered.map(r => renderItemHTML(r, evals)).join('');
-      }
-
-      // Events évaluation sur toutes les listes
-      document.querySelectorAll('.btn-eval').forEach(btn => {
-        btn.addEventListener('click', () => openEvalModal(btn.dataset.id, btn.dataset.nom));
-      });
+      allList.innerHTML = filtered.length === 0
+        ? '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat. Sélectionnez une étape ou géolocalisez-vous.</li>'
+        : filtered.map(r => renderItemHTML(r)).join('');
     }
 
     // ── Carte Leaflet ─────────────────────────────────────────
@@ -746,10 +649,10 @@ import OceanBackground from '../components/OceanBackground.astro';
       // Cercle rayon
       radiusCircle = L.circle([currentLat, currentLon], {
         radius: currentRadius * 1000,
-        color: '#e2f94c',
+        color: '#9a9245',
         weight: 1.5,
         dashArray: '6 4',
-        fillColor: '#e2f94c',
+        fillColor: '#9a9245',
         fillOpacity: 0.04,
       }).addTo(leafletMap);
 
@@ -795,38 +698,6 @@ import OceanBackground from '../components/OceanBackground.astro';
       mapMarkers.forEach(m => m.remove());
       mapMarkers = [];
       if (radiusCircle) { radiusCircle.remove(); radiusCircle = null; }
-    }
-
-    // ── Évaluations localStorage ──────────────────────────────
-    function getEvals() {
-      try { return JSON.parse(localStorage.getItem(EVAL_KEY) || '{}'); }
-      catch { return {}; }
-    }
-
-    function saveEval(id, data) {
-      const evals = getEvals();
-      evals[id] = { ...data, ts: Date.now() };
-      localStorage.setItem(EVAL_KEY, JSON.stringify(evals));
-    }
-
-    function openEvalModal(id, nom) {
-      currentEvalId = id;
-      const evals = getEvals();
-      const existing = evals[id] || {};
-
-      document.getElementById('eval-place-name').textContent = nom;
-      document.getElementById('eval-proprete').value = existing.proprete || 3;
-      document.getElementById('eval-accueil').value  = existing.accueil  || 3;
-      document.getElementById('eval-securite').value = existing.securite || 3;
-      document.getElementById('eval-prix').value     = existing.prix     || 3;
-      document.getElementById('eval-note').value     = existing.note     || '';
-
-      ['proprete', 'accueil', 'securite', 'prix'].forEach(k => {
-        document.getElementById(`val-${k}`).textContent = document.getElementById(`eval-${k}`).value;
-      });
-
-      document.getElementById('eval-modal').classList.remove('hidden');
-      document.getElementById('eval-modal').focus();
     }
 
     // ── Reconnaissance vocale ─────────────────────────────────
@@ -1008,40 +879,6 @@ import OceanBackground from '../components/OceanBackground.astro';
         chip.addEventListener('click', () => toggleFilter(chip.dataset.type));
       });
 
-      // Modal évaluation — sliders live
-      ['proprete', 'accueil', 'securite', 'prix'].forEach(k => {
-        document.getElementById(`eval-${k}`).addEventListener('input', e => {
-          document.getElementById(`val-${k}`).textContent = e.target.value;
-        });
-      });
-
-      // Sauvegarder éval
-      document.getElementById('eval-save').addEventListener('click', () => {
-        if (!currentEvalId) return;
-        saveEval(currentEvalId, {
-          proprete: parseInt(document.getElementById('eval-proprete').value),
-          accueil:  parseInt(document.getElementById('eval-accueil').value),
-          securite: parseInt(document.getElementById('eval-securite').value),
-          prix:     parseInt(document.getElementById('eval-prix').value),
-          note:     document.getElementById('eval-note').value.trim(),
-        });
-        document.getElementById('eval-modal').classList.add('hidden');
-        toast('✅ Évaluation sauvegardée en local');
-        renderResults();
-      });
-
-      // Fermer modal
-      document.getElementById('modal-close').addEventListener('click', () => {
-        document.getElementById('eval-modal').classList.add('hidden');
-      });
-      document.getElementById('eval-modal').addEventListener('click', e => {
-        if (e.target === document.getElementById('eval-modal')) {
-          document.getElementById('eval-modal').classList.add('hidden');
-        }
-      });
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') document.getElementById('eval-modal').classList.add('hidden');
-      });
     });
 
   })();
@@ -1062,7 +899,29 @@ import OceanBackground from '../components/OceanBackground.astro';
   /* ── Hero section (cohérent strava/terrain) ─────────── */
   .rd-hero {
     text-align: center;
-    padding: 1.2rem 1rem 0.5rem;
+    padding: 1.6rem 1rem 0.8rem;
+  }
+
+  .rd-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1.2rem;
+    background: rgba(77, 184, 212, 0.08);
+    border: 1px solid rgba(77, 184, 212, 0.25);
+    border-radius: var(--radius-full);
+    color: var(--accent-cyan);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 0.6rem;
+    animation: fadeInDown 0.6s ease;
+  }
+  .rd-hero-badge i { font-size: 0.75rem; opacity: 0.85; }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ── Toolbar ────────────────────────────────────────────── */
@@ -1229,7 +1088,7 @@ import OceanBackground from '../components/OceanBackground.astro';
     transition: opacity .2s;
     flex-shrink: 0;
   }
-  .rd-tab--active .rd-tab-dot { opacity: 1; box-shadow: 0 0 5px var(--dot-color, #888); }
+  .rd-tab--active .rd-tab-dot { opacity: 1; }
 
   .rd-tab-count {
     font-size: 0.65rem;
@@ -1329,9 +1188,9 @@ import OceanBackground from '../components/OceanBackground.astro';
   }
   .map-info-overlay--info,
   .map-info-overlay--loading {
-    background: rgba(12, 24, 44, 0.88);
-    border: 1px solid rgba(77, 184, 212, 0.35);
-    color: var(--text-light);
+    background: rgba(10, 20, 38, 0.96);
+    border: 1px solid rgba(77, 184, 212, 0.3);
+    color: #e8ecf0;
   }
   .map-info-overlay--loading #map-info-icon {
     display: inline-block;
@@ -1339,12 +1198,12 @@ import OceanBackground from '../components/OceanBackground.astro';
   }
   @keyframes spin-slow { to { transform: rotate(360deg); } }
   .map-info-overlay--success {
-    background: rgba(10, 36, 20, 0.9);
-    border: 1px solid rgba(34, 197, 94, 0.4);
-    color: #86efac;
+    background: rgba(10, 20, 38, 0.96);
+    border: 1px solid rgba(77, 184, 212, 0.3);
+    color: #e8ecf0;
   }
   .map-info-overlay--error {
-    background: rgba(44, 10, 10, 0.9);
+    background: rgba(10, 20, 38, 0.96);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #fca5a5;
   }
@@ -1353,11 +1212,11 @@ import OceanBackground from '../components/OceanBackground.astro';
   #radar-map {
     width: 100%;
     height: 100%;
-    filter: brightness(.78) saturate(.55) hue-rotate(4deg);
+    filter: brightness(.88) saturate(.70) hue-rotate(2deg);
     transition: filter .3s;
   }
   .rd-map-frame:hover #radar-map {
-    filter: brightness(.88) saturate(.65) hue-rotate(4deg);
+    filter: brightness(.95) saturate(.80) hue-rotate(2deg);
   }
 
   .leaflet-popup-content-wrapper,
@@ -1400,7 +1259,7 @@ import OceanBackground from '../components/OceanBackground.astro';
     background: rgba(77, 184, 212, 0.08);
     color: var(--text-light);
   }
-  .chip.active .chip-dot { opacity: 1; box-shadow: 0 0 5px var(--dot, #888); }
+  .chip.active .chip-dot { opacity: 1; }
   .chip:hover { border-color: var(--accent-cyan); color: var(--text-light); }
 
   /* ── Résultats (listes) ────────────────────────────────── */
@@ -1461,16 +1320,6 @@ import OceanBackground from '../components/OceanBackground.astro';
     min-width: 0;
   }
 
-  .eval-badge {
-    font-size: 0.68rem;
-    background: rgba(226, 249, 76, 0.12);
-    border: 1px solid rgba(226, 249, 76, 0.25);
-    color: #e2f94c;
-    border-radius: var(--radius-sm);
-    padding: 1px 5px;
-    flex-shrink: 0;
-  }
-
   .result-dist {
     font-size: var(--text-xs);
     font-weight: 700;
@@ -1525,13 +1374,9 @@ import OceanBackground from '../components/OceanBackground.astro';
     transition: var(--transition-fast);
     line-height: 1.4;
   }
-  .result-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-  .btn-go   { border-color: rgba(61, 232, 160, 0.35); color: #3de8a0; }
-  .btn-go:hover { background: rgba(61, 232, 160, 0.08); border-color: #3de8a0; color: #3de8a0; }
-  .btn-fiche { border-color: rgba(226, 249, 76, 0.3); color: #e2f94c; }
-  .btn-fiche:hover { background: rgba(226, 249, 76, 0.08); color: #e2f94c; }
-  .btn-eval { border-color: rgba(77, 184, 212, 0.25); color: var(--accent-cyan); }
-  .btn-eval:hover { background: rgba(77, 184, 212, 0.08); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .result-btn:hover { border-color: rgba(77,184,212,0.4); color: var(--text-light); background: rgba(255,255,255,0.04); }
+  .btn-go   { }
+  .btn-fiche { }
 
   /* Empty / skeleton / hint */
   .no-results {
@@ -1609,145 +1454,6 @@ import OceanBackground from '../components/OceanBackground.astro';
   .toast-show { opacity: 1; transform: translateY(0); }
   .toast-error { border-color: rgba(239,68,68,.45); color: #fca5a5; }
 
-  /* ── Modal évaluation ──────────────────────────────────── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.72);
-    z-index: 1000;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    backdrop-filter: blur(6px);
-  }
-  .modal-overlay.hidden { display: none; }
-
-  .modal-sheet {
-    background: rgba(18, 32, 52, 0.98);
-    border: 1px solid rgba(45, 130, 170, 0.2);
-    border-bottom: none;
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    padding: 20px 20px 36px;
-    width: 100%;
-    max-width: 520px;
-    position: relative;
-    max-height: 88dvh;
-    overflow-y: auto;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.5);
-  }
-
-  .modal-handle {
-    width: 36px; height: 4px;
-    background: rgba(77, 184, 212, 0.25);
-    border-radius: 2px;
-    margin: 0 auto 16px;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 14px; right: 14px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.1);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    width: 28px; height: 28px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition-fast);
-  }
-  .modal-close:hover { color: var(--text-light); background: rgba(255,255,255,.12); }
-
-  .modal-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 18px;
-  }
-
-  .modal-icon {
-    width: 36px; height: 36px;
-    background: rgba(77, 184, 212, 0.1);
-    border: 1px solid rgba(77, 184, 212, 0.2);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent-cyan);
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-
-  .modal-title {
-    font-size: var(--text-base);
-    font-weight: 700;
-    color: var(--text-light);
-    margin: 0 0 2px;
-  }
-
-  .modal-subtitle {
-    font-size: var(--text-sm);
-    color: var(--accent-cyan);
-    margin: 0;
-  }
-
-  .eval-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .eval-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .eval-label {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    letter-spacing: var(--ls-label);
-    text-transform: uppercase;
-  }
-
-  .slider-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .slider-row input[type="range"] {
-    flex: 1;
-    accent-color: var(--accent-cyan);
-    cursor: pointer;
-  }
-  .slider-val {
-    width: 20px;
-    text-align: right;
-    color: var(--accent-cyan);
-    font-weight: 700;
-    font-size: var(--text-sm);
-  }
-
-  .eval-field--full textarea {
-    width: 100%;
-    background: rgba(10, 18, 32, 0.8);
-    border: 1px solid rgba(45, 130, 170, 0.2);
-    border-radius: var(--radius-sm);
-    color: var(--text-light);
-    padding: 8px 10px;
-    font-size: var(--text-sm);
-    font-family: var(--font-primary);
-    resize: vertical;
-    transition: border-color var(--transition-fast);
-  }
-  .eval-field--full textarea:focus {
-    outline: none;
-    border-color: var(--accent-cyan);
-  }
-
   /* ── Responsive ────────────────────────────────────────── */
   @media (max-width: 640px) {
     .rd-header { padding: 8px 12px; margin: 0 8px 0.5rem; }
@@ -1767,23 +1473,56 @@ import OceanBackground from '../components/OceanBackground.astro';
   /* ── Micro-footer ──────────────────────────────────────── */
   .rd-footer {
     flex-shrink: 0;
+    background: rgba(8, 15, 28, 0.97);
+    border-top: 1px solid rgba(45, 130, 170, 0.15);
+    padding: 0.8rem 1.2rem 0.6rem;
+  }
+
+  .rd-footer-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(45, 130, 170, 0.08);
+  }
+  .rd-footer-nav a {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 500;
+    font-family: var(--font-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color var(--transition-fast);
+    padding: 0.15rem 0;
+  }
+  .rd-footer-nav a:hover { color: var(--accent-cyan); }
+  .rd-footer-nav a i { font-size: 0.65rem; opacity: 0.75; }
+  .rd-footer-nav--active {
+    color: var(--accent-cyan) !important;
+    font-weight: 600 !important;
+  }
+  .rd-footer-nav--active i { opacity: 1 !important; }
+
+  .rd-footer-copy-row {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 5px 12px;
-    background: rgba(8, 15, 28, 0.97);
-    border-top: 1px solid rgba(45, 130, 170, 0.12);
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
+    flex-wrap: wrap;
+    opacity: 0.7;
   }
   .rd-footer-copy  { color: var(--text-muted); }
   .rd-footer-copy strong { color: var(--accent-cyan); font-weight: 600; }
   .rd-footer-sep   { color: rgba(143, 163, 184, 0.3); }
   .rd-footer-project { color: var(--text-muted); }
-  .rd-footer-project i { color: #e2f94c; margin-right: 3px; }
+  .rd-footer-project i { color: var(--text-muted); margin-right: 3px; }
   .rd-footer-link  {
     color: var(--text-muted);
     text-decoration: none;
@@ -1791,8 +1530,9 @@ import OceanBackground from '../components/OceanBackground.astro';
   }
   .rd-footer-link:hover { color: var(--accent-cyan); }
 
-  @media (max-width: 400px) {
-    .rd-footer-project { display: none; }
+  @media (max-width: 480px) {
+    .rd-footer-nav { gap: 0.8rem; }
+    .rd-footer-nav a { font-size: 0.68rem; }
   }
 
   /* ── Light theme ────────────────────────────────────────── */
@@ -1807,9 +1547,13 @@ import OceanBackground from '../components/OceanBackground.astro';
   [data-theme="light"] .chip.active  { background: rgba(26,127,160,.1); border-color: #1a7fa0; color: #1a2535; }
   [data-theme="light"] .result-item  { background: rgba(255,255,255,.8); border-color: rgba(26,127,160,.1); }
   [data-theme="light"] .result-nom   { color: #1a2535; }
-  [data-theme="light"] #radar-map    { filter: brightness(.95) saturate(.7); }
-  [data-theme="light"] .modal-sheet  { background: rgba(234,241,247,.99); border-color: rgba(26,127,160,.2); }
+  [data-theme="light"] #radar-map    { filter: brightness(.95) saturate(.75); }
   [data-theme="light"] .rd-map-frame { border-color: rgba(26,127,160,.12); }
+  [data-theme="light"] .rd-footer    { background: rgba(228,238,248,.97); border-top-color: rgba(26,127,160,.15); }
+  [data-theme="light"] .rd-footer-nav a { color: #4a6275; }
+  [data-theme="light"] .rd-footer-nav a:hover { color: var(--accent-cyan); }
+  [data-theme="light"] .rd-footer-copy-row { color: #5a7285; }
+  [data-theme="light"] .rd-hero-badge { background: rgba(26,127,160,.07); border-color: rgba(26,127,160,.22); }
 
   /* toast-info (toast default type) */
   .toast-info { border-color: rgba(77, 184, 212, 0.45); color: var(--text-light); }
