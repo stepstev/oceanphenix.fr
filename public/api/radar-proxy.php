@@ -16,18 +16,13 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: public, max-age=300'); // Cache 5 min côté client
 
-// ── CORS (même origine en prod, localhost en dev) ─────────────────────────────
-$allowedOrigins = [
-    'https://www.tourdata2026.oceanphenix.fr',
-    'https://tourdata2026.oceanphenix.fr',
-    'https://oceanphenix.fr',
-    'https://www.oceanphenix.fr',
-    'http://localhost:4321',
-    'http://localhost:4322',
-    'http://localhost:4323',
-];
+// ── CORS (tout sous-domaine oceanphenix.fr + localhost) ───────────────────────
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins)) {
+$allowed = (
+    preg_match('#^https?://([\w-]+\.)*oceanphenix\.fr$#', $origin) ||
+    preg_match('#^http://localhost:\d+$#', $origin)
+);
+if ($allowed) {
     header("Access-Control-Allow-Origin: $origin");
 }
 header('Access-Control-Allow-Methods: GET, OPTIONS');

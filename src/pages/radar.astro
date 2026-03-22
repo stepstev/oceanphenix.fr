@@ -51,9 +51,6 @@ import OceanBackground from '../components/OceanBackground.astro';
         <button id="btn-locate" class="rd-btn rd-btn--primary" aria-label="Géolocaliser ma position">
           <i class="fas fa-location-dot"></i> Je suis ici
         </button>
-        <button id="btn-voice" class="rd-btn rd-btn--ghost" aria-label="Commande vocale" title="Commande vocale fr-FR">
-          <i class="fas fa-microphone"></i>
-        </button>
         <div class="rd-radius-inline">
           <span class="rd-radius-label"><i class="fas fa-circle-dot"></i> <strong id="radius-val">10</strong> km</span>
           <input type="range" id="radius-slider" min="2" max="25" value="10" step="1"
@@ -191,6 +188,21 @@ import OceanBackground from '../components/OceanBackground.astro';
     </div><!-- /.rd-container -->
 
     <!-- ══════════════════════════════════════════════════════ -->
+    <!-- NOTE TECHNIQUE                                        -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="rd-tech-note">
+      <p>
+        <strong>Votre position reste dans votre navigateur.</strong>
+        Le bouton « Je suis ici » utilise l'API <code>navigator.geolocation</code> du navigateur — aucune coordonnée GPS n'est envoyée à un serveur OceanPhenix.
+        Les coordonnées sont transmises directement aux sources de données :
+        <strong>OpenStreetMap / Overpass</strong> pour campings, douches et coworkings ;
+        <strong>OpenDataSoft / Atout France</strong> pour les hébergements classés ;
+        <strong>INSEE SIRENE</strong> pour les entreprises Data &amp; IT (via un proxy PHP anti-CORS).
+        Résultats mis en cache 5 à 30&nbsp;min côté serveur pour limiter les appels.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
     <!-- TOASTS                                                -->
     <!-- ══════════════════════════════════════════════════════ -->
     <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
@@ -280,7 +292,6 @@ import OceanBackground from '../components/OceanBackground.astro';
     let leafletMap = null;
     let mapMarkers = [];
     let radiusCircle = null;
-    let recognition = null;
 
     // ── Mode dev : détection + mock data ──────────────────────
     const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -700,50 +711,6 @@ import OceanBackground from '../components/OceanBackground.astro';
       if (radiusCircle) { radiusCircle.remove(); radiusCircle = null; }
     }
 
-    // ── Reconnaissance vocale ─────────────────────────────────
-    function initVoice() {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) {
-        document.getElementById('btn-voice').setAttribute('disabled', '');
-        document.getElementById('btn-voice').title = 'Reconnaissance vocale non supportée';
-        return;
-      }
-      recognition = new SR();
-      recognition.lang = 'fr-FR';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onresult = e => {
-        const text = e.results[0][0].transcript.toLowerCase();
-        toast(`🎤 "${text}"`);
-        handleVoiceCommand(text);
-      };
-      recognition.onerror = e => toast(`🎤 Erreur : ${e.error}`, 'error');
-    }
-
-    function handleVoiceCommand(text) {
-      const filterMap = {
-        camping:    ['camping', 'camp', 'tente'],
-        coworking:  ['coworking', 'espace de travail', 'bureau'],
-        douche:     ['douche', 'piscine', 'bain'],
-        entreprise: ['entreprise', 'société', 'boîte', 'data', 'informatique'],
-      };
-      for (const [type, keywords] of Object.entries(filterMap)) {
-        if (keywords.some(k => text.includes(k))) {
-          toggleFilter(type, true);
-        }
-      }
-
-      const radiusMatch = text.match(/rayon (\d+)/);
-      if (radiusMatch) {
-        const km = Math.min(25, Math.max(2, parseInt(radiusMatch[1])));
-        currentRadius = km;
-        document.getElementById('radius-slider').value = km;
-        document.getElementById('radius-val').textContent = km;
-      }
-
-      if (/cherche|recherche|trouve|lance/.test(text)) search();
-    }
 
     // ── Utilitaires UI ────────────────────────────────────────
     function toast(msg, type = 'info') {
@@ -824,7 +791,6 @@ import OceanBackground from '../components/OceanBackground.astro';
     // ── Boot ──────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       initMap();
-      initVoice();
 
       // Tab switching
       document.querySelectorAll('.rd-tab').forEach(tab => {
@@ -846,12 +812,6 @@ import OceanBackground from '../components/OceanBackground.astro';
       // Bouton géolocalisation
       document.getElementById('btn-locate').addEventListener('click', locateMe);
 
-      // Bouton voix
-      document.getElementById('btn-voice').addEventListener('click', () => {
-        if (!recognition) { toast('🎤 Non supporté sur ce navigateur', 'error'); return; }
-        toast('🎤 Parlez maintenant…');
-        try { recognition.start(); } catch { recognition.stop(); setTimeout(() => recognition.start(), 200); }
-      });
 
       // Sélecteur d'étape
       document.getElementById('etape-select').addEventListener('change', e => {
@@ -1471,6 +1431,47 @@ import OceanBackground from '../components/OceanBackground.astro';
   }
 
   /* ── Micro-footer ──────────────────────────────────────── */
+  /* ── Note technique ── */
+  .rd-tech-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    max-width: 860px;
+    margin: 0.6rem auto 0;
+    padding: 0.6rem 1rem;
+    border-top: 1px solid rgba(77,184,212,0.08);
+  }
+
+  .rd-tech-note-icon {
+    color: rgba(77,184,212,0.4);
+    font-size: 0.7rem;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .rd-tech-note p {
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .rd-tech-note p strong { color: rgba(200,215,230,0.7); font-weight: 600; }
+  .rd-tech-note p code {
+    font-size: 0.68rem;
+    background: rgba(77,184,212,0.08);
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--accent-cyan);
+  }
+
+  [data-theme="light"] .rd-tech-note {
+    border-top-color: rgba(26,101,128,0.1);
+  }
+  [data-theme="light"] .rd-tech-note p { color: #6a85a0; }
+  [data-theme="light"] .rd-tech-note p strong { color: #3a5268; }
+  [data-theme="light"] .rd-tech-note-icon { color: rgba(26,101,128,0.3); }
+
   .rd-footer {
     flex-shrink: 0;
     background: rgba(8, 15, 28, 0.97);

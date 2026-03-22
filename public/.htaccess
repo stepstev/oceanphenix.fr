@@ -60,7 +60,7 @@ media-src 'self'"
   Header set X-Frame-Options "SAMEORIGIN"
   Header set X-XSS-Protection "1; mode=block"
   Header set Referrer-Policy "strict-origin-when-cross-origin"
-  Header set Permissions-Policy "geolocation=(self), microphone=(self), camera=()"
+  Header set Permissions-Policy "geolocation=(self), camera=()"
   Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 
   # Supprime la signature Apache
