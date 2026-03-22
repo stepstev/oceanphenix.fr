@@ -91,18 +91,48 @@ switch ($type) {
 
         $nafs = ['6311Z', '6202A', '7022Z', '6201Z', '5829A'];
         $results = [];
+        $debug  = [];
         foreach ($nafs as $naf) {
             $url = "https://recherche-entreprises.api.gouv.fr/search"
-                 . "?activite_principale={$naf}&departement={$dept}&per_page=5&page=1";
-            $raw = httpGet($url, 8);
-            if ($raw !== false) {
-                $json = json_decode($raw, true);
-                if (!empty($json['results'])) {
-                    $results = array_merge($results, $json['results']);
+                 . "?activite_principale={$naf}&departement={$dept}&per_page=10&page=1";
+            $raw = httpGet($url, 12);
+            if ($raw === false) {
+                $debug[] = "$naf: timeout/erreur réseau";
+                continue;
+            }
+            $json = json_decode($raw, true);
+            if ($json === null) {
+                $debug[] = "$naf: JSON invalide";
+                continue;
+            }
+            $found = count($json['results'] ?? []);
+            $debug[] = "$naf: $found résultats bruts";
+            if (!empty($json['results'])) {
+                // Normaliser les champs utiles uniquement
+                foreach ($json['results'] as $e) {
+                    $results[] = [
+                        'siren'            => $e['siren'] ?? null,
+                        'nom_complet'      => $e['nom_complet'] ?? ($e['nom_raison_sociale'] ?? null),
+                        'activite_principale' => $e['activite_principale'] ?? $naf,
+                        'libelle_activite_principale_libelle_65' => $e['libelle_activite_principale_libelle_65'] ?? null,
+                        'tranche_effectif_salarie' => $e['tranche_effectif_salarie'] ?? null,
+                        'siege' => isset($e['siege']) ? [
+                            'latitude'         => $e['siege']['latitude']         ?? null,
+                            'longitude'        => $e['siege']['longitude']        ?? null,
+                            'adresse'          => $e['siege']['adresse']          ?? null,
+                            'code_postal'      => $e['siege']['code_postal']      ?? null,
+                            'libelle_commune'  => $e['siege']['libelle_commune']  ?? null,
+                        ] : null,
+                    ];
                 }
             }
         }
-        $out = json_encode(['results' => $results], JSON_UNESCAPED_UNICODE);
+        $out = json_encode([
+            'results' => $results,
+            '_debug'  => $debug,
+            '_dept'   => $dept,
+            '_count'  => count($results),
+        ], JSON_UNESCAPED_UNICODE);
         cacheSet($cacheKey, $out);
         echo $out;
         break;
@@ -112,6 +142,26 @@ switch ($type) {
         $url = "https://geo.api.gouv.fr/communes?lat={$lat}&lon={$lon}&fields=codeDepartement,nom&format=json";
         // Cache 1h — la commune ne change pas
         proxyFetchCached($url, "commune_{$lat}_{$lon}", 3600);
+        break;
+
+    case 'events':
+        if ($lat === null || $lon === null) jsonError('lat/lon requis');
+        $openagendaKey = getenv('OPENAGENDA_KEY') ?: '';
+        if (empty($openagendaKey)) {
+            // Clé non configurée — retourner tableau vide proprement
+            echo json_encode(['total' => 0, 'events' => [], '_info' => 'Configurez OPENAGENDA_KEY en variable d\'environnement sur le serveur.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        $keywords = 'data informatique intelligence-artificielle emploi numérique BI tech développeur recrutement';
+        $url = sprintf(
+            'https://api.openagenda.com/v2/events?key=%s&latlng=%s,%s&radius=%d&keyword=%s&size=20&monolingual=fr&timings[gte]=%s',
+            urlencode($openagendaKey),
+            $lat, $lon,
+            min(150, $radius * 5), // rayon élargi pour les événements (max 150 km)
+            urlencode($keywords),
+            urlencode(date('Y-m-d'))
+        );
+        proxyFetchCached($url, "events_{$lat}_{$lon}", 3600); // Cache 1h
         break;
 
     default:
