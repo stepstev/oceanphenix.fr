@@ -184,8 +184,8 @@
   line-height: 1.1;
   letter-spacing: -1px;
   margin: 1rem 0 0.2rem;
-  color: var(--text-light);
-  -webkit-text-fill-color: var(--text-light);
+  color: var(--heading-color);
+  -webkit-text-fill-color: var(--heading-color);
   animation: fadeInUp 0.8s ease 0.1s both;
 }
 
@@ -470,8 +470,8 @@
 
 /* ── Light mode ── */
 :global([data-theme="light"]) .terrain-hero-title {
-  color: var(--text-light);
-  -webkit-text-fill-color: var(--text-light);
+  color: var(--heading-color);
+  -webkit-text-fill-color: var(--heading-color);
 }
 
 :global([data-theme="light"]) .terrain-hero-title-sub {

@@ -1125,7 +1125,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
   .rd-card-header h3 {
     font-size: var(--text-lg);
-    color: var(--text-light);
+    color: var(--heading-color);
     margin: 0;
     font-weight: 700;
   }
@@ -1543,7 +1543,7 @@ import OceanBackground from '../components/OceanBackground.astro';
   [data-theme="light"] .rd-tab:hover { color: #1a2535; }
   [data-theme="light"] .rd-tab--active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
   [data-theme="light"] .rd-card      { background: rgba(255,255,255,.85); border-color: rgba(26,127,160,.12); }
-  [data-theme="light"] .rd-card-header h3 { color: #1a2535; }
+  [data-theme="light"] .rd-card-header h3 { color: var(--heading-color); }
   [data-theme="light"] .chip.active  { background: rgba(26,127,160,.1); border-color: #1a7fa0; color: #1a2535; }
   [data-theme="light"] .result-item  { background: rgba(255,255,255,.8); border-color: rgba(26,127,160,.1); }
   [data-theme="light"] .result-nom   { color: #1a2535; }
@@ -1554,6 +1554,11 @@ import OceanBackground from '../components/OceanBackground.astro';
   [data-theme="light"] .rd-footer-nav a:hover { color: var(--accent-cyan); }
   [data-theme="light"] .rd-footer-copy-row { color: #5a7285; }
   [data-theme="light"] .rd-hero-badge { background: rgba(26,127,160,.07); border-color: rgba(26,127,160,.22); }
+  [data-theme="light"] .skeleton-item { background: rgba(200,215,230,.55); border-color: rgba(26,127,160,.08); }
+  [data-theme="light"] .skel-line     { background: linear-gradient(90deg, rgba(26,127,160,.1) 25%, rgba(26,127,160,.22) 50%, rgba(26,127,160,.1) 75%); background-size: 200% 100%; }
+  [data-theme="light"] .result-dist   { color: var(--accent-cyan); background: rgba(26,127,160,.08); border-color: rgba(26,127,160,.18); }
+  [data-theme="light"] .result-adresse, [data-theme="light"] .result-meta, [data-theme="light"] .result-source { color: var(--text-muted); }
+  [data-theme="light"] .no-results    { color: var(--text-muted); }
 
   /* toast-info (toast default type) */
   .toast-info { border-color: rgba(77, 184, 212, 0.45); color: var(--text-light); }

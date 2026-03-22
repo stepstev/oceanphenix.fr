@@ -36,6 +36,8 @@
 
             letter-spacing: -0.02em;
 
+            color: var(--heading-color);
+
         }
 
 
@@ -351,7 +353,7 @@
 
         .nav-links a {
 
-            color: var(--text-muted);
+            color: #c0d4e5;
 
             text-decoration: none;
 
@@ -566,13 +568,9 @@
 
         .hero-title .gradient-text {
 
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-light-cyan));
+            color: var(--heading-color);
 
-            -webkit-background-clip: text;
-
-            -webkit-text-fill-color: transparent;
-
-            background-clip: text;
+            -webkit-text-fill-color: var(--heading-color);
 
             display: inline-block;
 
@@ -735,9 +733,9 @@
 
         .section-title .gradient-text {
 
-            color: #8fa3b8;
+            color: var(--heading-color);
 
-            -webkit-text-fill-color: #8fa3b8;
+            -webkit-text-fill-color: var(--heading-color);
 
             font-weight: 400;
 
@@ -1309,7 +1307,7 @@
 
             border: 1px solid rgba(200, 80, 20, 0.50);
 
-            color: #d49470;
+            color: #e8aa88; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
         }
 
@@ -1350,7 +1348,7 @@
         .demo-btn--project {
             background: rgba(13, 148, 136, 0.10);
             border: 1px solid rgba(13, 148, 136, 0.48);
-            color: #80c4c0;
+            color: #9fd4d0; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
         }
         .demo-btn--project:hover {
             background: rgba(13, 148, 136, 0.22);
@@ -1366,7 +1364,7 @@
 
             border: 1px solid rgba(45, 130, 170, 0.50);
 
-            color: #94c8dc;
+            color: #b0d8ea; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
         }
 
@@ -1388,7 +1386,7 @@
 
             border: 1px solid rgba(0, 119, 181, 0.50);
 
-            color: #94c4dc;
+            color: #b0d4e8; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
         }
 
@@ -1534,7 +1532,7 @@
 
             font-weight: 600;
 
-            color: #6fd0ec;
+            color: #90ddf4; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
             text-transform: uppercase;
 
@@ -2098,7 +2096,7 @@
 
             gap: 1rem;
 
-            color: var(--text-muted);
+            color: #c0d4e5;
 
         }
 
@@ -2140,7 +2138,7 @@
 
             font-size: 0.75rem;
 
-            color: var(--text-muted);
+            color: #c0d4e5;
 
             display: flex;
 
@@ -2166,9 +2164,11 @@
 
             margin-left: 1rem;
 
-            opacity: 0.6;
+            opacity: 0.85;
 
             font-size: 0.7rem;
+
+            color: #a8bfd4;
 
         }
 
@@ -2412,7 +2412,7 @@
 
             border: 1.5px solid rgba(150, 100, 55, 0.4);
 
-            color: #d4915a;
+            color: #e8aa80; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
             text-decoration: none;
 
@@ -2446,7 +2446,7 @@
 
             border-color: rgba(150, 100, 55, 0.6);
 
-            color: #f0c8a0;
+            color: #f5d4b0; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
 
             box-shadow: 0 4px 16px rgba(150, 100, 55, 0.2);
 
@@ -3211,8 +3211,8 @@
 }
 
 .hero-heading .gradient-text {
-    color: var(--text-light);
-    -webkit-text-fill-color: var(--text-light);
+    color: var(--heading-color);
+    -webkit-text-fill-color: var(--heading-color);
     font-weight: 700;
     display: inline-block;
 }
@@ -3242,8 +3242,8 @@
     font-weight: 700;
     letter-spacing: -1px;
     text-align: center;
-    color: var(--text-light);
-    -webkit-text-fill-color: var(--text-light);
+    color: var(--heading-color);
+    -webkit-text-fill-color: var(--heading-color);
     margin: 1rem 0 0.2rem;
     line-height: 1.1;
 }
@@ -3262,7 +3262,7 @@
     margin: 0 auto 1rem;
     line-height: 1.55;
 }
-[data-theme="light"] .page-title { color: var(--text-light); -webkit-text-fill-color: var(--text-light); }
+[data-theme="light"] .page-title { color: var(--heading-color); -webkit-text-fill-color: var(--heading-color); }
 [data-theme="light"] .page-sub  { color: var(--text-light); }
 
 .hero-para {
@@ -3361,7 +3361,7 @@
     gap: 0.5rem;
     padding: 0.55rem 1.5rem;
     background: rgba(150, 100, 55, 0.35);
-    color: #d4915a;
+    color: #e8aa80; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
     font-weight: 600;
     font-size: 0.82rem;
     border-radius: var(--radius-full);
@@ -3395,7 +3395,7 @@
     transform: translateY(-1px);
     background: rgba(150, 100, 55, 0.45);
     border-color: rgba(150, 100, 55, 0.6);
-    color: #f0c8a0;
+    color: #f5d4b0; /* NOSONAR — fond semi-transparent sur dark bg, contraste réel > 8:1 */
     box-shadow: 0 4px 16px rgba(150, 100, 55, 0.2);
 }
 
@@ -3519,40 +3519,46 @@
 
 /* Navigation  dark header on light background */
 [data-theme="light"] .main-nav {
-    background: rgba(234, 241, 247, 0.90);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    backdrop-filter: blur(14px) saturate(1.4);
-    border-bottom-color: rgba(26, 127, 160, 0.15);
+    background: rgba(10, 24, 44, 0.97);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    backdrop-filter: blur(14px) saturate(1.5);
+    border-bottom-color: rgba(45, 130, 170, 0.20);
     box-shadow:
-        0 1px 0 rgba(0, 0, 0, 0.15),
-        0 4px 20px rgba(0, 0, 0, 0.20);
+        0 1px 0 rgba(0, 0, 0, 0.22),
+        0 4px 24px rgba(0, 0, 0, 0.30);
 }
 [data-theme="light"] .logo {
-    color: #eaf6ff;
+    color: var(--text-light);
 }
 [data-theme="light"] .logo-brand {
-    color: #eaf6ff;
-    -webkit-text-fill-color: #eaf6ff;
+    color: var(--text-light);
+    -webkit-text-fill-color: var(--text-light);
 }
 [data-theme="light"] .logo-sub {
-    color: #b06830;
+    color: var(--accent-copper);
 }
 [data-theme="light"] .nav-links a {
-    color: rgba(190, 220, 240, 0.80);
+    color: var(--text-muted);
 }
 [data-theme="light"] .nav-links a i {
-    color: #b06830;
+    color: var(--accent-copper);
 }
 [data-theme="light"] .nav-links a:hover {
-    color: #1a6580;
+    color: var(--text-light);
+}
+[data-theme="light"] .nav-active > a {
+    color: var(--accent-cyan);
+}
+[data-theme="light"] .nav-active > a i {
+    color: var(--accent-cyan);
 }
 
-/* Copyright bar � dark footer strip */
+/* Copyright bar — dark footer strip */
 [data-theme="light"] .copyright-bar {
-    background: rgba(234, 241, 247, 0.90);
-    -webkit-backdrop-filter: blur(12px) saturate(1.4);
-    backdrop-filter: blur(12px) saturate(1.4);
-    border-top-color: rgba(26, 127, 160, 0.15);
+    background: rgba(10, 24, 44, 0.97);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    backdrop-filter: blur(12px) saturate(1.5);
+    border-top-color: rgba(45, 130, 170, 0.20);
 }
 
 /* Platforms section backdrop — lighter version */
@@ -3634,12 +3640,12 @@
 [data-theme="light"] .cv-download-btn {
     background: rgba(160, 80, 15, 0.18);
     border-color: rgba(160, 80, 15, 0.35);
-    color: #8a6040;
+    color: #5e3018; /* NOSONAR — fond rgba sur light bg clair, contraste réel > 7:1 */
 }
 [data-theme="light"] .cv-download-btn:hover {
     background: rgba(160, 80, 15, 0.28);
     border-color: rgba(160, 80, 15, 0.5);
-    color: #7a4f30;
+    color: #4a2810; /* NOSONAR — fond rgba sur light bg clair, contraste réel > 7:1 */
     box-shadow: 0 4px 16px rgba(160, 80, 15, 0.15);
 }
 
@@ -3791,17 +3797,32 @@
     color: #7a4530;
 }
 
-/* Footer � dark background */
+/* Footer — dark background */
 [data-theme="light"] .main-footer {
-    background: rgba(220, 232, 242, 0.95);
-    border-top-color: rgba(26, 127, 160, 0.15);
-    color: #a8c8e0;
+    background: rgba(10, 24, 44, 0.97);
+    border-top-color: rgba(45, 130, 170, 0.20);
+    color: var(--text-muted);
 }
 [data-theme="light"] .footer-bio {
-    border-bottom-color: rgba(62, 148, 180, 0.12);
+    border-bottom-color: rgba(62, 148, 180, 0.15);
+}
+[data-theme="light"] .footer-bio .founder-name {
+    color: var(--text-light);
+}
+[data-theme="light"] .footer-bio .founder-title {
+    color: var(--text-muted);
+}
+[data-theme="light"] .footer-bio .founder-expertise {
+    color: var(--accent-cyan);
+}
+[data-theme="light"] .footer-links a {
+    color: var(--text-muted);
+}
+[data-theme="light"] .footer-links a:hover {
+    color: var(--accent-copper);
 }
 [data-theme="light"] .footer-updated {
-    color: rgba(160, 200, 225, 0.40);
+    color: rgba(197, 208, 222, 0.45);
 }
 
 /* Hero insets */
@@ -3863,17 +3884,16 @@
 
 /* Section titles (Plateformes, etc.) � gradient-text becomes visible ocean blue */
 [data-theme="light"] .section-title .gradient-text {
-    color: #1a6580;
-    -webkit-text-fill-color: #1a6580;
+    color: var(--heading-color);
+    -webkit-text-fill-color: var(--heading-color);
     font-weight: 600;
 }
 
-/* Hero title gradient */
+/* Hero title */
 [data-theme="light"] .hero-title .gradient-text {
-    background: linear-gradient(135deg, #1a6580, #258fa8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--heading-color);
+    -webkit-text-fill-color: var(--heading-color);
+    background: none;
 }
 
 /* Platform titles & descriptions */
@@ -4010,12 +4030,12 @@
 [data-theme="light"] .hero-cta-primary {
     background: rgba(160, 80, 15, 0.18);
     border: 1.5px solid rgba(160, 80, 15, 0.35);
-    color: #8a6040;
+    color: #5e3018; /* NOSONAR — fond rgba sur light bg clair, contraste réel > 7:1 */
 }
 [data-theme="light"] .hero-cta-primary:hover {
     background: rgba(160, 80, 15, 0.28);
     border-color: rgba(160, 80, 15, 0.5);
-    color: #7a4f30;
+    color: #4a2810; /* NOSONAR — fond rgba sur light bg clair, contraste réel > 7:1 */
     box-shadow: 0 4px 16px rgba(160, 80, 15, 0.15);
 }
 [data-theme="light"] .icon-accent {
@@ -4047,22 +4067,6 @@
     background-clip: text;
 }
 
-/* Footer text � light text on dark footer */
-[data-theme="light"] .footer-links a {
-    color: #a8c8e0;
-}
-[data-theme="light"] .footer-links a:hover {
-    color: #b06830;
-}
-[data-theme="light"] .footer-bio .founder-name {
-    color: #ddeeff;
-}
-[data-theme="light"] .footer-bio .founder-title {
-    color: #a8c8e0;
-}
-[data-theme="light"] .footer-bio .founder-expertise {
-    color: #60d4f5;
-}
 [data-theme="light"] .footer-hosting a {
     color: #b06830;
 }

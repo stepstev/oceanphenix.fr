@@ -6,14 +6,14 @@
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', function (e) {
-            var link = e.target.closest('a[target="_blank"]');
+            const link = e.target.closest('a[target="_blank"]');
             if (!link || link.hasAttribute('download')) return;
 
             e.preventDefault();
-            var w = Math.round(window.screen.width * 0.6);
-            var h = Math.round(window.screen.height * 0.6);
-            var left = Math.round((window.screen.width - w) / 2);
-            var top = Math.round((window.screen.height - h) / 2);
+            const w = Math.round(window.screen.width * 0.6);
+            const h = Math.round(window.screen.height * 0.6);
+            const left = Math.round((window.screen.width - w) / 2);
+            const top = Math.round((window.screen.height - h) / 2);
             window.open(
                 link.href,
                 '_blank',
@@ -55,6 +55,27 @@
     });
 })();
 
+
+// ==========================================
+// Active nav link — page courante
+// ==========================================
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        let path = location.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+        if (!path.endsWith('/')) path += '/';
+        document.querySelectorAll('.nav-links a').forEach(function (a) {
+            let href = (a.getAttribute('href') || '')
+                .replace(/\/index\.html$/, '/')
+                .replace(/\.html$/, '');
+            if (!href.endsWith('/')) href += '/';
+            // Evite de marquer / (accueil) sur toutes les pages
+            if (href && href !== '/' && path.startsWith(href)) {
+                const li = a.closest('li');
+                if (li) li.classList.add('nav-active');
+            }
+        });
+    });
+})();
 
 // ==========================================
 
