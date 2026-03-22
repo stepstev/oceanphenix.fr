@@ -2143,13 +2143,18 @@ import OceanBackground from '../components/OceanBackground.astro';
   .rd-wip-notice {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 0.5rem;
-    font-size: 0.78rem;
-    color: rgba(143, 163, 184, 0.6);
-    font-style: italic;
+    gap: 8px;
+    margin-top: 0.75rem;
+    padding: 0.45rem 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f59e0b;
+    letter-spacing: 0.01em;
   }
-  .rd-wip-notice i { color: #f59e0b; font-size: 0.72rem; opacity: 0.8; }
+  .rd-wip-notice i { font-size: 0.78rem; }
   [data-theme="light"] .skeleton-item { background: rgba(200,215,230,.55); border-color: rgba(26,127,160,.08); }
   [data-theme="light"] .skel-line     { background: linear-gradient(90deg, rgba(26,127,160,.1) 25%, rgba(26,127,160,.22) 50%, rgba(26,127,160,.1) 75%); background-size: 200% 100%; }
   [data-theme="light"] .result-dist   { color: var(--accent-cyan); background: rgba(26,127,160,.08); border-color: rgba(26,127,160,.18); }
