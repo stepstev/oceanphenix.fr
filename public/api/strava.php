@@ -19,6 +19,8 @@ header('X-Content-Type-Options: nosniff');
 
 // ── CORS (même origine en prod, localhost en dev) ────────────────────────────
 $allowedOrigins = [
+    'https://www.tourdata2026.oceanphenix.fr',
+    'https://tourdata2026.oceanphenix.fr',
     'https://oceanphenix.fr',
     'https://www.oceanphenix.fr',
     'http://localhost:4321',
@@ -172,7 +174,7 @@ $athleteId = $athlete['id'] ?? null;
 
 // ── Étape 3 : 30 dernières activités ────────────────────────────────────────
 $rawActivities = stravaGet(
-    'https://www.strava.com/api/v3/athlete/activities?per_page=30&page=1',
+    'https://www.strava.com/api/v3/athlete/activities?per_page=100&page=1',
     $accessToken
 ) ?? [];
 
@@ -209,6 +211,15 @@ foreach ($rawActivities as $act) {
         'kudos'        => $act['kudos_count'] ?? 0,
         'polyline'     => $act['map']['summary_polyline'] ?? null,
         'strava_url'   => "https://www.strava.com/activities/{$act['id']}",
+        'max_hr'       => isset($act['max_heartrate'])              ? (int)$act['max_heartrate']                       : null,
+        'calories'     => isset($act['calories'])                   ? (int)$act['calories']                            : null,
+        'avg_watts'    => isset($act['average_watts'])              ? (int)round($act['average_watts'])                : null,
+        'w_avg_watts'  => isset($act['weighted_average_watts'])     ? (int)round($act['weighted_average_watts'])       : null,
+        'cadence'      => isset($act['average_cadence'])            ? round($act['average_cadence'], 1)                : null,
+        'suffer'       => isset($act['suffer_score'])               ? (int)$act['suffer_score']                       : null,
+        'pr_count'     => (int)($act['pr_count']                   ?? 0),
+        'achievements' => (int)($act['achievement_count']          ?? 0),
+        'is_trainer'   => !empty($act['trainer']),
     ];
 }
 
@@ -234,7 +245,7 @@ $data = [
             ($stats['ytd_ride_totals']['elevation_gain'] ?? 0)
         ),
     ] : null,
-    'activities'    => array_slice($processed, 0, 10),
+    'activities'    => array_slice($processed, 0, 50),
     'total_count'   => count($processed),
     'updated_at'    => date('c'),
 ];

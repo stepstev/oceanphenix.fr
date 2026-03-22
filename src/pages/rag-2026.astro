@@ -32,12 +32,10 @@ import CopyrightBar from '../components/CopyrightBar.astro';
         </div>
 
         <!-- Titre -->
-        <h1 class="rag-hero-title">
-          <span class="gradient-text">RAG Platform 2026</span>
-        </h1>
+        <h1 class="page-title"><i class="fas fa-robot page-title-icon"></i> RAG Platform 2026</h1>
 
         <!-- Description projet -->
-        <p class="rag-hero-subtitle">
+        <p class="page-sub rag-hero-subtitle">
           Une stack RAG (Retrieval-Augmented Generation) <strong>souveraine, modulaire et prête à l'emploi</strong> —
           conçue pour interroger vos documents via un LLM local, sans aucune dépendance cloud.
           Déployable en une commande via Docker Compose, avec <strong>observabilité complète</strong>
@@ -277,25 +275,10 @@ import CopyrightBar from '../components/CopyrightBar.astro';
     color: #22c55e;
     border: 1px solid rgba(34, 197, 94, 0.3);
   }
-  .rag-hero-title {
-    font-size: clamp(1.8rem, 4.5vw, 3rem);
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    line-height: 1.15;
-  }
-  .rag-hero-title .gradient-text {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-light-cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: inline-block;
-  }
   .rag-hero-subtitle {
-    font-size: 1rem;
-    color: var(--text-muted);
     max-width: 620px;
-    margin: 0 auto var(--spacing-md);
-    line-height: 1.7;
+    margin-left: auto;
+    margin-right: auto;
   }
   .rag-hero-subtitle strong {
     color: var(--text-light);
@@ -359,7 +342,7 @@ import CopyrightBar from '../components/CopyrightBar.astro';
   .rag-about-block p {
     font-size: 0.875rem;
     color: var(--text-muted);
-    line-height: 1.7;
+    line-height: var(--lh-body, 1.65);
   }
   .rag-about-block p strong,
   .rag-about-block p em {
@@ -452,14 +435,14 @@ import CopyrightBar from '../components/CopyrightBar.astro';
     color: var(--accent-cyan);
   }
   .rag-stack-card h3 {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--text-light);
   }
   .rag-stack-card p {
-    font-size: 0.82rem;
+    font-size: 0.875rem;
     color: var(--text-muted);
-    line-height: 1.6;
+    line-height: var(--lh-body, 1.65);
     margin-bottom: 0.6rem;
   }
   .rag-tech-tag {
@@ -469,7 +452,7 @@ import CopyrightBar from '../components/CopyrightBar.astro';
     border: 1px solid rgba(0, 217, 255, 0.2);
     border-radius: var(--radius-full);
     padding: 0.15rem 0.55rem;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 600;
     margin-right: 0.25rem;
     margin-top: 0.15rem;

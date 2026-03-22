@@ -166,16 +166,47 @@
     showToast('\u2705 GPX téléchargé \u2014 placez-le dans public/gpx/ puis relancez le build');
   }
 
-  function exportJson() {
-    const json = JSON.stringify(cleanExportData(), null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'terrain-etapes.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('\u2705 JSON export\u00e9 \u2014 1) remplacez src/data/terrain-etapes.json  2) npm run build  3) uploadez dist/ sur O2switch');
+  function exportJson(deploy) {
+    const exportData = cleanExportData();
+    const json = JSON.stringify(exportData, null, 2);
+    const btn = document.getElementById(deploy ? 'export-deploy-btn' : 'export-btn');
+    if (btn) { btn.disabled = true; btn.textContent = deploy ? '\u23f3 Build + Deploy...' : '\u23f3 Build en cours...'; }
+
+    const endpoint = 'http://localhost:4399/update' + (deploy ? '?deploy=true' : '');
+    fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: json,
+    }).then(function(r) { return r.json(); }).then(function(result) {
+      if (btn) { btn.disabled = false; btn.innerHTML = deploy
+        ? '<i class="fas fa-rocket"></i> Build + Deploy'
+        : '<i class="fas fa-file-export"></i> Exporter & Build'; }
+      if (result.ok) {
+        // Sync localStorage with the just-built data → tous les navigateurs voient la même chose
+        try {
+          const synced = JSON.parse(json);
+          synced._lastSaved = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(synced));
+        } catch(_) {}
+        const msg = result.deployed
+          ? '\u2705 Build + deploy termin\u00e9 \u2014 tous les navigateurs sont synchronis\u00e9s \u2714'
+          : '\u2705 Build termin\u00e9 \u2014 localStorage synchronis\u00e9 \u2714 \u2014 uploadez dist/ pour d\u00e9ployer';
+        showToast(msg);
+      } else {
+        showToast('\u26a0\ufe0f ' + (result.error || 'Erreur inconnue'));
+      }
+    }).catch(function() {
+      // Fallback : téléchargement si l'API n'est pas démarrée
+      if (btn) { btn.disabled = false; btn.innerHTML = deploy
+        ? '<i class="fas fa-rocket"></i> Build + Deploy'
+        : '<i class="fas fa-file-export"></i> Exporter & Build'; }
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'terrain-etapes.json'; a.click();
+      URL.revokeObjectURL(url);
+      showToast('\u26a0\ufe0f API locale non d\u00e9marr\u00e9e (npm run api) \u2014 JSON t\u00e9l\u00e9charg\u00e9 manuellement');
+    });
   }
 
   function exportJournalJson() {
@@ -196,7 +227,12 @@
     }).then(function(r) { return r.json(); }).then(function(result) {
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-export"></i> Exporter Journal \u2192 terrain-etapes.json'; }
       if (result.ok) {
-        showToast('\u2705 ' + nbJournal + ' entr\u00e9e(s) écrites + build termin\u00e9 \u2014 uploadez dist/ sur O2switch');
+        try {
+          const synced = JSON.parse(json);
+          synced._lastSaved = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(synced));
+        } catch(_) {}
+        showToast('\u2705 ' + nbJournal + ' entr\u00e9e(s) + build termin\u00e9 \u2014 localStorage synchronis\u00e9 \u2714');
       } else {
         showToast('\u26a0\ufe0f Erreur build : ' + result.error);
       }
@@ -659,10 +695,14 @@
       showToast('\u2705 Dashboard + Position sauvegard\u00e9s \u2014 ville:' + data.positionActuelle.ville + ' statut:' + data.positionActuelle.statut);
     });
 
-    document.getElementById('admin-export-btn').addEventListener('click', function() {
-      collectDashboard();
-      collectPosition();
-      exportJson();
+    ['export-btn', 'export-deploy-btn'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('click', function() {
+        collectDashboard();
+        collectPosition();
+        exportJson(id === 'export-deploy-btn');
+      });
     });
     document.getElementById('journal-export-btn').addEventListener('click', function() {
       exportJournalJson();
@@ -845,6 +885,7 @@
       document.getElementById('etape-edit-id').value = etape.id;
       document.getElementById('etape-edit-ville').value = etape.ville;
       document.getElementById('etape-edit-region').value = etape.region;
+      document.getElementById('etape-edit-type').value = etape.type || 'etape';
       document.getElementById('etape-edit-statut').value = etape.statut;
       document.getElementById('etape-edit-dist').value = etape.distanceDepuisDepart;
       document.getElementById('etape-edit-lat').value = etape.lat;
@@ -856,6 +897,7 @@
       document.getElementById('etape-edit-id').value = '0';
       document.getElementById('etape-edit-ville').value = '';
       document.getElementById('etape-edit-region').value = '';
+      document.getElementById('etape-edit-type').value = 'etape';
       document.getElementById('etape-edit-statut').value = 'planifie';
       document.getElementById('etape-edit-dist').value = '';
       document.getElementById('etape-edit-lat').value = '';
@@ -892,6 +934,7 @@
     let fields = {
       ville: ville,
       region: document.getElementById('etape-edit-region').value.trim(),
+      type: document.getElementById('etape-edit-type').value || 'etape',
       statut: document.getElementById('etape-edit-statut').value,
       distanceDepuisDepart: Number.parseInt(document.getElementById('etape-edit-dist').value) || 0,
       lat: Number.parseFloat(document.getElementById('etape-edit-lat').value) || 0,
@@ -902,7 +945,6 @@
     if (id === 0) {
       let newId = data.etapes.length > 0 ? Math.max.apply(null, data.etapes.map(function(e){ return e.id; })) + 1 : 1;
       fields.id = newId;
-      fields.type = 'etape';
       // Remove from _deletedVilles if re-adding a previously deleted ville
       if (data._deletedVilles) {
         data._deletedVilles = data._deletedVilles.filter(function(v) { return v !== ville; });

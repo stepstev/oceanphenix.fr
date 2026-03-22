@@ -14,10 +14,14 @@
     }
 
     var colors = {
-      actuel: '#f59e0b',
+      actuel:   '#f59e0b',
       planifie: '#1a6b8a',
-      visite: '#22c55e',
-      depart: '#f59e0b',
+      visite:   '#22c55e',
+      depart:   '#f59e0b',
+    };
+    var typeColors = {
+      depart:  '#fc4c02',   // orange Strava — point de départ
+      arrivee: '#f59e0b',   // doré — arrivée
     };
 
     // ---- Helper: create a map with markers + route ----
@@ -75,8 +79,9 @@
 
       stepsData.forEach(function (etape) {
         if (etape.visible === false) return;
-        var color = colors[etape.statut] || colors.planifie;
-        var radius = etape.statut === 'actuel' ? (opts.compact ? 8 : 10) : (opts.compact ? 5 : 7);
+        var color = typeColors[etape.type] || colors[etape.statut] || colors.planifie;
+        var isSpecial = etape.type === 'depart' || etape.type === 'arrivee';
+        var radius = (etape.statut === 'actuel' || isSpecial) ? (opts.compact ? 9 : 11) : (opts.compact ? 5 : 7);
 
         var marker = L.circleMarker([etape.lat, etape.lng], {
           radius: radius,
@@ -106,7 +111,7 @@
             '<div style="font-family:Inter,sans-serif;min-width:200px;">' +
             '<strong style="font-size:14px;color:#0b1a2e;">' + etape.ville + '</strong>' +
             '<br><span style="color:#666;font-size:12px;">' + etape.region + '</span>' +
-            '<br><span style="color:#888;font-size:11px;">Étape ' + etape.id + ' / 14 — ' + etape.distanceDepuisDepart + ' km</span>' +
+            '<br><span style="color:#888;font-size:11px;">' + (etape.type === 'depart' ? 'Départ' : etape.type === 'arrivee' ? 'Arrivée' : 'Étape ' + etape.id) + ' — ' + etape.distanceDepuisDepart + ' km</span>' +
             '<hr style="margin:6px 0;border:0;border-top:1px solid #e5e7eb;">' +
             '<p style="font-size:12px;color:#444;margin:0;">' + etape.description + '</p>' +
             '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estimée : ' + etape.dateEstimee + '</p>' +

@@ -53,8 +53,11 @@ import etapesData from '../data/terrain-etapes.json';
           <button id="admin-save-btn" class="admin-btn">
             <i class="fas fa-save"></i> Sauvegarder
           </button>
-          <button id="admin-export-btn" class="admin-btn admin-btn--accent">
-            <i class="fas fa-download"></i> Exporter JSON
+          <button id="export-btn" class="admin-btn admin-btn--accent" onclick="exportJson(false)">
+            <i class="fas fa-file-export"></i> Exporter &amp; Build
+          </button>
+          <button id="export-deploy-btn" class="admin-btn admin-btn--deploy" onclick="exportJson(true)">
+            <i class="fas fa-rocket"></i> Build + Deploy
           </button>
           <button id="admin-export-gpx-btn" class="admin-btn" title="Télécharger le fichier GPX depuis la mémoire admin → placez-le dans public/gpx/">
             <i class="fas fa-route"></i> Exporter GPX
@@ -76,13 +79,9 @@ import etapesData from '../data/terrain-etapes.json';
         <span class="wf-arr">›</span>
         <span class="wf-item"><span class="wf-n">2</span> Sauvegarder</span>
         <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--key"><span class="wf-n">3</span> Exporter JSON</span>
+        <span class="wf-item wf-item--key"><span class="wf-n">3</span> Build + Deploy <small style="opacity:.7">(npm run api requis)</small></span>
         <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--key"><span class="wf-n">4</span> <code>astro build</code></span>
-        <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--key"><span class="wf-n">5</span> Upload <code>dist/</code> → O2switch</span>
-        <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--reset"><span class="wf-n">6</span> Réinitialiser le cache</span>
+        <span class="wf-item wf-item--reset"><span class="wf-n">4</span> Réinitialiser le cache</span>
       </div>
 
       <!-- Tabs -->
@@ -110,6 +109,9 @@ import etapesData from '../data/terrain-etapes.json';
         </button>
         <button class="admin-tab" data-tab="coworking">
           <i class="fas fa-building"></i> Coworking
+        </button>
+        <button class="admin-tab" data-tab="strava">
+          <i class="fab fa-strava"></i> Strava
         </button>
       </div>
 
@@ -263,6 +265,14 @@ import etapesData from '../data/terrain-etapes.json';
               </div>
             </div>
             <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Type</label>
+                <select id="etape-edit-type">
+                  <option value="etape">Étape</option>
+                  <option value="depart">Départ</option>
+                  <option value="arrivee">Arrivée</option>
+                </select>
+              </div>
               <div class="admin-form-group">
                 <label>Statut</label>
                 <select id="etape-edit-statut">
@@ -576,6 +586,78 @@ import etapesData from '../data/terrain-etapes.json';
         </div>
       </div>
 
+      <!-- ============================== -->
+      <!-- TAB: Strava                    -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-strava">
+
+        <!-- Statut connexion -->
+        <div class="admin-card">
+          <h2><i class="fab fa-strava" style="color:#fc4c02"></i> Statut API Strava</h2>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="strava-test-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-plug"></i> Tester la connexion
+            </button>
+          </div>
+          <div id="strava-test-result" style="display:none;" class="admin-strava-result"></div>
+        </div>
+
+        <!-- Configuration strava-env.php -->
+        <div class="admin-card">
+          <h2><i class="fas fa-key"></i> Configuration — <code>strava-env.php</code></h2>
+          <p class="admin-hint">
+            Uploader ce fichier sur le serveur via FTP dans <code>public_html/api/strava-env.php</code>.
+            Ne jamais le committer dans le repo.
+          </p>
+          <pre class="admin-strava-code" id="strava-env-code">&lt;?php
+$STRAVA_CLIENT_ID     = '213901';
+$STRAVA_CLIENT_SECRET = 'f0e301f4e8e195e2b66628204fc7da1adfe22fdc';
+$STRAVA_REFRESH_TOKEN = 'fe65e09336f38c60c1039816bb9924876dc39623';
+$STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
+          <div class="admin-form-actions">
+            <button id="strava-copy-env-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-copy"></i> Copier
+            </button>
+          </div>
+        </div>
+
+        <!-- Tag activités -->
+        <div class="admin-card">
+          <h2><i class="fas fa-tag"></i> Tag activités TourData 2026</h2>
+          <p class="admin-hint">
+            Ajouter ce tag dans le titre de l'activité sur Strava (web ou app mobile) pour qu'elle apparaisse sur la page <code>/strava</code>.
+          </p>
+          <div class="admin-strava-tag-box">
+            <span class="admin-strava-tag">#Tourdata2026</span>
+            <button id="strava-copy-tag-btn" class="admin-btn" title="Copier le tag">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          <p class="admin-hint" style="margin-top:0.75rem;">
+            Exemple : <em>"Sortie vélo Bordeaux #Tourdata2026"</em><br>
+            Le renommage peut se faire après coup — effectif au prochain chargement de la page (cache 10 min).
+          </p>
+        </div>
+
+        <!-- Procédure déploiement -->
+        <div class="admin-card">
+          <h2><i class="fas fa-rocket"></i> Procédure de déploiement</h2>
+          <div class="admin-workflow-banner" style="margin-bottom:1rem;">
+            <i class="fas fa-code-branch wf-icon"></i>
+            <span class="wf-item wf-item--key"><span class="wf-n">1</span> <code>npm run build</code></span>
+            <span class="wf-arr">›</span>
+            <span class="wf-item wf-item--key"><span class="wf-n">2</span> Upload <code>dist/</code> → <code>public_html/</code></span>
+            <span class="wf-arr">›</span>
+            <span class="wf-item"><span class="wf-n">3</span> Vérifier <code>/strava</code> (point vert)</span>
+          </div>
+          <p class="admin-hint">
+            <i class="fas fa-info-circle" style="color:var(--accent-cyan)"></i>
+            &nbsp;<code>strava-env.php</code> n'est à uploader qu'une seule fois. Il n'est pas inclus dans le build.
+          </p>
+        </div>
+
+      </div><!-- /tab-strava -->
+
     </div>
   </main>
 
@@ -589,6 +671,66 @@ import etapesData from '../data/terrain-etapes.json';
 
   <!-- Admin JS -->
   <script src="/js/admin-terrain.js" is:inline></script>
+
+  <!-- Strava tab JS -->
+  <script is:inline>
+  (function () {
+    function onReady(fn) {
+      if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn);
+    }
+    onReady(function () {
+      // Test connexion
+      const testBtn    = document.getElementById('strava-test-btn');
+      const testResult = document.getElementById('strava-test-result');
+      if (testBtn) {
+        testBtn.addEventListener('click', function () {
+          testResult.style.display = '';
+          testResult.className = 'admin-strava-result info';
+          testResult.textContent = 'Connexion en cours\u2026';
+          fetch('/api/strava.php')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+              if (d.error) throw new Error(d.error);
+              testResult.className = 'admin-strava-result ok';
+              testResult.innerHTML =
+                '<i class="fas fa-check-circle"></i> Connexion OK &mdash; ' +
+                (d.athlete?.name || '') + ' &bull; ' +
+                (d.total_count || 0) + ' activit\u00e9(s) &bull; mis \u00e0 jour ' +
+                (d.updated_at ? new Date(d.updated_at).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) : '') +
+                (d._mock ? ' <em style="opacity:.6">(mock local)</em>' : '');
+            })
+            .catch(function (e) {
+              testResult.className = 'admin-strava-result error';
+              testResult.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + e.message;
+            });
+        });
+      }
+
+      // Copier strava-env.php
+      const copyEnvBtn = document.getElementById('strava-copy-env-btn');
+      if (copyEnvBtn) {
+        copyEnvBtn.addEventListener('click', function () {
+          const code = document.getElementById('strava-env-code')?.textContent || '';
+          navigator.clipboard.writeText(code).then(function () {
+            copyEnvBtn.innerHTML = '<i class="fas fa-check"></i> Copi\u00e9 !';
+            setTimeout(function () { copyEnvBtn.innerHTML = '<i class="fas fa-copy"></i> Copier'; }, 2000);
+          });
+        });
+      }
+
+      // Copier tag
+      const copyTagBtn = document.getElementById('strava-copy-tag-btn');
+      if (copyTagBtn) {
+        copyTagBtn.addEventListener('click', function () {
+          navigator.clipboard.writeText('#Tourdata2026').then(function () {
+            copyTagBtn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(function () { copyTagBtn.innerHTML = '<i class="fas fa-copy"></i>'; }, 2000);
+          });
+        });
+      }
+    });
+  })();
+  </script>
 </BaseLayout>
 
 <style>
@@ -1104,6 +1246,13 @@ import etapesData from '../data/terrain-etapes.json';
     color: var(--accent-cyan, #4db8d4);
   }
 
+  .admin-btn--deploy {
+    background: rgba(252, 76, 2, 0.12);
+    border: 1.5px solid rgba(252, 76, 2, 0.45);
+    color: #fc4c02;
+  }
+  .admin-btn--deploy:hover { background: rgba(252, 76, 2, 0.22); }
+
   .admin-btn--export-journal {
     background: rgba(77, 184, 212, 0.15);
     border: 1.5px solid rgba(77, 184, 212, 0.5);
@@ -1390,6 +1539,49 @@ import etapesData from '../data/terrain-etapes.json';
   :global([data-theme="light"]) .admin-form-group select option {
     background: #fff;
     color: #1a2535;
+  }
+
+  /* ── Onglet Strava ──────────────────────────────────────────────────────── */
+  .admin-strava-code {
+    background: rgba(10, 18, 32, 0.9);
+    border: 1px solid rgba(45, 130, 170, 0.15);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+    font-size: 0.8rem;
+    color: #6ec5d6;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    line-height: 1.7;
+    white-space: pre;
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+
+  .admin-strava-result {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    border: 1px solid;
+  }
+  .admin-strava-result.ok    { background: rgba(34,197,94,0.08);  border-color: rgba(34,197,94,0.25);  color: #4ade80; }
+  .admin-strava-result.error { background: rgba(239,68,68,0.08);  border-color: rgba(239,68,68,0.22);  color: #fca5a5; }
+  .admin-strava-result.info  { background: rgba(77,184,212,0.07); border-color: rgba(77,184,212,0.2);  color: var(--text-light); }
+
+  .admin-strava-tag-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+  }
+
+  .admin-strava-tag {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: #fc4c02;
+    background: rgba(252, 76, 2, 0.08);
+    border: 1px solid rgba(252, 76, 2, 0.25);
+    border-radius: var(--radius-sm);
+    padding: 0.35rem 0.9rem;
+    letter-spacing: 0.01em;
   }
 
   /* Responsive */

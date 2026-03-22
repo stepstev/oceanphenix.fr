@@ -7,6 +7,7 @@
 :root {
   /* ── Brand Colors (desaturated) ────────────────────────── */
   --primary-dark:       #0b1a2e;
+  --navy:               #0a182c;
   --secondary-dark:     #1a3352;
   --accent-cyan:        #4db8d4;
   --accent-blue:        #2d8bb5;
@@ -16,6 +17,8 @@
   --text-light:         #e8ecf0;
   --text-muted:         #8fa3b8;
   --accent-orange:      #d4845a;
+  --accent-copper:      #c87a4a;
+  --accent-copper-light: #d4a07a;
 
   /* ── Gradients ────────────────────────────────────────── */
   --primary-gradient: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
@@ -61,6 +64,17 @@
   --transition-fast:   0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow:   0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Status / Semantic colors ──────────────────────────── */
+  --status-ok:   #22c55e;
+  --status-warn: #f59e0b;
+  --status-err:  #ef4444;
+  --brand-strava: #fc4c02;
+
+  /* ── Typography helpers ────────────────────────────────── */
+  --lh-body:    1.65;
+  --lh-compact: 1.3;
+  --ls-label:   0.06em;
 }
 
 /* ============================================================
@@ -80,6 +94,9 @@
   --accent-blue:        #15658a;
   --accent-light-cyan:  #258fa8;
   --accent-orange:      #b06830;
+  --accent-copper:      #b06830;
+  --accent-copper-light: #c49060;
+  --navy:               #1a2535;
 
   /* ── Gradients (light) ────────────────────────────────── */
   --primary-gradient: linear-gradient(135deg, #eaf1f7, #d8e6f0);

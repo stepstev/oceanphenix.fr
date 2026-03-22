@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "api": "node admin-api.cjs",
+    "start": "node -e \"require('child_process').spawn('node',['admin-api.cjs'],{stdio:'inherit',shell:true,detached:false});require('child_process').spawn('npm',['run','dev'],{stdio:'inherit',shell:true})\"",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

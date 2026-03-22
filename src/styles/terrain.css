@@ -108,7 +108,7 @@
 }
 
 :global([data-theme="light"]) .terrain-auth-card h1 {
-  color: var(--navy, #0a182c);
+  color: var(--navy);
 }
 
 :global([data-theme="light"]) .terrain-auth-card p {
@@ -175,35 +175,29 @@
 /* ── Titre ── */
 .terrain-hero-title {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.15em;
-  font-size: clamp(2rem, 5.5vw, 3.4rem);
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 2.8rem;
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -1px;
-  margin: 0 0 1rem;
+  margin: 1rem 0 0.2rem;
   color: var(--text-light);
+  -webkit-text-fill-color: var(--text-light);
   animation: fadeInUp 0.8s ease 0.1s both;
 }
 
-/* Annule le gradient cyan du .gradient-text générique pour rester en blanc neutre */
-.terrain-hero-title .gradient-text {
-  color: var(--text-light);
-  -webkit-text-fill-color: var(--text-light);
-  background: none;
-  font-weight: 700;
-  display: inline-block;
-}
-
 .terrain-hero-title-sub {
-  font-size: clamp(1.1rem, 2.8vw, 1.25rem);
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--text-light);
   opacity: 0.75;
-  letter-spacing: 0px;
-  display: block;
-  margin-top: 0.2rem;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 1rem;
+  line-height: 1.55;
 }
 
 /* ── Métriques ── */
@@ -416,7 +410,7 @@
 }
 
 :global([data-theme="light"]) .thm-tension-punch {
-  color: var(--navy, #0a182c) !important;
+  color: var(--navy) !important;
 }
 
 :global([data-theme="light"]) .thm-action {
@@ -428,7 +422,7 @@
 }
 
 :global([data-theme="light"]) .thm-closing strong {
-  color: var(--navy, #0a182c);
+  color: var(--navy);
 }
 
 /* ── CTA ── */
@@ -476,17 +470,13 @@
 
 /* ── Light mode ── */
 :global([data-theme="light"]) .terrain-hero-title {
-  color: var(--navy, #0a182c);
-}
-
-:global([data-theme="light"]) .terrain-hero-title .gradient-text {
-  color: var(--navy, #0a182c);
-  -webkit-text-fill-color: var(--navy, #0a182c);
+  color: var(--text-light);
+  -webkit-text-fill-color: var(--text-light);
 }
 
 :global([data-theme="light"]) .terrain-hero-title-sub {
-  color: var(--navy, #0a182c);
-  opacity: 0.65;
+  color: var(--text-light);
+  opacity: 0.75;
 }
 
 :global([data-theme="light"]) .terrain-hero-img-badge {
@@ -822,9 +812,15 @@
   max-width: 1100px;
 }
 
+.terrain-section-header {
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+}
+
 .terrain-section-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   padding: 0.4rem 1.1rem;
   background: rgba(255, 255, 255, 0.08);
@@ -834,10 +830,11 @@
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: var(--spacing-md);
+  letter-spacing: var(--ls-label, 0.06em);
+  display: inline-flex;
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
+  margin-bottom: 0.75rem;
 }
 
 .terrain-section-title {
@@ -846,6 +843,7 @@
   letter-spacing: -0.02em;
   margin-bottom: var(--spacing-sm);
   color: var(--text-light);
+  text-align: center;
 }
 
 .terrain-section-desc {
@@ -854,6 +852,9 @@
   line-height: 1.75;
   margin-bottom: 2rem;
   max-width: 680px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Vision Grid */
@@ -1293,7 +1294,7 @@
 
 .terrain-help-objectif {
   font-size: var(--text-xs, 0.75rem);
-  color: var(--accent-copper, #c87a4a);
+  color: var(--accent-copper);
   margin-top: 0.75rem;
   padding-top: 0.5rem;
   border-top: 1px solid rgba(45, 130, 170, 0.1);

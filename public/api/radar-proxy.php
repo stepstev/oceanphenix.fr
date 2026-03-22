@@ -1,0 +1,120 @@
+<?php
+/**
+ * Radar Terrain — Proxy API
+ * OceanPhenix TourData 2026
+ *
+ * Proxifie les appels vers data.gouv.fr / opendatasoft pour éviter
+ * les erreurs CORS en production sur o2switch.
+ *
+ * Usage :
+ *   /api/radar-proxy.php?type=campings&lat=48.63&lon=2.09&radius=10
+ *   /api/radar-proxy.php?type=entreprises&dept=91
+ *   /api/radar-proxy.php?type=commune&lat=48.63&lon=2.09
+ */
+
+header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('Cache-Control: public, max-age=300'); // Cache 5 min côté client
+
+// ── CORS (même origine en prod, localhost en dev) ─────────────────────────────
+$allowedOrigins = [
+    'https://www.tourdata2026.oceanphenix.fr',
+    'https://tourdata2026.oceanphenix.fr',
+    'https://oceanphenix.fr',
+    'https://www.oceanphenix.fr',
+    'http://localhost:4321',
+    'http://localhost:4322',
+    'http://localhost:4323',
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
+
+// ── Paramètres ────────────────────────────────────────────────────────────────
+$type   = $_GET['type']   ?? '';
+$lat    = isset($_GET['lat'])    ? (float)$_GET['lat']    : null;
+$lon    = isset($_GET['lon'])    ? (float)$_GET['lon']    : null;
+$radius = isset($_GET['radius']) ? (int)$_GET['radius']   : 10;
+$dept   = $_GET['dept']   ?? '';
+
+// ── Validation basique ────────────────────────────────────────────────────────
+$radius = max(1, min(50, $radius));
+if ($lat !== null && ($lat < -90 || $lat > 90)) { jsonError('Latitude invalide'); }
+if ($lon !== null && ($lon < -180 || $lon > 180)) { jsonError('Longitude invalide'); }
+
+// ── Routage ───────────────────────────────────────────────────────────────────
+switch ($type) {
+
+    case 'campings':
+        if ($lat === null || $lon === null) jsonError('lat/lon requis');
+        $url = sprintf(
+            'https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/hebergements-classes/records'
+            . '?where=%s&limit=20&select=nom_commercial,adresse,code_postal,commune,coordonnees_geo,classement,nombre_emplacements',
+            urlencode("distance(coordonnees_geo, geom'POINT($lon $lat)', {$radius}km) AND type_hebergement = \"Camping\"")
+        );
+        proxyFetch($url);
+        break;
+
+    case 'entreprises':
+        if (empty($dept)) jsonError('dept requis');
+        // Codes NAF data/IT
+        $nafs = ['6311Z', '6202A', '7022Z', '6201Z', '5829A'];
+        $results = [];
+        foreach ($nafs as $naf) {
+            $url = "https://recherche-entreprises.api.gouv.fr/search"
+                 . "?activite_principale={$naf}&departement={$dept}&per_page=5&page=1";
+            $raw = httpGet($url, 8);
+            if ($raw !== false) {
+                $json = json_decode($raw, true);
+                if (!empty($json['results'])) {
+                    $results = array_merge($results, $json['results']);
+                }
+            }
+        }
+        echo json_encode(['results' => $results], JSON_UNESCAPED_UNICODE);
+        break;
+
+    case 'commune':
+        if ($lat === null || $lon === null) jsonError('lat/lon requis');
+        $url = "https://geo.api.gouv.fr/communes?lat={$lat}&lon={$lon}&fields=codeDepartement,nom&format=json";
+        proxyFetch($url);
+        break;
+
+    default:
+        jsonError("Type inconnu : $type. Valeurs acceptées : campings, entreprises, commune");
+}
+
+// ── Fonctions utilitaires ─────────────────────────────────────────────────────
+function proxyFetch(string $url): void {
+    $body = httpGet($url, 12);
+    if ($body === false) {
+        jsonError('Erreur lors de la requête vers la source externe', 502);
+    }
+    echo $body;
+    exit;
+}
+
+function httpGet(string $url, int $timeout = 10): string|false {
+    $ctx = stream_context_create([
+        'http' => [
+            'method'          => 'GET',
+            'timeout'         => $timeout,
+            'user_agent'      => 'OceanPhenix-TourData2026/1.0 (tourdata2026.oceanphenix.fr)',
+            'ignore_errors'   => true,
+            'follow_location' => true,
+            'max_redirects'   => 3,
+        ],
+        'ssl' => ['verify_peer' => true],
+    ]);
+    return @file_get_contents($url, false, $ctx);
+}
+
+function jsonError(string $msg, int $code = 400): void {
+    http_response_code($code);
+    echo json_encode(['error' => $msg], JSON_UNESCAPED_UNICODE);
+    exit;
+}

@@ -138,6 +138,57 @@
     journalEl.innerHTML = jhtml;
   }
 
+  function fmtMonthYear(iso) {
+    if (!iso) return '\u2014';
+    try {
+      return new Date(iso).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    } catch { return iso; }
+  }
+
+  function fmtNum(n) {
+    if (n == null) return '\u2014';
+    return Number(n).toLocaleString('fr-FR');
+  }
+
+  function applyEtapesList(etapes) {
+    const ul = document.getElementById('td-etapes-list-live');
+    if (!ul || !etapes || !etapes.length) return;
+    let html = '';
+    etapes.forEach(function (etape) {
+      const isDepart  = etape.type === 'depart';
+      const isArrivee = etape.type === 'arrivee';
+      const extraLabel = isDepart ? ' \u2014 D\u00e9part' : isArrivee ? ' \u2014 Retour' : '';
+      const dotCls  = etape.statut === 'actuel' ? 'td-dot--live'
+                    : isArrivee                 ? 'td-dot--orange'
+                    : isDepart                  ? 'td-dot--green'
+                    : 'td-dot--blue';
+      const badgeTxt = etape.statut === 'actuel' ? 'En cours'
+                     : isDepart                  ? fmtMonthYear(etape.dateEstimee)
+                     : isArrivee                 ? fmtMonthYear(etape.dateEstimee)
+                     : 'Planifi\u00e9';
+      const badgeCls = etape.statut === 'actuel' ? 'td-pill--live'
+                     : isDepart                  ? 'td-pill--green'
+                     : isArrivee                 ? 'td-pill--orange'
+                     : 'td-pill--muted';
+      const kmLabel  = isDepart ? 'Km 0' : '~' + fmtNum(etape.distanceDepuisDepart) + ' km';
+      const accent   = isDepart || isArrivee ? ' td-etape-row--accent' : '';
+      html += '<li class="td-etape-row' + accent + '">' +
+        '<span class="td-dot ' + dotCls + '"></span>' +
+        '<span class="td-etape-ville">' + escapeHtml(etape.ville) + escapeHtml(extraLabel) + '</span>' +
+        '<span class="td-etape-sep"></span>' +
+        '<span class="td-etape-km">' + kmLabel + '</span>' +
+        '<span class="td-pill ' + badgeCls + '">' + badgeTxt + '</span>' +
+        '</li>';
+    });
+    ul.innerHTML = html;
+    // Update meta count
+    const meta = document.getElementById('td-etapes-meta-live');
+    if (meta) {
+      const nbEtapes = etapes.filter(function(e) { return e.type === 'etape'; }).length;
+      meta.textContent = nbEtapes + ' \u00e9tapes';
+    }
+  }
+
   function applyMaps(etapes) {
     if (!etapes.length) return;
     if (globalThis._terrainMainMap) {
@@ -171,6 +222,7 @@
 
     applyPhotos(document.getElementById('live-photos'), dash.photos);
     applyJournal(document.getElementById('live-journal'), journal);
+    applyEtapesList(etapes);
     applyMaps(etapes);
   }
 
@@ -207,7 +259,7 @@
           '<div style="font-family:Inter,sans-serif;min-width:200px;">' +
           '<strong style="font-size:14px;color:#0b1a2e;">' + etape.ville + '</strong>' +
           '<br><span style="color:#666;font-size:12px;">' + etape.region + '</span>' +
-          '<br><span style="color:#888;font-size:11px;">\u00c9tape ' + etape.id + ' / 14 \u2014 ' + etape.distanceDepuisDepart + ' km</span>' +
+          '<br><span style="color:#888;font-size:11px;">' + (etape.type === 'depart' ? 'D\u00e9part' : etape.type === 'arrivee' ? 'Arriv\u00e9e' : '\u00c9tape ' + etape.id) + ' \u2014 ' + etape.distanceDepuisDepart + ' km</span>' +
           '<hr style="margin:6px 0;border:0;border-top:1px solid #e5e7eb;">' +
           '<p style="font-size:12px;color:#444;margin:0;">' + etape.description + '</p>' +
           '<p style="font-size:11px;color:#999;margin:6px 0 0;">Date estim\u00e9e : ' + etape.dateEstimee + '</p></div>'

@@ -62,9 +62,10 @@ const gpxFiles = etapesData.gpxFiles || [];
 
         <!-- Titre -->
         <h1 class="terrain-hero-title">
-          <span class="gradient-text">Retour au Terrain</span>
-          <span class="terrain-hero-title-sub">vers les Besoins Data</span>
+          <i class="fas fa-bicycle page-title-icon"></i>
+          <span>Retour au Terrain</span>
         </h1>
+        <p class="terrain-hero-title-sub">vers les Besoins Data</p>
 
         <!-- Métriques -->
         <div class="terrain-hero-meta">
@@ -154,12 +155,14 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section" id="vision">
       <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-eye"></i> VISION &amp; DÉMARCHE
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-eye"></i> VISION &amp; DÉMARCHE
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Pourquoi ce projet&nbsp;?</span>
+          </h2>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Pourquoi ce projet&nbsp;?</span>
-        </h2>
         <div class="terrain-vision-grid">
 
           <div class="terrain-vision-card">
@@ -246,15 +249,17 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section terrain-section--map" id="carte">
       <div class="terrain-container terrain-container--wide">
-        <div class="terrain-section-badge">
-          <i class="fas fa-map-marked-alt"></i> PARCOURS
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-map-marked-alt"></i> PARCOURS
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Carte du parcours</span>
+          </h2>
+          <p class="terrain-section-desc">
+            Cliquez sur une étape pour voir les détails. Le tracé GPX est mis à jour en temps réel depuis l'admin.
+          </p>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Carte du parcours</span>
-        </h2>
-        <p class="terrain-section-desc">
-          Cliquez sur une étape pour voir les détails. Le tracé GPX est mis à jour en temps réel depuis l'admin.
-        </p>
         <div id="terrain-map" class="terrain-map-container"></div>
         <div class="terrain-map-legend">
           <span class="legend-item"><span class="legend-dot legend-dot--actuel"></span> Position actuelle</span>
@@ -290,16 +295,18 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section terrain-section--rdv" id="rdv">
       <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-calendar-check"></i> PRISE DE RENDEZ-VOUS
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-calendar-check"></i> PRISE DE RENDEZ-VOUS
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Rencontrons-nous</span>
+          </h2>
+          <p class="terrain-section-desc">
+            Vous êtes sur mon parcours&nbsp;? Envie d'échanger autour de vos besoins data, d'une opportunité de
+            collaboration, ou simplement de parler du projet&nbsp;? Réservez directement un créneau dans mon agenda.
+          </p>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Rencontrons-nous</span>
-        </h2>
-        <p class="terrain-section-desc">
-          Vous êtes sur mon parcours&nbsp;? Envie d'échanger autour de vos besoins data, d'une opportunité de
-          collaboration, ou simplement de parler du projet&nbsp;? Réservez directement un créneau dans mon agenda.
-        </p>
 
         <div class="terrain-rdv-card">
           <div class="terrain-rdv-card-left">
@@ -355,16 +362,18 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section" id="contact-terrain">
       <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-envelope"></i> CONTACT
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-envelope"></i> CONTACT
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Me contacter</span>
+          </h2>
+          <p class="terrain-section-desc">
+            Vous êtes une entreprise sur mon parcours ? Vous souhaitez organiser une rencontre, proposer un échange
+            ou devenir sponsor ? Écrivez-moi&nbsp;!
+          </p>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Me contacter</span>
-        </h2>
-        <p class="terrain-section-desc">
-          Vous êtes une entreprise sur mon parcours ? Vous souhaitez organiser une rencontre, proposer un échange
-          ou devenir sponsor ? Écrivez-moi&nbsp;!
-        </p>
         <form
           class="terrain-contact-form"
           action="mailto:contact@oceanpconsulting.fr"
@@ -391,14 +400,22 @@ const gpxFiles = etapesData.gpxFiles || [];
             </select>
           </div>
           <div class="terrain-form-group">
-            <label for="terrain-type">Type de demande</label>
+            <label for="terrain-type">Type d'offre / demande</label>
             <select id="terrain-type" name="type">
               <option value="">— Sélectionnez —</option>
-              <option value="rencontre">Organiser une rencontre</option>
-              <option value="diagnostic">Demander un diagnostic data</option>
-              <option value="sponsor">Devenir sponsor</option>
-              <option value="freelance">Proposer mes services (freelance/consultant)</option>
-              <option value="autre">Autre</option>
+              <optgroup label="— Demandes">
+                <option value="rencontre">Organiser une rencontre</option>
+                <option value="diagnostic">Demander un diagnostic data</option>
+                <option value="sponsor">Devenir sponsor</option>
+              </optgroup>
+              <optgroup label="— Offres">
+                <option value="hebergement">Me proposer un hébergement sur le parcours (1 nuit)</option>
+                <option value="datacoffee">Me proposer un DataCoffee (1 h échange data)</option>
+                <option value="freelance">Proposer mes services (freelance / consultant)</option>
+              </optgroup>
+              <optgroup label="— Autre">
+                <option value="autre">Autre</option>
+              </optgroup>
             </select>
           </div>
           <div class="terrain-form-group">
@@ -418,12 +435,14 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section" id="journal">
       <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-book-open"></i> JOURNAL
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-book-open"></i> JOURNAL
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Journal du terrain</span>
+          </h2>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Journal du terrain</span>
-        </h2>
         <div class="terrain-journal-timeline" id="live-journal">
           {journal.map((entry) => (
             <div class="terrain-journal-entry">
@@ -449,12 +468,14 @@ const gpxFiles = etapesData.gpxFiles || [];
     <!-- ============================== -->
     <section class="terrain-section terrain-section--links" id="suivre">
       <div class="terrain-container">
-        <div class="terrain-section-badge">
-          <i class="fas fa-satellite-dish"></i> SUIVRE LE PROJET
+        <div class="terrain-section-header">
+          <div class="terrain-section-badge">
+            <i class="fas fa-satellite-dish"></i> SUIVRE LE PROJET
+          </div>
+          <h2 class="terrain-section-title">
+            <span class="gradient-text">Restez connectés</span>
+          </h2>
         </div>
-        <h2 class="terrain-section-title">
-          <span class="gradient-text">Restez connectés</span>
-        </h2>
         <div class="terrain-social-grid">
           <a href={projet.liens.youtube} target="_blank" rel="noopener" class="terrain-social-card terrain-social--yt">
             <i class="fab fa-youtube"></i>

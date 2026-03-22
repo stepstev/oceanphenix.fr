@@ -23,3 +23,7 @@ public/api/strava-cache.json
 
 # Deploy archive
 dist-deploy.zip
+
+# Deploy credentials — jamais dans le repo
+deploy.env
+deploy.log

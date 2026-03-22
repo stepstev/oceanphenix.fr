@@ -1,0 +1,1774 @@
+---
+// src/pages/radar.astro — Radar Terrain TourData 2026
+// Localise en temps réel : campings, coworkings, douches, entreprises data/IT
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+
+import OceanBackground from '../components/OceanBackground.astro';
+---
+
+<BaseLayout
+  title="Radar Terrain — Campings, Coworkings & Entreprises | TourData 2026"
+  description="Localisez en temps réel autour de votre position : campings, douches, coworkings et entreprises data/IT. Outil terrain TourData 2026 — Stéphane Celton."
+  lastModified="22/03/2026 12:00"
+>
+  <link slot="head" rel="stylesheet" href="/lib/leaflet.min.css" />
+
+  <OceanBackground />
+  <Nav />
+
+  <main class="radar-page main-content" id="radar-page">
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- HERO — cohérent avec strava / terrain                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <section class="rd-hero">
+      <h2 class="page-title"><i class="fas fa-crosshairs page-title-icon"></i> Radar Terrain</h2>
+      <p class="page-sub">Localisez en temps réel : campings, douches, coworkings et entreprises data/IT autour de votre position — TourData 2026</p>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- CONTRÔLES — toolbar compacte                          -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="rd-header">
+      <div class="rd-toolbar">
+        <select id="etape-select" class="rd-select" aria-label="Sélectionner une étape">
+          <option value="">— Choisir une étape —</option>
+          <option value="48.638,2.094">Fontenay-lès-Briis</option>
+          <option value="49.183,-0.357">Caen</option>
+          <option value="48.117,-1.677">Rennes</option>
+          <option value="47.218,-1.553">Nantes</option>
+          <option value="44.837,-0.579">Bordeaux</option>
+          <option value="43.605,1.444">Toulouse</option>
+          <option value="43.611,3.877">Montpellier</option>
+          <option value="43.296,5.381">Marseille</option>
+          <option value="43.710,7.262">Nice</option>
+          <option value="45.748,4.847">Lyon</option>
+        </select>
+        <button id="btn-locate" class="rd-btn rd-btn--primary" aria-label="Géolocaliser ma position">
+          <i class="fas fa-location-dot"></i> Je suis ici
+        </button>
+        <button id="btn-voice" class="rd-btn rd-btn--ghost" aria-label="Commande vocale" title="Commande vocale fr-FR">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <div class="rd-radius-inline">
+          <span class="rd-radius-label"><i class="fas fa-circle-dot"></i> <strong id="radius-val">10</strong> km</span>
+          <input type="range" id="radius-slider" min="2" max="25" value="10" step="1"
+            aria-label="Rayon de recherche" />
+        </div>
+        <div class="rd-status">
+          <span class="rd-dot" id="rd-dot"></span>
+          <span id="loading-indicator" class="rd-status-label hidden" aria-live="polite">Chargement…</span>
+          <span id="results-count" class="rd-status-label rd-status-idle">Sélectionnez une étape</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- CONTENU PRINCIPAL — container admin-style              -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="rd-container">
+
+      <!-- TABS — inspirés de admin-terrain -->
+      <div class="rd-tabs" role="tablist">
+        <button class="rd-tab rd-tab--active" data-tab="carte" role="tab" aria-selected="true">
+          <i class="fas fa-map-marked-alt"></i> Carte
+        </button>
+        <button class="rd-tab" data-tab="camping" role="tab" aria-selected="false">
+          <span class="rd-tab-dot" style="--dot-color:#3de8a0"></span>
+          <i class="fas fa-campground"></i> Campings
+          <span class="rd-tab-count" id="count-camping">0</span>
+        </button>
+        <button class="rd-tab" data-tab="coworking" role="tab" aria-selected="false">
+          <span class="rd-tab-dot" style="--dot-color:#a078f8"></span>
+          <i class="fas fa-building"></i> Coworkings
+          <span class="rd-tab-count" id="count-coworking">0</span>
+        </button>
+        <button class="rd-tab" data-tab="douche" role="tab" aria-selected="false">
+          <span class="rd-tab-dot" style="--dot-color:#38c8f8"></span>
+          <i class="fas fa-shower"></i> Douches
+          <span class="rd-tab-count" id="count-douche">0</span>
+        </button>
+        <button class="rd-tab" data-tab="entreprise" role="tab" aria-selected="false">
+          <span class="rd-tab-dot" style="--dot-color:#e2f94c"></span>
+          <i class="fas fa-briefcase"></i> Entreprises
+          <span class="rd-tab-count" id="count-entreprise">0</span>
+        </button>
+        <button class="rd-tab" data-tab="warmshowers" role="tab" aria-selected="false">
+          <span class="rd-tab-dot" style="--dot-color:#ff8c42"></span>
+          <i class="fas fa-hand-holding-heart"></i> WarmShowers
+          <span class="rd-tab-count" id="count-warmshowers">0</span>
+        </button>
+        <button class="rd-tab" data-tab="tous" role="tab" aria-selected="false">
+          <i class="fas fa-list"></i> Tous
+        </button>
+      </div>
+
+      <!-- TAB: Carte -->
+      <div class="rd-tab-content rd-tab-content--active" id="tab-carte" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-map"></i> Carte interactive</h3>
+            <div class="rd-card-badges filter-chips" role="group" aria-label="Filtres carte">
+              <button class="chip active" data-type="camping" aria-pressed="true" style="--dot:#3de8a0">
+                <span class="chip-dot"></span>Camping
+              </button>
+              <button class="chip active" data-type="coworking" aria-pressed="true" style="--dot:#a078f8">
+                <span class="chip-dot"></span>Coworking
+              </button>
+              <button class="chip active" data-type="douche" aria-pressed="true" style="--dot:#38c8f8">
+                <span class="chip-dot"></span>Douche
+              </button>
+              <button class="chip active" data-type="entreprise" aria-pressed="true" style="--dot:#e2f94c">
+                <span class="chip-dot"></span>Entreprise
+              </button>
+              <button class="chip active" data-type="warmshowers" aria-pressed="true" style="--dot:#ff8c42">
+                <span class="chip-dot"></span>WarmShowers
+              </button>
+            </div>
+          </div>
+          <div class="rd-map-frame">
+            <div id="radar-map" aria-label="Carte interactive des lieux proches"></div>
+            <!-- Overlay info centré sur la carte -->
+            <div id="map-info-overlay" class="map-info-overlay map-info-overlay--hidden" role="status" aria-live="polite">
+              <span id="map-info-icon"></span>
+              <span id="map-info-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Campings -->
+      <div class="rd-tab-content" id="tab-camping" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-campground" style="color:#3de8a0"></i> Campings à proximité</h3>
+            <span class="rd-card-hint">Sources : OpenStreetMap + Atout France</span>
+          </div>
+          <ul class="rd-list" id="list-camping" aria-label="Liste des campings"></ul>
+        </div>
+      </div>
+
+      <!-- TAB: Coworkings -->
+      <div class="rd-tab-content" id="tab-coworking" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-building" style="color:#a078f8"></i> Coworkings</h3>
+            <span class="rd-card-hint">Sources : OpenStreetMap + données référencées</span>
+          </div>
+          <ul class="rd-list" id="list-coworking" aria-label="Liste des coworkings"></ul>
+        </div>
+      </div>
+
+      <!-- TAB: Douches -->
+      <div class="rd-tab-content" id="tab-douche" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-shower" style="color:#38c8f8"></i> Douches & Piscines</h3>
+            <span class="rd-card-hint">Sources : OpenStreetMap</span>
+          </div>
+          <ul class="rd-list" id="list-douche" aria-label="Liste des douches et piscines"></ul>
+        </div>
+      </div>
+
+      <!-- TAB: Entreprises -->
+      <div class="rd-tab-content" id="tab-entreprise" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-briefcase" style="color:#e2f94c"></i> Entreprises Data / IT</h3>
+            <span class="rd-card-hint">Source : INSEE SIRENE — codes NAF Data, IT, Conseil</span>
+          </div>
+          <ul class="rd-list" id="list-entreprise" aria-label="Liste des entreprises"></ul>
+        </div>
+      </div>
+
+      <!-- TAB: WarmShowers -->
+      <div class="rd-tab-content" id="tab-warmshowers" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-hand-holding-heart" style="color:#ff8c42"></i> WarmShowers</h3>
+            <span class="rd-card-hint">Réseau d'hospitalité pour cyclistes — données simulées (API OAuth2 requise)</span>
+          </div>
+          <ul class="rd-list" id="list-warmshowers" aria-label="Liste WarmShowers"></ul>
+        </div>
+      </div>
+
+      <!-- TAB: Tous -->
+      <div class="rd-tab-content" id="tab-tous" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-list"></i> Tous les résultats</h3>
+          </div>
+          <ul class="rd-list" id="results-list" aria-live="polite" aria-label="Liste des lieux trouvés"></ul>
+        </div>
+      </div>
+
+    </div><!-- /.rd-container -->
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TOASTS                                                -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- MODAL ÉVALUATION — bottom sheet                       -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="eval-modal" class="modal-overlay hidden"
+      role="dialog" aria-modal="true" aria-labelledby="eval-title">
+      <div class="modal-sheet">
+
+        <div class="modal-handle"></div>
+        <button class="modal-close" id="modal-close" aria-label="Fermer">
+          <i class="fas fa-xmark"></i>
+        </button>
+
+        <div class="modal-header">
+          <span class="modal-icon"><i class="fas fa-star"></i></span>
+          <div>
+            <h3 id="eval-title" class="modal-title">Évaluer ce lieu</h3>
+            <p id="eval-place-name" class="modal-subtitle"></p>
+          </div>
+        </div>
+
+        <div class="eval-fields">
+          <label class="eval-field">
+            <span class="eval-label">🧹 Propreté</span>
+            <div class="slider-row">
+              <input type="range" min="1" max="5" value="3" id="eval-proprete" />
+              <span class="slider-val" id="val-proprete">3</span>
+            </div>
+          </label>
+          <label class="eval-field">
+            <span class="eval-label">🤝 Accueil</span>
+            <div class="slider-row">
+              <input type="range" min="1" max="5" value="3" id="eval-accueil" />
+              <span class="slider-val" id="val-accueil">3</span>
+            </div>
+          </label>
+          <label class="eval-field">
+            <span class="eval-label">🔒 Sécurité vélo</span>
+            <div class="slider-row">
+              <input type="range" min="1" max="5" value="3" id="eval-securite" />
+              <span class="slider-val" id="val-securite">3</span>
+            </div>
+          </label>
+          <label class="eval-field">
+            <span class="eval-label">💶 Prix</span>
+            <div class="slider-row">
+              <input type="range" min="1" max="5" value="3" id="eval-prix" />
+              <span class="slider-val" id="val-prix">3</span>
+            </div>
+          </label>
+          <label class="eval-field eval-field--full">
+            <span class="eval-label">📝 Commentaire</span>
+            <textarea id="eval-note" rows="2"
+              placeholder="Impression, conseil, avertissement…"></textarea>
+          </label>
+        </div>
+
+        <button class="rd-btn rd-btn--primary rd-btn--full" id="eval-save">
+          <i class="fas fa-floppy-disk"></i> Sauvegarder l'évaluation
+        </button>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Leaflet JS (local, cohérent avec terrain/strava) -->
+  <script is:inline src="/lib/leaflet.min.js"></script>
+
+  <script is:inline>
+  /* ============================================================
+     RADAR TERRAIN — TourData 2026
+     Stéphane Celton — OceanPhenix
+  ============================================================ */
+  (function () {
+    'use strict';
+
+    // ── Constantes ────────────────────────────────────────────
+    const EVAL_KEY = 'td_evals';
+    const TYPE_COLORS = {
+      camping:     '#3de8a0',
+      coworking:   '#a078f8',
+      douche:      '#38c8f8',
+      entreprise:  '#e2f94c',
+      warmshowers: '#ff8c42',
+    };
+    const NAF_CODES = ['6311Z', '6202A', '7022Z', '6201Z', '5829A'];
+    const ETAPES_COORDS = {
+      'Fontenay-lès-Briis': [48.638, 2.094],
+      'Caen':               [49.183, -0.357],
+      'Rennes':             [48.117, -1.677],
+      'Nantes':             [47.218, -1.553],
+      'Bordeaux':           [44.837, -0.579],
+      'Toulouse':           [43.605,  1.444],
+      'Montpellier':        [43.611,  3.877],
+      'Marseille':          [43.296,  5.381],
+      'Nice':               [43.710,  7.262],
+      'Lyon':               [45.748,  4.847],
+    };
+    // Coworkings statiques enrichis
+    const COWORKINGS_STATIC = [
+      { nom: 'La Ruche',           ville: 'Paris',       lat: 48.866, lon:  2.387, adresse: '24 Rue Brézin, 75014 Paris' },
+      { nom: 'Mutinerie',          ville: 'Paris',       lat: 48.862, lon:  2.365, adresse: '181 Rue du Temple, 75003 Paris' },
+      { nom: 'Darwin Écosystème',  ville: 'Bordeaux',    lat: 44.841, lon: -0.565, adresse: '87 Quai des Queyries, 33100 Bordeaux' },
+      { nom: 'La Cordée',          ville: 'Lyon',        lat: 45.748, lon:  4.847, adresse: '1 Rue du Palais de Justice, 69005 Lyon' },
+      { nom: 'La Cantine',         ville: 'Toulouse',    lat: 43.608, lon:  1.445, adresse: '2 Place Dupuy, 31000 Toulouse' },
+      { nom: 'Remix Coworking',    ville: 'Nantes',      lat: 47.218, lon: -1.553, adresse: 'Nantes Centre' },
+      { nom: 'Le Dôme',            ville: 'Caen',        lat: 49.183, lon: -0.357, adresse: 'Caen' },
+      { nom: 'La Station',         ville: 'Nice',        lat: 43.706, lon:  7.267, adresse: '89 Rue de France, 06000 Nice' },
+      { nom: 'Village by CA',      ville: 'Rennes',      lat: 48.112, lon: -1.680, adresse: 'Rennes' },
+      { nom: 'Le Palace',          ville: 'Montpellier', lat: 43.611, lon:  3.877, adresse: 'Montpellier' },
+      { nom: 'Cité de l\'innovation', ville: 'Marseille', lat: 43.293, lon: 5.393, adresse: '2 Rue de la Charité, 13002 Marseille' },
+    ];
+    // WarmShowers — simulation (API OAuth2 requise pour les vraies données)
+    const WARMSHOWERS_SIMULE = [
+      { id: 'ws-sim-1', nom: 'WarmShowers (données simulées)', lat: null, lon: null, adresse: 'Inscription sur warmshowers.org pour les vrais contacts', source: 'Simulé' },
+    ];
+
+    // ── État ──────────────────────────────────────────────────
+    let currentLat = null;
+    let currentLon = null;
+    let currentRadius = 10;
+    let activeFilters = new Set(['camping', 'coworking', 'douche', 'entreprise', 'warmshowers']);
+    let allResults = [];
+    let leafletMap = null;
+    let mapMarkers = [];
+    let radiusCircle = null;
+    let currentEvalId = null;
+    let recognition = null;
+
+    // ── Mode dev : détection + mock data ──────────────────────
+    const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+    const MOCK_RESULTS = [
+      { id: 'mock-camp-1', nom: 'Camping La Belle Étoile', type: 'camping', lat: 48.642, lon: 2.098, adresse: '12 Chemin des Prés, 91580 Fontenay-lès-Briis', classement: '3 étoiles', source: 'Mock Dev', dist: 1.2 },
+      { id: 'mock-camp-2', nom: 'Camping Le Bois Joli', type: 'camping', lat: 48.651, lon: 2.075, adresse: '3 Route de Briis, 91580', classement: '2 étoiles', source: 'Mock Dev', dist: 2.8 },
+      { id: 'mock-camp-3', nom: 'Camping Municipal des Saules', type: 'camping', lat: 48.625, lon: 2.110, adresse: 'Allée des Saules, 91580', source: 'Mock Dev', dist: 3.5 },
+      { id: 'mock-cw-1', nom: 'CoWork Valley', type: 'coworking', lat: 48.636, lon: 2.102, adresse: '5 Rue du Commerce, 91580 Fontenay-lès-Briis', source: 'Mock Dev', dist: 0.8 },
+      { id: 'mock-cw-2', nom: 'La Ruche Numérique', type: 'coworking', lat: 48.648, lon: 2.088, adresse: '18 Boulevard Central, 91580', source: 'Mock Dev', dist: 1.9 },
+      { id: 'mock-douche-1', nom: 'Piscine Municipale', type: 'douche', lat: 48.640, lon: 2.091, adresse: 'Parc des Sports, 91580 Fontenay-lès-Briis', source: 'Mock Dev', dist: 0.5 },
+      { id: 'mock-douche-2', nom: 'Douches Camping Accueil Libre', type: 'douche', lat: 48.633, lon: 2.105, adresse: 'Zone Accueil, 91580', source: 'Mock Dev', dist: 1.6 },
+      { id: 'mock-ent-1', nom: 'DataFlow Consulting', type: 'entreprise', lat: 48.644, lon: 2.087, adresse: '24 Rue de la Tech, 91580 Fontenay-lès-Briis', siren: '123456789', naf: '6311Z', nafLabel: 'Traitement de données, hébergement', source: 'Mock Dev', dist: 1.4 },
+      { id: 'mock-ent-2', nom: 'CloudBridge Solutions', type: 'entreprise', lat: 48.630, lon: 2.100, adresse: '7 Avenue de l\'Innovation, 91580', siren: '987654321', naf: '6202A', nafLabel: 'Conseil en systèmes informatiques', source: 'Mock Dev', dist: 2.1 },
+      { id: 'mock-ent-3', nom: 'BI Analytics France', type: 'entreprise', lat: 48.653, lon: 2.082, adresse: '42 Place de la Data, 91580', siren: '456789123', naf: '7022Z', nafLabel: 'Conseil pour les affaires', source: 'Mock Dev', dist: 3.0 },
+      { id: 'mock-ws-1', nom: 'WarmShowers — Jean D.', type: 'warmshowers', lat: 48.639, lon: 2.096, adresse: 'Fontenay-lès-Briis (hôte vérifié)', source: 'Mock Dev', dist: 0.3 },
+      { id: 'mock-ws-2', nom: 'WarmShowers — Marie L.', type: 'warmshowers', lat: 48.645, lon: 2.080, adresse: 'Briis-sous-Forges (hôte vérifié)', source: 'Mock Dev', dist: 2.4 },
+    ];
+
+    // ── Init carte ────────────────────────────────────────────
+    function initMap() {
+      leafletMap = L.map('radar-map', {
+        center: [46.6, 2.3],
+        zoom: 6,
+        zoomControl: true,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(leafletMap);
+
+      // Dark filter appliqué via CSS
+    }
+
+    // ── Overlay info centré sur la carte ────────────────────
+    let _mapInfoTimer = null;
+    function showMapInfo(icon, text, type = 'info', duration = 3500) {
+      const overlay = document.getElementById('map-info-overlay');
+      const iconEl  = document.getElementById('map-info-icon');
+      const textEl  = document.getElementById('map-info-text');
+      if (!overlay) return;
+      iconEl.textContent = icon;
+      textEl.textContent = text;
+      overlay.className = `map-info-overlay map-info-overlay--${type}`;
+      clearTimeout(_mapInfoTimer);
+      if (duration > 0) {
+        _mapInfoTimer = setTimeout(() => {
+          overlay.classList.add('map-info-overlay--hidden');
+        }, duration);
+      }
+    }
+    function hideMapInfo() {
+      const overlay = document.getElementById('map-info-overlay');
+      if (overlay) overlay.classList.add('map-info-overlay--hidden');
+    }
+
+    // ── Géolocalisation ───────────────────────────────────────
+    function locateMe() {
+      if (!navigator.geolocation) {
+        showMapInfo('❌', 'Géolocalisation non supportée par ce navigateur', 'error', 4000);
+        return;
+      }
+      showMapInfo('📡', 'Localisation en cours…', 'loading', 0);
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          currentLat = pos.coords.latitude;
+          currentLon = pos.coords.longitude;
+          document.getElementById('etape-select').value = '';
+          showMapInfo('✅', `Position : ${currentLat.toFixed(4)}, ${currentLon.toFixed(4)}`, 'success', 3000);
+          search();
+        },
+        err => {
+          const msgs = {
+            1: 'Permission refusée — activez la géolocalisation',
+            2: 'Position indisponible',
+            3: 'Délai dépassé',
+          };
+          showMapInfo('🔒', msgs[err.code] || 'Erreur de géolocalisation', 'error', 5000);
+        },
+        { timeout: 10000, maximumAge: 60000, enableHighAccuracy: true }
+      );
+    }
+
+    // ── Haversine ─────────────────────────────────────────────
+    function haversine(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // ── Sources de données ────────────────────────────────────
+
+    async function fetchOverpass(lat, lon, radiusM) {
+      const query = `
+        [out:json][timeout:25];
+        (
+          node["tourism"="camp_site"](around:${radiusM},${lat},${lon});
+          way["tourism"="camp_site"](around:${radiusM},${lat},${lon});
+          node["amenity"="shower"](around:${radiusM},${lat},${lon});
+          node["leisure"="swimming_pool"]["access"!="private"](around:${radiusM},${lat},${lon});
+          way["leisure"="swimming_pool"]["access"!="private"](around:${radiusM},${lat},${lon});
+          node["amenity"="coworking_space"](around:${radiusM},${lat},${lon});
+          way["amenity"="coworking_space"](around:${radiusM},${lat},${lon});
+        );
+        out center;
+      `;
+      const resp = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: query,
+        signal: AbortSignal.timeout(20000),
+      });
+      if (!resp.ok) throw new Error(`Overpass HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      return (data.elements || []).map(el => {
+        const elLat = el.lat ?? el.center?.lat;
+        const elLon = el.lon ?? el.center?.lon;
+        if (!elLat || !elLon) return null;
+
+        let type = 'autre';
+        if (el.tags?.tourism === 'camp_site') type = 'camping';
+        else if (el.tags?.amenity === 'shower') type = 'douche';
+        else if (el.tags?.leisure === 'swimming_pool') type = 'douche';
+        else if (el.tags?.amenity === 'coworking_space') type = 'coworking';
+
+        const adresseParts = [
+          el.tags?.['addr:housenumber'],
+          el.tags?.['addr:street'],
+          el.tags?.['addr:city'],
+        ].filter(Boolean);
+
+        return {
+          id: `osm-${el.id}`,
+          nom: el.tags?.name || labelForType(type),
+          type,
+          lat: elLat,
+          lon: elLon,
+          adresse: adresseParts.join(' ') || null,
+          phone: el.tags?.phone || el.tags?.['contact:phone'] || null,
+          website: el.tags?.website || el.tags?.['contact:website'] || null,
+          source: 'OpenStreetMap',
+        };
+      }).filter(Boolean);
+    }
+
+    async function fetchCampingsGouv(lat, lon, radiusKm) {
+      const url = new URL('https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/hebergements-classes/records');
+      url.searchParams.set('where', `distance(coordonnees_geo, geom'POINT(${lon} ${lat})', ${radiusKm}km) AND type_hebergement = "Camping"`);
+      url.searchParams.set('limit', '20');
+      url.searchParams.set('select', 'nom_commercial,adresse,code_postal,commune,coordonnees_geo,classement,nombre_emplacements');
+
+      const resp = await fetch(url.toString(), { signal: AbortSignal.timeout(15000) });
+      if (!resp.ok) throw new Error(`Atout France HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      return (data.results || [])
+        .filter(r => r.coordonnees_geo?.lat && r.coordonnees_geo?.lon)
+        .map(r => ({
+          id: `atout-${r.nom_commercial}-${r.code_postal}`,
+          nom: r.nom_commercial || 'Camping',
+          type: 'camping',
+          lat: r.coordonnees_geo.lat,
+          lon: r.coordonnees_geo.lon,
+          adresse: [r.adresse, r.code_postal, r.commune].filter(Boolean).join(' '),
+          classement: r.classement || null,
+          nbEmplacements: r.nombre_emplacements || null,
+          source: 'Atout France',
+        }));
+    }
+
+    async function fetchEntreprises(lat, lon) {
+      // 1. Récupérer le code département depuis les coordonnées
+      const geoResp = await fetch(
+        `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=codeDepartement&format=json`,
+        { signal: AbortSignal.timeout(8000) }
+      );
+      const geoData = await geoResp.json();
+      const dept = geoData[0]?.codeDepartement;
+      if (!dept) throw new Error('Département introuvable');
+
+      // 2. Interroger chaque code NAF en parallèle
+      const queries = NAF_CODES.map(naf =>
+        fetch(
+          `https://recherche-entreprises.api.gouv.fr/search?activite_principale=${naf}&departement=${dept}&per_page=5&page=1`,
+          { signal: AbortSignal.timeout(12000) }
+        ).then(r => r.ok ? r.json() : Promise.reject(r.status))
+      );
+      const settled = await Promise.allSettled(queries);
+
+      const seen = new Set();
+      const results = [];
+      for (const r of settled) {
+        if (r.status !== 'fulfilled') continue;
+        for (const e of (r.value?.results || [])) {
+          if (!e.siren || seen.has(e.siren)) continue;
+          const siege = e.siege;
+          if (!siege?.latitude || !siege?.longitude) continue;
+          seen.add(e.siren);
+          results.push({
+            id: `siren-${e.siren}`,
+            nom: e.nom_complet || e.nom_raison_sociale || 'Entreprise',
+            type: 'entreprise',
+            lat: parseFloat(siege.latitude),
+            lon: parseFloat(siege.longitude),
+            adresse: [siege.adresse, siege.code_postal, siege.libelle_commune].filter(Boolean).join(' '),
+            source: 'INSEE SIRENE',
+            siren: e.siren,
+            naf: e.activite_principale,
+            nafLabel: e.libelle_activite_principale_libelle_65 || e.activite_principale,
+          });
+        }
+      }
+      return results;
+    }
+
+    function getCoworkingsNearby(lat, lon, radiusKm) {
+      return COWORKINGS_STATIC
+        .filter(c => haversine(lat, lon, c.lat, c.lon) <= radiusKm)
+        .map(c => ({
+          id: `cw-${c.ville}-${c.nom}`.replace(/\s+/g, '-').toLowerCase(),
+          nom: c.nom,
+          type: 'coworking',
+          lat: c.lat,
+          lon: c.lon,
+          adresse: c.adresse,
+          source: 'Données statiques',
+        }));
+    }
+
+    function getWarmshowersNearby(lat, lon, radiusKm) {
+      // API OAuth2 non disponible — simulation avec note d'info
+      return WARMSHOWERS_SIMULE
+        .filter(w => w.lat !== null)
+        .map(w => ({ ...w, type: 'warmshowers' }));
+      // TODO: intégrer OAuth WarmShowers quand token disponible
+    }
+
+    // ── Recherche principale ──────────────────────────────────
+    async function search() {
+      if (currentLat === null || currentLon === null) return;
+
+      showLoading(true);
+      clearMapMarkers();
+      // Show skeletons in all lists
+      ['results-list', 'list-camping', 'list-coworking', 'list-douche', 'list-entreprise', 'list-warmshowers'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = skeletonHTML(3);
+      });
+      document.getElementById('results-count').textContent = '⏳ Interrogation des sources…';
+
+      // En dev : utiliser les données mock pour avoir un rendu immédiat
+      if (IS_DEV) {
+        await new Promise(r => setTimeout(r, 400)); // Simule latence réseau
+        allResults = MOCK_RESULTS.map(r => ({
+          ...r,
+          dist: haversine(currentLat, currentLon, r.lat, r.lon)
+        })).filter(r => r.dist <= currentRadius).sort((a, b) => a.dist - b.dist);
+        renderResults();
+        renderMapMarkers();
+        showLoading(false);
+        const n = allResults.filter(r => activeFilters.has(r.type)).length;
+        showMapInfo('🧪', `DEV — ${n} lieu${n !== 1 ? 'x' : ''} simulé${n !== 1 ? 's' : ''}`, 'info', 3000);
+        return;
+      }
+
+      const radiusM = currentRadius * 1000;
+
+      const [resOverpass, resCampings, resEntreprises, resCw] = await Promise.allSettled([
+        fetchOverpass(currentLat, currentLon, radiusM),
+        fetchCampingsGouv(currentLat, currentLon, currentRadius),
+        fetchEntreprises(currentLat, currentLon),
+        Promise.resolve(getCoworkingsNearby(currentLat, currentLon, currentRadius)),
+      ]);
+
+      // Log les erreurs silencieusement
+      if (resOverpass.status    === 'rejected') console.warn('Overpass:', resOverpass.reason);
+      if (resCampings.status    === 'rejected') console.warn('Atout France:', resCampings.reason);
+      if (resEntreprises.status === 'rejected') console.warn('INSEE SIRENE:', resEntreprises.reason);
+
+      const raw = [
+        ...(resOverpass.status    === 'fulfilled' ? resOverpass.value    : []),
+        ...(resCampings.status    === 'fulfilled' ? resCampings.value    : []),
+        ...(resEntreprises.status === 'fulfilled' ? resEntreprises.value : []),
+        ...(resCw.status          === 'fulfilled' ? resCw.value         : []),
+        ...getWarmshowersNearby(currentLat, currentLon, currentRadius),
+      ];
+
+      // Dédupliquer par id, calculer distance, filtrer rayon, trier
+      const byId = new Map();
+      for (const item of raw) {
+        if (!byId.has(item.id)) byId.set(item.id, item);
+      }
+      allResults = [...byId.values()]
+        .filter(r => r.lat && r.lon)
+        .map(r => ({ ...r, dist: haversine(currentLat, currentLon, r.lat, r.lon) }))
+        .filter(r => r.dist <= currentRadius)
+        .sort((a, b) => a.dist - b.dist);
+
+      renderResults();
+      renderMapMarkers();
+      showLoading(false);
+
+      const n = allResults.filter(r => activeFilters.has(r.type)).length;
+      showMapInfo('🎯', `${n} lieu${n !== 1 ? 'x' : ''} trouvé${n !== 1 ? 's' : ''} — rayon ${currentRadius} km`, 'success', 3500);
+    }
+
+    // ── Rendu résultats ───────────────────────────────────────
+    function renderItemHTML(r, evals) {
+      const ev = evals[r.id];
+      const avgStars = ev ? ((ev.proprete + ev.accueil + ev.securite + ev.prix) / 4).toFixed(1) : null;
+      const evalBadge = avgStars ? `<span class="eval-badge">★ ${avgStars}</span>` : '';
+      const ficheBtn = r.type === 'entreprise' && r.siren
+        ? `<a href="https://annuaire-entreprises.data.gouv.fr/entreprise/${encodeURIComponent(r.siren)}" target="_blank" rel="noopener" class="result-btn btn-fiche">🔗 Fiche</a>`
+        : '';
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}&travelmode=bicycling`;
+      const color = TYPE_COLORS[r.type] || '#888';
+
+      return `
+        <li class="result-item" data-id="${r.id}" data-type="${r.type}">
+          <div class="result-left">
+            <span class="type-dot" style="background:${color}"></span>
+          </div>
+          <div class="result-body">
+            <div class="result-header-row">
+              <span class="result-nom">${escHtml(r.nom)}</span>
+              ${evalBadge}
+              <span class="result-dist">${r.dist.toFixed(1)} km</span>
+            </div>
+            ${r.adresse ? `<div class="result-adresse"><i class="fas fa-map-pin"></i> ${escHtml(r.adresse)}</div>` : ''}
+            ${r.nafLabel ? `<div class="result-meta"><i class="fas fa-tag"></i> ${escHtml(r.nafLabel)}</div>` : ''}
+            ${r.classement ? `<div class="result-meta"><i class="fas fa-star"></i> ${escHtml(String(r.classement))}</div>` : ''}
+            ${r.source ? `<div class="result-source">Source : ${escHtml(r.source)}</div>` : ''}
+            <div class="result-actions">
+              <a href="${mapsUrl}" target="_blank" rel="noopener" class="result-btn btn-go">🧭 Y aller</a>
+              ${ficheBtn}
+              <button class="result-btn btn-eval"
+                data-id="${r.id}"
+                data-nom="${escHtml(r.nom)}">⭐ Évaluer</button>
+            </div>
+          </div>
+        </li>`;
+    }
+
+    function renderResults() {
+      const countEl = document.getElementById('results-count');
+      const evals = getEvals();
+      const filtered = allResults.filter(r => activeFilters.has(r.type));
+
+      countEl.textContent = `${filtered.length} résultat${filtered.length !== 1 ? 's' : ''} — rayon ${currentRadius} km`;
+
+      // Remplir les listes par catégorie
+      const types = ['camping', 'coworking', 'douche', 'entreprise', 'warmshowers'];
+      types.forEach(type => {
+        const items = allResults.filter(r => r.type === type);
+        const listEl = document.getElementById('list-' + type);
+        const countBadge = document.getElementById('count-' + type);
+        if (countBadge) countBadge.textContent = items.length;
+        if (listEl) {
+          if (items.length === 0) {
+            listEl.innerHTML = '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat dans cette catégorie.</li>';
+          } else {
+            listEl.innerHTML = items.map(r => renderItemHTML(r, evals)).join('');
+          }
+        }
+      });
+
+      // Remplir la liste "tous"
+      const allList = document.getElementById('results-list');
+      if (filtered.length === 0) {
+        allList.innerHTML = '<li class="no-results"><i class="fas fa-search"></i> Aucun résultat. Sélectionnez une étape ou géolocalisez-vous.</li>';
+      } else {
+        allList.innerHTML = filtered.map(r => renderItemHTML(r, evals)).join('');
+      }
+
+      // Events évaluation sur toutes les listes
+      document.querySelectorAll('.btn-eval').forEach(btn => {
+        btn.addEventListener('click', () => openEvalModal(btn.dataset.id, btn.dataset.nom));
+      });
+    }
+
+    // ── Carte Leaflet ─────────────────────────────────────────
+    function renderMapMarkers() {
+      clearMapMarkers();
+      if (!currentLat || !currentLon || !leafletMap) return;
+
+      // Cercle rayon
+      radiusCircle = L.circle([currentLat, currentLon], {
+        radius: currentRadius * 1000,
+        color: '#e2f94c',
+        weight: 1.5,
+        dashArray: '6 4',
+        fillColor: '#e2f94c',
+        fillOpacity: 0.04,
+      }).addTo(leafletMap);
+
+      // Marqueur position actuelle
+      const posIcon = L.divIcon({
+        className: 'pos-marker-wrap',
+        html: '<div class="pos-marker">📍</div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+      });
+      const posM = L.marker([currentLat, currentLon], { icon: posIcon })
+        .bindPopup('<strong>Ma position</strong>')
+        .addTo(leafletMap);
+      mapMarkers.push(posM);
+
+      // Marqueurs résultats
+      const filtered = allResults.filter(r => activeFilters.has(r.type));
+      for (const r of filtered) {
+        const color = TYPE_COLORS[r.type] || '#888';
+        const m = L.circleMarker([r.lat, r.lon], {
+          radius: 7,
+          fillColor: color,
+          color: '#0b1a2e',
+          weight: 1.5,
+          fillOpacity: 0.9,
+        }).bindPopup(`
+          <strong>${escHtml(r.nom)}</strong><br>
+          <em>${r.dist.toFixed(1)} km</em>
+          ${r.adresse ? `<br><small>${escHtml(r.adresse)}</small>` : ''}
+        `).addTo(leafletMap);
+        mapMarkers.push(m);
+      }
+
+      // Recadrer
+      const margin = currentRadius / 90;
+      leafletMap.fitBounds([
+        [currentLat - margin, currentLon - margin * 1.4],
+        [currentLat + margin, currentLon + margin * 1.4],
+      ], { padding: [24, 24] });
+    }
+
+    function clearMapMarkers() {
+      mapMarkers.forEach(m => m.remove());
+      mapMarkers = [];
+      if (radiusCircle) { radiusCircle.remove(); radiusCircle = null; }
+    }
+
+    // ── Évaluations localStorage ──────────────────────────────
+    function getEvals() {
+      try { return JSON.parse(localStorage.getItem(EVAL_KEY) || '{}'); }
+      catch { return {}; }
+    }
+
+    function saveEval(id, data) {
+      const evals = getEvals();
+      evals[id] = { ...data, ts: Date.now() };
+      localStorage.setItem(EVAL_KEY, JSON.stringify(evals));
+    }
+
+    function openEvalModal(id, nom) {
+      currentEvalId = id;
+      const evals = getEvals();
+      const existing = evals[id] || {};
+
+      document.getElementById('eval-place-name').textContent = nom;
+      document.getElementById('eval-proprete').value = existing.proprete || 3;
+      document.getElementById('eval-accueil').value  = existing.accueil  || 3;
+      document.getElementById('eval-securite').value = existing.securite || 3;
+      document.getElementById('eval-prix').value     = existing.prix     || 3;
+      document.getElementById('eval-note').value     = existing.note     || '';
+
+      ['proprete', 'accueil', 'securite', 'prix'].forEach(k => {
+        document.getElementById(`val-${k}`).textContent = document.getElementById(`eval-${k}`).value;
+      });
+
+      document.getElementById('eval-modal').classList.remove('hidden');
+      document.getElementById('eval-modal').focus();
+    }
+
+    // ── Reconnaissance vocale ─────────────────────────────────
+    function initVoice() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        document.getElementById('btn-voice').setAttribute('disabled', '');
+        document.getElementById('btn-voice').title = 'Reconnaissance vocale non supportée';
+        return;
+      }
+      recognition = new SR();
+      recognition.lang = 'fr-FR';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = e => {
+        const text = e.results[0][0].transcript.toLowerCase();
+        toast(`🎤 "${text}"`);
+        handleVoiceCommand(text);
+      };
+      recognition.onerror = e => toast(`🎤 Erreur : ${e.error}`, 'error');
+    }
+
+    function handleVoiceCommand(text) {
+      const filterMap = {
+        camping:    ['camping', 'camp', 'tente'],
+        coworking:  ['coworking', 'espace de travail', 'bureau'],
+        douche:     ['douche', 'piscine', 'bain'],
+        entreprise: ['entreprise', 'société', 'boîte', 'data', 'informatique'],
+      };
+      for (const [type, keywords] of Object.entries(filterMap)) {
+        if (keywords.some(k => text.includes(k))) {
+          toggleFilter(type, true);
+        }
+      }
+
+      const radiusMatch = text.match(/rayon (\d+)/);
+      if (radiusMatch) {
+        const km = Math.min(25, Math.max(2, parseInt(radiusMatch[1])));
+        currentRadius = km;
+        document.getElementById('radius-slider').value = km;
+        document.getElementById('radius-val').textContent = km;
+      }
+
+      if (/cherche|recherche|trouve|lance/.test(text)) search();
+    }
+
+    // ── Utilitaires UI ────────────────────────────────────────
+    function toast(msg, type = 'info') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.textContent = msg;
+      c.appendChild(t);
+      requestAnimationFrame(() => t.classList.add('toast-show'));
+      setTimeout(() => {
+        t.classList.remove('toast-show');
+        t.addEventListener('transitionend', () => t.remove(), { once: true });
+      }, 3500);
+    }
+
+    function showLoading(on) {
+      const dot    = document.getElementById('rd-dot');
+      const loader = document.getElementById('loading-indicator');
+      const idle   = document.getElementById('results-count');
+      if (on) {
+        dot.className = 'rd-dot loading';
+        loader.classList.remove('hidden');
+        idle.classList.add('hidden');
+      } else {
+        dot.className = 'rd-dot active';
+        loader.classList.add('hidden');
+        idle.classList.remove('hidden');
+      }
+    }
+
+    function toggleFilter(type, forceOn) {
+      const chip = document.querySelector(`.chip[data-type="${type}"]`);
+      if (!chip) return;
+      const next = forceOn !== undefined ? forceOn : !activeFilters.has(type);
+      if (next) { activeFilters.add(type); chip.classList.add('active'); chip.setAttribute('aria-pressed', 'true'); }
+      else       { activeFilters.delete(type); chip.classList.remove('active'); chip.setAttribute('aria-pressed', 'false'); }
+      renderResults();
+      renderMapMarkers();
+    }
+
+    function labelForType(type) {
+      return { camping: 'Camping', coworking: 'Coworking', douche: 'Douche / Piscine', entreprise: 'Entreprise', warmshowers: 'WarmShowers' }[type] || type;
+    }
+
+    function escHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function skeletonHTML(n) {
+      return Array.from({ length: n }, () =>
+        '<li class="skeleton-item"><div class="skel-line skel-w70"></div><div class="skel-line skel-w45"></div></li>'
+      ).join('');
+    }
+
+    function hintHTML() {
+      return `<li class="rd-hint">
+        <i class="fas fa-crosshairs"></i>
+        <strong>Radar Terrain</strong>
+        <span>Sélectionnez une étape dans le menu ou cliquez sur<br><em>📍 Je suis ici</em> pour lancer la recherche</span>
+      </li>`;
+    }
+
+    // ── Tabs switching ────────────────────────────────────────
+    function switchTab(tabName) {
+      document.querySelectorAll('.rd-tab').forEach(t => {
+        t.classList.toggle('rd-tab--active', t.dataset.tab === tabName);
+        t.setAttribute('aria-selected', t.dataset.tab === tabName ? 'true' : 'false');
+      });
+      document.querySelectorAll('.rd-tab-content').forEach(c => {
+        c.classList.toggle('rd-tab-content--active', c.id === 'tab-' + tabName);
+      });
+      // Refresh map when switching back to carte tab
+      if (tabName === 'carte' && leafletMap) {
+        setTimeout(() => leafletMap.invalidateSize(), 100);
+      }
+    }
+
+    // ── Boot ──────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      initVoice();
+
+      // Tab switching
+      document.querySelectorAll('.rd-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      });
+
+      // En dev : charger automatiquement les mocks sur Fontenay-lès-Briis
+      if (IS_DEV) {
+        document.getElementById('results-list').innerHTML = hintHTML();
+        currentLat = 48.638;
+        currentLon = 2.094;
+        document.getElementById('etape-select').value = '48.638,2.094';
+        showMapInfo('🧪', 'Mode Dev — données mock activées', 'info', 3000);
+        setTimeout(() => search(), 300);
+      } else {
+        document.getElementById('results-list').innerHTML = hintHTML();
+      }
+
+      // Bouton géolocalisation
+      document.getElementById('btn-locate').addEventListener('click', locateMe);
+
+      // Bouton voix
+      document.getElementById('btn-voice').addEventListener('click', () => {
+        if (!recognition) { toast('🎤 Non supporté sur ce navigateur', 'error'); return; }
+        toast('🎤 Parlez maintenant…');
+        try { recognition.start(); } catch { recognition.stop(); setTimeout(() => recognition.start(), 200); }
+      });
+
+      // Sélecteur d'étape
+      document.getElementById('etape-select').addEventListener('change', e => {
+        if (!e.target.value) return;
+        const [lat, lon] = e.target.value.split(',').map(Number);
+        currentLat = lat;
+        currentLon = lon;
+        const label = e.target.options[e.target.selectedIndex].text;
+        showMapInfo('📍', `Étape : ${label}`, 'info', 2500);
+        search();
+      });
+
+      // Slider rayon
+      const slider = document.getElementById('radius-slider');
+      slider.addEventListener('input', () => {
+        currentRadius = parseInt(slider.value);
+        document.getElementById('radius-val').textContent = currentRadius;
+      });
+      slider.addEventListener('change', () => {
+        if (currentLat !== null) search();
+      });
+
+      // Chips filtres
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => toggleFilter(chip.dataset.type));
+      });
+
+      // Modal évaluation — sliders live
+      ['proprete', 'accueil', 'securite', 'prix'].forEach(k => {
+        document.getElementById(`eval-${k}`).addEventListener('input', e => {
+          document.getElementById(`val-${k}`).textContent = e.target.value;
+        });
+      });
+
+      // Sauvegarder éval
+      document.getElementById('eval-save').addEventListener('click', () => {
+        if (!currentEvalId) return;
+        saveEval(currentEvalId, {
+          proprete: parseInt(document.getElementById('eval-proprete').value),
+          accueil:  parseInt(document.getElementById('eval-accueil').value),
+          securite: parseInt(document.getElementById('eval-securite').value),
+          prix:     parseInt(document.getElementById('eval-prix').value),
+          note:     document.getElementById('eval-note').value.trim(),
+        });
+        document.getElementById('eval-modal').classList.add('hidden');
+        toast('✅ Évaluation sauvegardée en local');
+        renderResults();
+      });
+
+      // Fermer modal
+      document.getElementById('modal-close').addEventListener('click', () => {
+        document.getElementById('eval-modal').classList.add('hidden');
+      });
+      document.getElementById('eval-modal').addEventListener('click', e => {
+        if (e.target === document.getElementById('eval-modal')) {
+          document.getElementById('eval-modal').classList.add('hidden');
+        }
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.getElementById('eval-modal').classList.add('hidden');
+      });
+    });
+
+  })();
+  </script>
+
+  <style is:global>
+  /* ============================================================
+     RADAR TERRAIN — Design system admin-style OceanPhenix
+  ============================================================ */
+
+  /* ── Layout racine ───────────────────────────────────────── */
+  .radar-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 5rem);
+  }
+
+  /* ── Hero section (cohérent strava/terrain) ─────────── */
+  .rd-hero {
+    text-align: center;
+    padding: 1.2rem 1rem 0.5rem;
+  }
+
+  /* ── Toolbar ────────────────────────────────────────────── */
+  .rd-header {
+    flex-shrink: 0;
+    background: rgba(12, 20, 36, 0.92);
+    border-bottom: 1px solid rgba(45, 130, 170, 0.12);
+    padding: 10px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+  }
+
+  .rd-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .rd-select {
+    min-width: 150px;
+    max-width: 220px;
+    padding: 7px 12px;
+    background: rgba(26, 51, 82, 0.8);
+    color: var(--text-light);
+    border: 1px solid rgba(45, 130, 170, 0.25);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+  }
+  .rd-select:focus { outline: none; border-color: var(--accent-cyan); }
+
+  .rd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: var(--transition-fast);
+    border: 1px solid transparent;
+  }
+  .rd-btn--primary {
+    background: var(--accent-cyan);
+    color: #0b1a2e;
+    border-color: var(--accent-cyan);
+  }
+  .rd-btn--primary:hover { background: var(--accent-light-cyan); border-color: var(--accent-light-cyan); }
+
+  .rd-btn--ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: rgba(45, 130, 170, 0.25);
+  }
+  .rd-btn--ghost:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .rd-btn--ghost:disabled { opacity: .35; cursor: not-allowed; }
+  .rd-btn--full { width: 100%; justify-content: center; }
+
+  .rd-radius-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .rd-radius-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .rd-radius-label strong { color: var(--accent-cyan); font-weight: 700; }
+  #radius-slider {
+    width: 90px;
+    accent-color: var(--accent-cyan);
+    cursor: pointer;
+  }
+
+  .rd-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .rd-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    transition: background .3s;
+  }
+  .rd-dot.active  { background: var(--status-ok); box-shadow: 0 0 6px var(--status-ok); }
+  .rd-dot.loading { background: var(--accent-cyan); animation: pulse-dot 1s ease infinite; }
+  .rd-dot.error   { background: var(--status-err); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .rd-status-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rd-status-label.hidden { display: none; }
+
+  /* ── Container admin-style ─────────────────────────────── */
+  .rd-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 var(--spacing-sm) 2rem;
+    flex: 1;
+  }
+
+  /* ── Tabs — inspiré admin-terrain ──────────────────────── */
+  .rd-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(45, 130, 170, 0.12);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rd-tabs::-webkit-scrollbar { display: none; }
+
+  .rd-tab {
+    padding: 0.65rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .rd-tab:hover { color: var(--text-light); }
+  .rd-tab--active {
+    color: var(--accent-cyan);
+    border-bottom-color: var(--accent-cyan);
+  }
+
+  .rd-tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--dot-color, #888);
+    opacity: .5;
+    transition: opacity .2s;
+    flex-shrink: 0;
+  }
+  .rd-tab--active .rd-tab-dot { opacity: 1; box-shadow: 0 0 5px var(--dot-color, #888); }
+
+  .rd-tab-count {
+    font-size: 0.65rem;
+    background: rgba(77, 184, 212, 0.12);
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    color: var(--accent-cyan);
+    border-radius: var(--radius-full);
+    padding: 0 6px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .rd-tab-content { display: none; }
+  .rd-tab-content--active { display: block; }
+
+  /* ── Card — admin-style ────────────────────────────────── */
+  .rd-card {
+    background: rgba(12, 20, 36, 0.8);
+    border: 1px solid rgba(45, 130, 170, 0.1);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .rd-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .rd-card-header h3 {
+    font-size: var(--text-lg);
+    color: var(--text-light);
+    margin: 0;
+    font-weight: 700;
+  }
+  .rd-card-header h3 i {
+    margin-right: 0.4rem;
+  }
+
+  .rd-card-hint {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    letter-spacing: var(--ls-label);
+  }
+
+  .rd-card-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Carte ─────────────────────────────────────────────── */
+  .rd-map-frame {
+    height: 45vh;
+    min-height: 320px;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(45, 130, 170, 0.1);
+    position: relative;
+  }
+
+  /* ── Overlay centré sur la carte ──────────────────────── */
+  .map-info-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: var(--radius-full);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-primary);
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 88%;
+    box-shadow: 0 4px 24px rgba(0,0,0,.45);
+    transition: opacity .25s ease, transform .25s ease;
+    opacity: 1;
+  }
+
+  /* États */
+  .map-info-overlay--hidden {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 8px));
+    pointer-events: none;
+  }
+  .map-info-overlay--info,
+  .map-info-overlay--loading {
+    background: rgba(12, 24, 44, 0.88);
+    border: 1px solid rgba(77, 184, 212, 0.35);
+    color: var(--text-light);
+  }
+  .map-info-overlay--loading #map-info-icon {
+    display: inline-block;
+    animation: spin-slow 1.2s linear infinite;
+  }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  .map-info-overlay--success {
+    background: rgba(10, 36, 20, 0.9);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+  }
+  .map-info-overlay--error {
+    background: rgba(44, 10, 10, 0.9);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+  }
+  #map-info-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+  #radar-map {
+    width: 100%;
+    height: 100%;
+    filter: brightness(.78) saturate(.55) hue-rotate(4deg);
+    transition: filter .3s;
+  }
+  .rd-map-frame:hover #radar-map {
+    filter: brightness(.88) saturate(.65) hue-rotate(4deg);
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip   { filter: brightness(1.65) saturate(2.5); }
+  .leaflet-control-zoom { filter: brightness(1.65) saturate(2.5); }
+
+  .pos-marker {
+    font-size: 22px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.9));
+    animation: bounce .9s ease infinite alternate;
+  }
+  @keyframes bounce { to { transform: translateY(-5px); } }
+
+  /* ── Chips filtres ─────────────────────────────────────── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(45, 130, 170, 0.2);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+    user-select: none;
+  }
+  .chip-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--dot, #888);
+    opacity: .5;
+    transition: opacity .2s;
+  }
+  .chip.active {
+    border-color: rgba(77, 184, 212, 0.45);
+    background: rgba(77, 184, 212, 0.08);
+    color: var(--text-light);
+  }
+  .chip.active .chip-dot { opacity: 1; box-shadow: 0 0 5px var(--dot, #888); }
+  .chip:hover { border-color: var(--accent-cyan); color: var(--text-light); }
+
+  /* ── Résultats (listes) ────────────────────────────────── */
+  .rd-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 55vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(77,184,212,.2) transparent;
+  }
+
+  .result-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(18, 30, 50, 0.6);
+    border: 1px solid rgba(45, 130, 170, 0.08);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+  }
+  .result-item:hover {
+    border-color: rgba(77, 184, 212, 0.28);
+    background: rgba(18, 30, 50, 0.95);
+  }
+
+  .result-left { flex-shrink: 0; padding-top: 4px; }
+
+  .type-dot {
+    display: block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 7px currentColor;
+  }
+
+  .result-body { flex: 1; min-width: 0; }
+
+  .result-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .result-nom {
+    flex: 1;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .eval-badge {
+    font-size: 0.68rem;
+    background: rgba(226, 249, 76, 0.12);
+    border: 1px solid rgba(226, 249, 76, 0.25);
+    color: #e2f94c;
+    border-radius: var(--radius-sm);
+    padding: 1px 5px;
+    flex-shrink: 0;
+  }
+
+  .result-dist {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--accent-cyan);
+    flex-shrink: 0;
+    background: rgba(77, 184, 212, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(77, 184, 212, 0.15);
+  }
+
+  .result-adresse, .result-meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .result-source {
+    font-size: 0.65rem;
+    color: rgba(143, 163, 184, 0.45);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .result-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(45, 130, 170, 0.2);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-fast);
+    line-height: 1.4;
+  }
+  .result-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+  .btn-go   { border-color: rgba(61, 232, 160, 0.35); color: #3de8a0; }
+  .btn-go:hover { background: rgba(61, 232, 160, 0.08); border-color: #3de8a0; color: #3de8a0; }
+  .btn-fiche { border-color: rgba(226, 249, 76, 0.3); color: #e2f94c; }
+  .btn-fiche:hover { background: rgba(226, 249, 76, 0.08); color: #e2f94c; }
+  .btn-eval { border-color: rgba(77, 184, 212, 0.25); color: var(--accent-cyan); }
+  .btn-eval:hover { background: rgba(77, 184, 212, 0.08); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+  /* Empty / skeleton / hint */
+  .no-results {
+    padding: 32px 16px;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .no-results i { font-size: 1.5rem; opacity: .4; }
+
+  .rd-hint {
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .rd-hint i { font-size: 2rem; opacity: .25; }
+  .rd-hint strong { color: var(--accent-cyan); font-size: var(--text-base); }
+
+  .skeleton-item {
+    padding: 12px 14px;
+    background: rgba(18, 30, 50, 0.6);
+    border: 1px solid rgba(45, 130, 170, 0.06);
+    border-radius: var(--radius-sm);
+  }
+  .skel-line {
+    height: 10px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(77,184,212,.06) 25%, rgba(77,184,212,.14) 50%, rgba(77,184,212,.06) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    margin-bottom: 8px;
+  }
+  .skel-w70 { width: 70%; }
+  .skel-w45 { width: 45%; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* ── Toasts ────────────────────────────────────────────── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: rgba(12, 20, 36, 0.97);
+    border: 1px solid rgba(45, 130, 170, 0.35);
+    color: var(--text-light);
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .2s, transform .2s;
+    backdrop-filter: blur(10px);
+    max-width: 88vw;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+  .toast-show { opacity: 1; transform: translateY(0); }
+  .toast-error { border-color: rgba(239,68,68,.45); color: #fca5a5; }
+
+  /* ── Modal évaluation ──────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .modal-overlay.hidden { display: none; }
+
+  .modal-sheet {
+    background: rgba(18, 32, 52, 0.98);
+    border: 1px solid rgba(45, 130, 170, 0.2);
+    border-bottom: none;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 20px 20px 36px;
+    width: 100%;
+    max-width: 520px;
+    position: relative;
+    max-height: 88dvh;
+    overflow-y: auto;
+    box-shadow: 0 -8px 40px rgba(0,0,0,.5);
+  }
+
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: rgba(77, 184, 212, 0.25);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+  }
+  .modal-close:hover { color: var(--text-light); background: rgba(255,255,255,.12); }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .modal-icon {
+    width: 36px; height: 36px;
+    background: rgba(77, 184, 212, 0.1);
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-cyan);
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .modal-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-light);
+    margin: 0 0 2px;
+  }
+
+  .modal-subtitle {
+    font-size: var(--text-sm);
+    color: var(--accent-cyan);
+    margin: 0;
+  }
+
+  .eval-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .eval-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .eval-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slider-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent-cyan);
+    cursor: pointer;
+  }
+  .slider-val {
+    width: 20px;
+    text-align: right;
+    color: var(--accent-cyan);
+    font-weight: 700;
+    font-size: var(--text-sm);
+  }
+
+  .eval-field--full textarea {
+    width: 100%;
+    background: rgba(10, 18, 32, 0.8);
+    border: 1px solid rgba(45, 130, 170, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--text-light);
+    padding: 8px 10px;
+    font-size: var(--text-sm);
+    font-family: var(--font-primary);
+    resize: vertical;
+    transition: border-color var(--transition-fast);
+  }
+  .eval-field--full textarea:focus {
+    outline: none;
+    border-color: var(--accent-cyan);
+  }
+
+  /* ── Responsive ────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    .rd-header { padding: 8px 12px; margin: 0 8px 0.5rem; }
+    .rd-toolbar { gap: 6px; }
+    .rd-select { min-width: 120px; max-width: none; flex: 1; }
+    .rd-radius-inline { margin-left: 0; width: 100%; }
+    #radius-slider { flex: 1; }
+    .rd-container { padding: 0 8px; }
+    .rd-tabs { gap: 0; }
+    .rd-tab { padding: 0.5rem 0.7rem; font-size: var(--text-xs); }
+    .rd-card { padding: 0.8rem; }
+    .rd-map-frame { height: 38vh; min-height: 250px; }
+    .rd-list { max-height: 45vh; gap: 6px; }
+    .result-item { padding: 10px; gap: 8px; }
+  }
+
+  /* ── Light theme ────────────────────────────────────────── */
+  [data-theme="light"] .rd-header    { background: rgba(234,241,247,.95); border-color: rgba(26,127,160,.15); }
+  [data-theme="light"] .rd-select    { background: #fff; color: #1a2535; border-color: rgba(26,127,160,.25); }
+  [data-theme="light"] .rd-btn--ghost { color: #4a6275; border-color: rgba(26,127,160,.2); }
+  [data-theme="light"] .rd-tabs      { border-color: rgba(26,127,160,.12); }
+  [data-theme="light"] .rd-tab:hover { color: #1a2535; }
+  [data-theme="light"] .rd-tab--active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+  [data-theme="light"] .rd-card      { background: rgba(255,255,255,.85); border-color: rgba(26,127,160,.12); }
+  [data-theme="light"] .rd-card-header h3 { color: #1a2535; }
+  [data-theme="light"] .chip.active  { background: rgba(26,127,160,.1); border-color: #1a7fa0; color: #1a2535; }
+  [data-theme="light"] .result-item  { background: rgba(255,255,255,.8); border-color: rgba(26,127,160,.1); }
+  [data-theme="light"] .result-nom   { color: #1a2535; }
+  [data-theme="light"] #radar-map    { filter: brightness(.95) saturate(.7); }
+  [data-theme="light"] .modal-sheet  { background: rgba(234,241,247,.99); border-color: rgba(26,127,160,.2); }
+  [data-theme="light"] .rd-map-frame { border-color: rgba(26,127,160,.12); }
+
+  /* toast-info (toast default type) */
+  .toast-info { border-color: rgba(77, 184, 212, 0.45); color: var(--text-light); }
+  </style>
+
+</BaseLayout>
