@@ -364,7 +364,6 @@ import OceanBackground from '../components/OceanBackground.astro';
       coworking:  '#8b5cf6',
       entreprise: '#f59e0b',
       evenement:  '#f43f5e',
-      warmshowers: '#ff8c42',
     };
     // Coworkings statiques enrichis
     const COWORKINGS_STATIC = [
@@ -502,9 +501,6 @@ import OceanBackground from '../components/OceanBackground.astro';
         (
           node["tourism"="camp_site"](around:${radiusM},${lat},${lon});
           way["tourism"="camp_site"](around:${radiusM},${lat},${lon});
-          node["amenity"="shower"](around:${radiusM},${lat},${lon});
-          node["leisure"="swimming_pool"]["access"!="private"](around:${radiusM},${lat},${lon});
-          way["leisure"="swimming_pool"]["access"!="private"](around:${radiusM},${lat},${lon});
           node["amenity"="coworking_space"](around:${radiusM},${lat},${lon});
           way["amenity"="coworking_space"](around:${radiusM},${lat},${lon});
         );
