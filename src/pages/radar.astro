@@ -3,7 +3,7 @@
 // Localise en temps réel : campings, coworkings, douches, entreprises data/IT
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
-
+import CguModal from '../components/CguModal.astro';
 import OceanBackground from '../components/OceanBackground.astro';
 ---
 
@@ -273,7 +273,20 @@ import OceanBackground from '../components/OceanBackground.astro';
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- MICRO-FOOTER intégré (page outil plein écran)         -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <footer class="rd-footer">
+      <span class="rd-footer-copy">© 2025–2026 <strong>OceanPhenix™</strong> · Stéphane Celton</span>
+      <span class="rd-footer-sep">·</span>
+      <span class="rd-footer-project"><i class="fas fa-bicycle"></i> TourData 2026</span>
+      <span class="rd-footer-sep">·</span>
+      <a href="#" id="cgu-link" class="rd-footer-link">CGU &amp; RGPD</a>
+    </footer>
+
   </main>
+
+  <CguModal />
 
   <!-- Leaflet JS (local, cohérent avec terrain/strava) -->
   <script is:inline src="/lib/leaflet.min.js"></script>
@@ -1749,6 +1762,37 @@ import OceanBackground from '../components/OceanBackground.astro';
     .rd-map-frame { height: 38vh; min-height: 250px; }
     .rd-list { max-height: 45vh; gap: 6px; }
     .result-item { padding: 10px; gap: 8px; }
+  }
+
+  /* ── Micro-footer ──────────────────────────────────────── */
+  .rd-footer {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: rgba(8, 15, 28, 0.97);
+    border-top: 1px solid rgba(45, 130, 170, 0.12);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .rd-footer-copy  { color: var(--text-muted); }
+  .rd-footer-copy strong { color: var(--accent-cyan); font-weight: 600; }
+  .rd-footer-sep   { color: rgba(143, 163, 184, 0.3); }
+  .rd-footer-project { color: var(--text-muted); }
+  .rd-footer-project i { color: #e2f94c; margin-right: 3px; }
+  .rd-footer-link  {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+  .rd-footer-link:hover { color: var(--accent-cyan); }
+
+  @media (max-width: 400px) {
+    .rd-footer-project { display: none; }
   }
 
   /* ── Light theme ────────────────────────────────────────── */
