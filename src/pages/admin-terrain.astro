@@ -793,6 +793,41 @@ import etapesData from '../data/terrain-etapes.json';
             </div>
           </div>
         </div>
+
+        <!-- Section: Publication serveur -->
+        <div class="admin-card">
+          <h2><i class="fas fa-cloud-upload-alt"></i> Publier sur le serveur</h2>
+          <p class="admin-hint">
+            <i class="fas fa-info-circle"></i>
+            Envoie les 3 listes vers <code>/data/radar-pro.json</code> sur O2Switch.
+            Visible immédiatement par tous les visiteurs, sans rebuild.
+          </p>
+          <div class="admin-workflow-banner" style="margin-bottom:1rem;">
+            <i class="fas fa-pen wf-icon"></i>
+            <span class="wf-item"><span class="wf-n">1</span> Saisir les données</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-item wf-item--key"><span class="wf-n">2</span> Publier</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-item"><span class="wf-n">3</span> Visible sur <code>/radar</code></span>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group" style="flex:1;">
+              <label>Clé d'upload <small style="opacity:.6;">(définie dans <code>radar-pro-save.php</code>)</small></label>
+              <input type="password" id="rp-upload-secret" placeholder="op-radar-pro-2026-…" autocomplete="off" />
+            </div>
+            <div class="admin-form-group" style="flex:0;align-self:flex-end;">
+              <button id="rp-publish-btn" class="admin-btn admin-btn--deploy">
+                <i class="fas fa-cloud-upload-alt"></i> Publier Radar Pro
+              </button>
+            </div>
+          </div>
+          <div id="rp-publish-result" style="display:none;margin-top:0.75rem;" class="admin-strava-result"></div>
+          <p class="admin-hint" style="margin-top:0.75rem;">
+            <i class="fas fa-key" style="color:var(--accent-cyan)"></i>
+            &nbsp;Clé par défaut : <code>op-radar-pro-2026-oceanphenix</code> — à changer dans le PHP avant upload.
+          </p>
+        </div>
+
       </div>
 
       <!-- ============================== -->

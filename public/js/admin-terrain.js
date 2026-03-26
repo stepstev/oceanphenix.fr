@@ -1611,4 +1611,61 @@
 
   loadRpData();
 
+  // ── Publication vers serveur ─────────────────────────────
+  var RP_SECRET_LS = 'op-radar-upload-secret';
+
+  (function () {
+    var secretInput = document.getElementById('rp-upload-secret');
+    var publishBtn  = document.getElementById('rp-publish-btn');
+    var resultEl    = document.getElementById('rp-publish-result');
+    if (!secretInput || !publishBtn) return;
+
+    // Restaurer la clé mémorisée
+    secretInput.value = localStorage.getItem(RP_SECRET_LS) || '';
+    secretInput.addEventListener('change', function () {
+      localStorage.setItem(RP_SECRET_LS, secretInput.value.trim());
+    });
+
+    publishBtn.addEventListener('click', function () {
+      var secret = secretInput.value.trim();
+      if (!secret) { alert('Entrez la clé d\'upload (définie dans radar-pro-save.php)'); return; }
+      localStorage.setItem(RP_SECRET_LS, secret);
+
+      publishBtn.disabled = true;
+      publishBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication\u2026';
+      resultEl.style.display = '';
+      resultEl.className = 'admin-strava-result info';
+      resultEl.textContent = 'Envoi en cours\u2026';
+
+      fetch('/api/radar-pro-save.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secret:      secret,
+          entreprises: rpEnts,
+          salons:      rpSalons,
+          events:      rpEvts,
+        })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.error) throw new Error(d.error);
+          resultEl.className = 'admin-strava-result ok';
+          resultEl.innerHTML = '<i class="fas fa-check-circle"></i> Publié \u2014 '
+            + d.counts.entreprises + ' entreprise(s), '
+            + d.counts.salons + ' salon(s), '
+            + d.counts.events + ' \u00e9v\u00e9nement(s)'
+            + ' \u2014 ' + new Date(d.updated_at).toLocaleString('fr-FR');
+        })
+        .catch(function (e) {
+          resultEl.className = 'admin-strava-result error';
+          resultEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + e.message;
+        })
+        .finally(function () {
+          publishBtn.disabled = false;
+          publishBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Publier Radar Pro';
+        });
+    });
+  })();
+
 })();

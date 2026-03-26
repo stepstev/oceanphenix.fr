@@ -591,10 +591,22 @@ import OceanBackground from '../components/OceanBackground.astro';
     // ── Données curées admin (localStorage) ───────────────────
     let adminProData = { entreprises: [], salons: [], events: [] };
 
-    function loadAdminProData() {
+    async function loadAdminProData() {
+      // Fallback localStorage (données admin locales)
       try { adminProData.entreprises = JSON.parse(localStorage.getItem('op-radar-entreprises') || '[]'); } catch(e) { adminProData.entreprises = []; }
       try { adminProData.salons      = JSON.parse(localStorage.getItem('op-radar-salons')      || '[]'); } catch(e) { adminProData.salons      = []; }
       try { adminProData.events      = JSON.parse(localStorage.getItem('op-radar-events')      || '[]'); } catch(e) { adminProData.events      = []; }
+
+      // Priorité : fichier serveur publié via admin (visible par tous)
+      try {
+        const resp = await fetch('/data/radar-pro.json', { signal: AbortSignal.timeout(5000) });
+        if (resp.ok) {
+          const d = await resp.json();
+          if (Array.isArray(d.entreprises) && d.entreprises.length) adminProData.entreprises = d.entreprises;
+          if (Array.isArray(d.salons)      && d.salons.length)      adminProData.salons      = d.salons;
+          if (Array.isArray(d.events)      && d.events.length)      adminProData.events      = d.events;
+        }
+      } catch(_) { /* fichier absent ou réseau — localStorage conservé */ }
     }
 
     // ── Mode dev : détection + mock data ──────────────────────
@@ -1422,8 +1434,8 @@ import OceanBackground from '../components/OceanBackground.astro';
     }
 
     // ── Boot ──────────────────────────────────────────────────
-    document.addEventListener('DOMContentLoaded', () => {
-      loadAdminProData();
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadAdminProData();
       initMap();
 
       // Tab switching
