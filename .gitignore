@@ -21,6 +21,9 @@ Thumbs.db
 public/api/strava-env.php
 public/api/strava-cache.json
 
+# Proxy radar — contient la clé OpenAgenda en dur, upload manuel sur serveur
+public/api/radar-proxy.php
+
 # Deploy archive
 dist-deploy.zip
 
