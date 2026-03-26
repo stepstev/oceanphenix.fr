@@ -783,33 +783,9 @@ import OceanBackground from '../components/OceanBackground.astro';
     // ── Sources de données ────────────────────────────────────
 
     async function fetchOverpass(lat, lon, radiusM, signal) {
-      const R = radiusM;
-      const query = `
-        [out:json][timeout:30];
-        (
-          node["tourism"="camp_site"](around:${R},${lat},${lon});
-          way["tourism"="camp_site"](around:${R},${lat},${lon});
-          node["amenity"="coworking_space"](around:${R},${lat},${lon});
-          way["amenity"="coworking_space"](around:${R},${lat},${lon});
-          node["amenity"="shower"](around:${R},${lat},${lon});
-          node["amenity"="drinking_water"](around:${R},${lat},${lon});
-          node["man_made"="water_tap"](around:${R},${lat},${lon});
-          node["leisure"="swimming_pool"]["access"!="private"](around:${R},${lat},${lon});
-          way["leisure"="swimming_pool"]["access"!="private"](around:${R},${lat},${lon});
-          node["sport"="swimming"]["access"!="private"](around:${R},${lat},${lon});
-          node["amenity"="shelter"](around:${R},${lat},${lon});
-          way["amenity"="shelter"](around:${R},${lat},${lon});
-          node["tourism"="wilderness_hut"](around:${R},${lat},${lon});
-          node["tourism"="alpine_hut"](around:${R},${lat},${lon});
-        );
-        out center;
-      `;
-      const resp = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: query,
-        signal: signal ?? AbortSignal.timeout(25000),
-      });
+      const radiusKm = Math.round(radiusM / 1000);
+      const url = `/api/radar-proxy.php?type=overpass&lat=${lat}&lon=${lon}&radius=${radiusKm}&mode=${currentMode}`;
+      const resp = await fetch(url, { signal: signal ?? AbortSignal.timeout(25000) });
       if (!resp.ok) throw new Error(`Overpass HTTP ${resp.status}`);
       const data = await resp.json();
 
