@@ -609,6 +609,8 @@ import OceanBackground from '../components/OceanBackground.astro';
     let currentMode = 'pro';
     let activeFilters = new Set(); // Initialisé par applyView('pro') au boot
     let allResults = [];
+    let searchAbortController = null; // Annule les requêtes en cours si nouvelle recherche
+    let modeChangeTimer = null;       // Debounce changement de mode
     let leafletMap = null;
     let mapClusters = {};     // cluster group par type
     let posMarker   = null;   // marqueur position actuelle
@@ -780,7 +782,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
     // ── Sources de données ────────────────────────────────────
 
-    async function fetchOverpass(lat, lon, radiusM) {
+    async function fetchOverpass(lat, lon, radiusM, signal) {
       const R = radiusM;
       const query = `
         [out:json][timeout:30];
@@ -806,7 +808,7 @@ import OceanBackground from '../components/OceanBackground.astro';
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: query,
-        signal: AbortSignal.timeout(25000),
+        signal: signal ?? AbortSignal.timeout(25000),
       });
       if (!resp.ok) throw new Error(`Overpass HTTP ${resp.status}`);
       const data = await resp.json();
@@ -855,9 +857,9 @@ import OceanBackground from '../components/OceanBackground.astro';
       }).filter(r => r.type !== 'autre');
     }
 
-    async function fetchCampingsGouv(lat, lon, radiusKm) {
+    async function fetchCampingsGouv(lat, lon, radiusKm, signal) {
       const url = `/api/radar-proxy.php?type=campings&lat=${lat}&lon=${lon}&radius=${radiusKm}`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      const resp = await fetch(url, { signal: signal ?? AbortSignal.timeout(15000) });
       if (!resp.ok) throw new Error(`Campings proxy HTTP ${resp.status}`);
       const data = await resp.json();
 
@@ -876,11 +878,11 @@ import OceanBackground from '../components/OceanBackground.astro';
         }));
     }
 
-    async function fetchEntreprises(lat, lon) {
+    async function fetchEntreprises(lat, lon, signal) {
       // 1. Code département via proxy (évite appel direct depuis mobile)
       const geoResp = await fetch(
         `/api/radar-proxy.php?type=commune&lat=${lat}&lon=${lon}`,
-        { signal: AbortSignal.timeout(8000) }
+        { signal: signal ?? AbortSignal.timeout(8000) }
       );
       if (!geoResp.ok) throw new Error(`Commune proxy HTTP ${geoResp.status}`);
       const geoData = await geoResp.json();
@@ -890,7 +892,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       // 2. Entreprises via proxy (le proxy gère les 5 codes NAF côté serveur)
       const entResp = await fetch(
         `/api/radar-proxy.php?type=entreprises&dept=${encodeURIComponent(dept)}`,
-        { signal: AbortSignal.timeout(20000) }
+        { signal: signal ?? AbortSignal.timeout(20000) }
       );
       if (!entResp.ok) throw new Error(`Entreprises proxy HTTP ${entResp.status}`);
       const entData = await entResp.json();
@@ -935,9 +937,9 @@ import OceanBackground from '../components/OceanBackground.astro';
         }));
     }
 
-    async function fetchEvents(lat, lon, radiusKm) {
+    async function fetchEvents(lat, lon, radiusKm, signal) {
       const url = `/api/radar-proxy.php?type=events&lat=${lat}&lon=${lon}&radius=${radiusKm}`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      const resp = await fetch(url, { signal: signal ?? AbortSignal.timeout(15000) });
       if (!resp.ok) throw new Error(`Events HTTP ${resp.status}`);
       const data = await resp.json();
       if (data.error || !data.events) return [];
@@ -1256,6 +1258,11 @@ import OceanBackground from '../components/OceanBackground.astro';
     async function search() {
       if (currentLat === null || currentLon === null) return;
 
+      // Annuler toute recherche en cours
+      if (searchAbortController) searchAbortController.abort();
+      searchAbortController = new AbortController();
+      const signal = searchAbortController.signal;
+
       showLoading(true);
       clearMapMarkers();
       // Show skeletons in all lists
@@ -1285,19 +1292,22 @@ import OceanBackground from '../components/OceanBackground.astro';
 
       // Appels conditionnels selon le mode — évite les timeouts inutiles
       const promises = [
-        fetchOverpass(currentLat, currentLon, radiusM),                                    // toujours
-        isCyclo ? fetchCampingsGouv(currentLat, currentLon, currentRadius) : Promise.resolve([]),
-        isCyclo ? Promise.resolve([]) : fetchEntreprises(currentLat, currentLon),
+        fetchOverpass(currentLat, currentLon, radiusM, signal),
+        isCyclo ? fetchCampingsGouv(currentLat, currentLon, currentRadius, signal) : Promise.resolve([]),
+        isCyclo ? Promise.resolve([]) : fetchEntreprises(currentLat, currentLon, signal),
         isCyclo ? Promise.resolve([]) : Promise.resolve(getCoworkingsNearby(currentLat, currentLon, currentRadius)),
-        isCyclo ? Promise.resolve([]) : fetchEvents(currentLat, currentLon, currentRadius),
+        isCyclo ? Promise.resolve([]) : fetchEvents(currentLat, currentLon, currentRadius, signal),
       ];
 
       const [resOverpass, resCampings, resEntreprises, resCw, resEvents] = await Promise.allSettled(promises);
 
-      if (resOverpass.status    === 'rejected') console.warn('Overpass:', resOverpass.reason);
-      if (resCampings.status    === 'rejected') console.warn('Atout France:', resCampings.reason);
-      if (resEntreprises.status === 'rejected') console.warn('INSEE SIRENE:', resEntreprises.reason);
-      if (resEvents.status      === 'rejected') console.warn('OpenAgenda:', resEvents.reason);
+      // Requête annulée — une nouvelle recherche a déjà démarré
+      if (signal.aborted) return;
+
+      if (resOverpass.status    === 'rejected' && resOverpass.reason?.name !== 'AbortError') console.warn('Overpass:', resOverpass.reason);
+      if (resCampings.status    === 'rejected' && resCampings.reason?.name !== 'AbortError') console.warn('Atout France:', resCampings.reason);
+      if (resEntreprises.status === 'rejected' && resEntreprises.reason?.name !== 'AbortError') console.warn('INSEE SIRENE:', resEntreprises.reason);
+      if (resEvents.status      === 'rejected' && resEvents.reason?.name !== 'AbortError') console.warn('OpenAgenda:', resEvents.reason);
 
       const raw = [
         ...(resOverpass.status    === 'fulfilled' ? resOverpass.value    : []),
@@ -1743,7 +1753,10 @@ import OceanBackground from '../components/OceanBackground.astro';
         }
 
         // 7. Relancer la recherche — les sources de données diffèrent selon le mode
-        if (currentLat !== null && currentLon !== null) search();
+        if (currentLat !== null && currentLon !== null) {
+          clearTimeout(modeChangeTimer);
+          modeChangeTimer = setTimeout(() => search(), 300);
+        }
       }
 
       document.querySelectorAll('.rd-mode-btn').forEach(btn => {
