@@ -1611,7 +1611,95 @@
 
   loadRpData();
 
-  // ── Publication vers serveur ─────────────────────────────
+  // ═══════════════════════════════════════════════════════════
+  // PUBLICATION UNIFIÉE — "Publier tout" → /api/admin-save.php
+  // ═══════════════════════════════════════════════════════════
+  var ADMIN_SECRET_LS = 'op-admin-secret';
+
+  function collectAllData() {
+    // Terrain
+    var terrain = null;
+    try { terrain = JSON.parse(localStorage.getItem('op-terrain-admin') || 'null'); } catch(e) { terrain = null; }
+    var terrainClean = terrain ? {
+      isPublic:         terrain.isPublic !== false,
+      dashboard:        terrain.dashboard        || {},
+      positionActuelle: terrain.positionActuelle || {},
+      projet:           terrain.projet           || {},
+      etapes:           terrain.etapes           || [],
+      journal:          terrain.journal          || []
+    } : {};
+
+    // Coworking
+    var coworking = [];
+    try { coworking = JSON.parse(localStorage.getItem('op-terrain-coworking') || '[]'); } catch(e) { coworking = []; }
+
+    return {
+      terrain:   terrainClean,
+      coworking: coworking,
+      radar: {
+        entreprises: rpEnts,
+        salons:      rpSalons,
+        events:      rpEvts
+      }
+    };
+  }
+
+  function publishAll() {
+    var secret = localStorage.getItem(ADMIN_SECRET_LS) || '';
+    if (!secret) {
+      secret = prompt('Clé de publication (définie dans admin-save.php) :');
+      if (!secret) return;
+      localStorage.setItem(ADMIN_SECRET_LS, secret.trim());
+    }
+
+    var btn      = document.getElementById('admin-publish-btn');
+    var statusEl = document.getElementById('admin-publish-status');
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publication\u2026';
+    if (statusEl) { statusEl.style.display = ''; statusEl.className = 'admin-publish-status admin-publish-status--loading'; statusEl.textContent = 'Envoi\u2026'; }
+
+    var payload = collectAllData();
+    payload.secret = secret;
+
+    fetch('/api/admin-save.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d.error) throw new Error(d.error);
+        var ts = d.updated_at ? new Date(d.updated_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+        if (statusEl) {
+          statusEl.className = 'admin-publish-status admin-publish-status--ok';
+          statusEl.innerHTML = '\u2713 ' + ts + ' \u2014 ' + (d.summary || '');
+        }
+        showToast('\u2705 Site publié sur O2Switch');
+      })
+      .catch(function (e) {
+        // Si clé incorrecte, effacer pour forcer re-saisie
+        if (e.message.includes('Clé') || e.message.includes('403')) localStorage.removeItem(ADMIN_SECRET_LS);
+        if (statusEl) {
+          statusEl.className = 'admin-publish-status admin-publish-status--err';
+          statusEl.innerHTML = '\u26a0 ' + e.message;
+        }
+        showToast('\u274c Publication échouée : ' + e.message);
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Publier tout';
+      });
+  }
+
+  (function () {
+    var btn = document.getElementById('admin-publish-btn');
+    if (btn) btn.addEventListener('click', publishAll);
+    // Restaurer le statut de la dernière publication si connue
+    // (rien à faire — le statut n'est pas persisté entre sessions)
+  })();
+
+  // ── Publication Radar Pro (ancien bouton — maintenant délégue à publishAll) ──
   var RP_SECRET_LS = 'op-radar-upload-secret';
 
   (function () {

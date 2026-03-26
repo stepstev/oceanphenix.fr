@@ -592,12 +592,26 @@ import OceanBackground from '../components/OceanBackground.astro';
     let adminProData = { entreprises: [], salons: [], events: [] };
 
     async function loadAdminProData() {
-      // Fallback localStorage (données admin locales)
+      // Fallback localStorage (données admin locales — prioritaires sur l'admin lui-même)
       try { adminProData.entreprises = JSON.parse(localStorage.getItem('op-radar-entreprises') || '[]'); } catch(e) { adminProData.entreprises = []; }
       try { adminProData.salons      = JSON.parse(localStorage.getItem('op-radar-salons')      || '[]'); } catch(e) { adminProData.salons      = []; }
       try { adminProData.events      = JSON.parse(localStorage.getItem('op-radar-events')      || '[]'); } catch(e) { adminProData.events      = []; }
 
-      // Priorité : fichier serveur publié via admin (visible par tous)
+      // Fichier serveur unifié → prioritaire pour les visiteurs publics
+      // Essaie d'abord site-data.json (nouveau), puis radar-pro.json (compat)
+      try {
+        const resp = await fetch('/data/site-data.json', { signal: AbortSignal.timeout(5000) });
+        if (resp.ok) {
+          const d = await resp.json();
+          const r = d.radar || {};
+          if (Array.isArray(r.entreprises) && r.entreprises.length) adminProData.entreprises = r.entreprises;
+          if (Array.isArray(r.salons)      && r.salons.length)      adminProData.salons      = r.salons;
+          if (Array.isArray(r.events)      && r.events.length)      adminProData.events      = r.events;
+          return; // site-data.json OK → pas besoin de radar-pro.json
+        }
+      } catch(_) { /* continuer vers fallback */ }
+
+      // Fallback : ancien radar-pro.json (si site-data.json absent)
       try {
         const resp = await fetch('/data/radar-pro.json', { signal: AbortSignal.timeout(5000) });
         if (resp.ok) {
@@ -606,7 +620,7 @@ import OceanBackground from '../components/OceanBackground.astro';
           if (Array.isArray(d.salons)      && d.salons.length)      adminProData.salons      = d.salons;
           if (Array.isArray(d.events)      && d.events.length)      adminProData.events      = d.events;
         }
-      } catch(_) { /* fichier absent ou réseau — localStorage conservé */ }
+      } catch(_) { /* localStorage conservé */ }
     }
 
     // ── Mode dev : détection + mock data ──────────────────────

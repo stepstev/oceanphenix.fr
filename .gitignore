@@ -27,6 +27,9 @@ public/api/radar-proxy.php
 # Endpoint upload Radar Pro — contient le secret, upload manuel sur serveur
 public/api/radar-pro-save.php
 
+# Endpoint admin unifié — contient le secret, upload manuel sur serveur
+public/api/admin-save.php
+
 # Deploy archive
 dist-deploy.zip
 

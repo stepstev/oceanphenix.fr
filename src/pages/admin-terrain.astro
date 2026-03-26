@@ -46,6 +46,13 @@ import etapesData from '../data/terrain-etapes.json';
           <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
         </div>
         <div class="admin-topbar-actions">
+          <!-- Publier tout — bouton principal -->
+          <div class="admin-publish-wrap">
+            <button id="admin-publish-btn" class="admin-btn admin-btn--publish" title="Envoie toutes les données vers /data/site-data.json sur O2Switch">
+              <i class="fas fa-cloud-upload-alt"></i> Publier tout
+            </button>
+            <span id="admin-publish-status" class="admin-publish-status" style="display:none;"></span>
+          </div>
           <button id="admin-visibility-btn" class="admin-visibility-btn" title="Basculer la visibilité de la page Terrain">
             <span class="vis-dot"></span>
             <span class="vis-label"></span>
@@ -1496,6 +1503,32 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     color: #fc4c02;
   }
   .admin-btn--deploy:hover { background: rgba(252, 76, 2, 0.22); }
+
+  /* Publier tout */
+  .admin-publish-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .admin-btn--publish {
+    background: rgba(34, 197, 94, 0.12);
+    border: 1.5px solid rgba(34, 197, 94, 0.5);
+    color: #22c55e;
+    font-weight: 700;
+  }
+  .admin-btn--publish:hover { background: rgba(34, 197, 94, 0.22); }
+  .admin-btn--publish:disabled { opacity: 0.5; cursor: wait; }
+  .admin-publish-status {
+    font-size: 0.65rem;
+    max-width: 260px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admin-publish-status--loading { color: #9ab0c4; }
+  .admin-publish-status--ok  { color: #22c55e; }
+  .admin-publish-status--err { color: #ef4444; }
 
   .admin-btn--export-journal {
     background: rgba(77, 184, 212, 0.15);
