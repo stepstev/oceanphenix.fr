@@ -840,18 +840,28 @@ import OceanBackground from '../components/OceanBackground.astro';
       const data = await resp.json();
 
       return (data.results || [])
-        .filter(r => r.coordonnees_geo?.lat && r.coordonnees_geo?.lon)
-        .map(r => ({
+        .filter(r => {
+          const g = r.coordonnees_geo;
+          if (!g) return false;
+          // OpenDataSoft v2 retourne {lat, lon} ou GeoJSON {coordinates:[lon,lat]}
+          return (g.lat && g.lon) || (Array.isArray(g.coordinates) && g.coordinates.length === 2);
+        })
+        .map(r => {
+          const g = r.coordonnees_geo;
+          const lat = g.lat ?? g.coordinates?.[1];
+          const lon = g.lon ?? g.coordinates?.[0];
+          return {
           id: `atout-${r.nom_commercial}-${r.code_postal}`,
           nom: r.nom_commercial || 'Camping',
           type: 'camping',
-          lat: r.coordonnees_geo.lat,
-          lon: r.coordonnees_geo.lon,
+          lat: parseFloat(lat),
+          lon: parseFloat(lon),
           adresse: [r.adresse, r.code_postal, r.commune].filter(Boolean).join(' '),
           classement: r.classement || null,
           nbEmplacements: r.nombre_emplacements || null,
           source: 'Atout France',
-        }));
+          };
+        });
     }
 
     async function fetchEntreprises(lat, lon, signal) {
@@ -918,7 +928,7 @@ import OceanBackground from '../components/OceanBackground.astro';
       const resp = await fetch(url, { signal: signal ?? AbortSignal.timeout(15000) });
       if (!resp.ok) throw new Error(`Events HTTP ${resp.status}`);
       const data = await resp.json();
-      if (data.error || !data.events) return [];
+      if (data.error || data._error || !data.events) return [];
       return (data.events || []).map(e => {
         const loc = e.location || {};
         const title = e.title?.fr || e.title?.en || 'Événement';
