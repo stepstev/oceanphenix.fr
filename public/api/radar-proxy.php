@@ -164,8 +164,30 @@ switch ($type) {
         proxyFetchCached($url, "events_{$lat}_{$lon}", 3600); // Cache 1h
         break;
 
+    case 'salons-nationaux':
+        $openagendaKey = getenv('OPENAGENDA_KEY') ?: '';
+        if (empty($openagendaKey)) {
+            echo json_encode(['total' => 0, 'events' => [], '_info' => 'Clé OpenAgenda non configurée.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        // Fenêtre temporelle : aujourd'hui → +9 mois, couverture nationale
+        $dateFrom = date('Y-m-d');
+        $dateTo   = date('Y-m-d', strtotime('+9 months'));
+        // Mots-clés ciblés salons emploi DATA / IA — sans contrainte géographique
+        $keywords = 'salon emploi data intelligence artificielle recrutement forum numérique IA machine learning';
+        $url = sprintf(
+            'https://api.openagenda.com/v2/events?key=%s&keyword=%s&size=50&monolingual=fr&timings[gte]=%s&timings[lte]=%s&sort=timings',
+            urlencode($openagendaKey),
+            urlencode($keywords),
+            urlencode($dateFrom),
+            urlencode($dateTo)
+        );
+        // Cache 2h — les salons à venir sont stables dans la journée
+        proxyFetchCached($url, "salons_nationaux_{$dateFrom}", 7200);
+        break;
+
     default:
-        jsonError("Type inconnu : $type. Valeurs acceptées : campings, entreprises, commune");
+        jsonError("Type inconnu : $type. Valeurs acceptées : campings, entreprises, commune, events, salons-nationaux");
 }
 
 // ── Fonctions utilitaires ─────────────────────────────────────────────────────
