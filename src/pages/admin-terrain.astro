@@ -79,16 +79,45 @@ import etapesData from '../data/terrain-etapes.json';
         </div>
       </div>
 
-      <!-- Workflow banner -->
-      <div class="admin-workflow-banner">
-        <i class="fas fa-code-branch wf-icon"></i>
-        <span class="wf-item"><span class="wf-n">1</span> Modifier</span>
-        <span class="wf-arr">›</span>
-        <span class="wf-item"><span class="wf-n">2</span> Sauvegarder</span>
-        <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--key"><span class="wf-n">3</span> Build + Deploy <small style="opacity:.7">(npm run api requis)</small></span>
-        <span class="wf-arr">›</span>
-        <span class="wf-item wf-item--reset"><span class="wf-n">4</span> Réinitialiser le cache</span>
+      <!-- Workflow banner — 2 cas -->
+      <div class="admin-workflow-2col">
+
+        <div class="admin-wf-case admin-wf-case--green">
+          <div class="admin-wf-case-title">
+            <i class="fas fa-cloud-upload-alt"></i>
+            Données variables <span class="admin-wf-tag">fréquent · sans rebuild</span>
+          </div>
+          <div class="admin-wf-steps">
+            <span class="wf-step"><span class="wf-n">1</span> Modifier un onglet</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-step"><span class="wf-n">2</span> Sauvegarder</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-step wf-step--key"><span class="wf-n">3</span> <i class="fas fa-cloud-upload-alt"></i> Publier tout</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-step">✅ Site live</span>
+          </div>
+          <div class="admin-wf-scope">
+            Concerne : Dashboard · Position · Étapes · Journal · Coworking · Radar Pro
+          </div>
+        </div>
+
+        <div class="admin-wf-case admin-wf-case--orange">
+          <div class="admin-wf-case-title">
+            <i class="fas fa-code"></i>
+            Code &amp; design <span class="admin-wf-tag">occasionnel · rebuild requis</span>
+          </div>
+          <div class="admin-wf-steps">
+            <span class="wf-step"><span class="wf-n">1</span> Modifier dans VS Code</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-step wf-step--key"><span class="wf-n">2</span> <i class="fas fa-rocket"></i> deploy.bat</span>
+            <span class="wf-arr">›</span>
+            <span class="wf-step">✅ Site live</span>
+          </div>
+          <div class="admin-wf-scope">
+            Concerne : pages Astro · CSS · nouvelles fonctionnalités · textes statiques
+          </div>
+        </div>
+
       </div>
 
       <!-- Tabs -->
@@ -129,6 +158,85 @@ import etapesData from '../data/terrain-etapes.json';
       <!-- TAB: Dashboard                 -->
       <!-- ============================== -->
       <div class="admin-tab-content admin-tab-content--active" id="tab-dashboard">
+
+        <!-- Guide rapide -->
+        <div class="admin-card admin-card--guide">
+          <h2><i class="fas fa-map-signs"></i> Comment mettre à jour le site</h2>
+
+          <div class="admin-guide-grid">
+
+            <!-- Cas 1 -->
+            <div class="admin-guide-bloc admin-guide-bloc--green">
+              <div class="admin-guide-bloc-head">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <strong>Données variables</strong>
+                <span class="admin-guide-tag">sans rebuild · ~2 sec</span>
+              </div>
+              <ol class="admin-guide-steps">
+                <li>Modifier les données dans les onglets <em>(Dashboard, Étapes, Journal, Radar Pro, Coworking…)</em></li>
+                <li>Cliquer <strong>Sauvegarder</strong></li>
+                <li>Cliquer <strong class="admin-guide-highlight--green"><i class="fas fa-cloud-upload-alt"></i> Publier tout</strong> <em>(bouton vert en haut)</em></li>
+                <li>Entrer la clé au 1er usage : <code>op-admin-save-2026-oceanphenix</code></li>
+              </ol>
+              <div class="admin-guide-result admin-guide-result--green">
+                ✅ Visible immédiatement pour tous les visiteurs
+              </div>
+            </div>
+
+            <!-- Cas 2 -->
+            <div class="admin-guide-bloc admin-guide-bloc--orange">
+              <div class="admin-guide-bloc-head">
+                <i class="fas fa-code"></i>
+                <strong>Code &amp; design</strong>
+                <span class="admin-guide-tag">rebuild requis · ~1 min</span>
+              </div>
+              <ol class="admin-guide-steps">
+                <li>Modifier les fichiers dans <strong>VS Code</strong></li>
+                <li>Double-cliquer sur <strong class="admin-guide-highlight--orange"><i class="fas fa-rocket"></i> deploy.bat</strong> à la racine du projet</li>
+                <li>Le script fait : <code>npm run build</code> puis upload FTP vers O2Switch</li>
+              </ol>
+              <div class="admin-guide-result admin-guide-result--orange">
+                ✅ Site reconstruit et déployé automatiquement
+              </div>
+            </div>
+
+            <!-- Prérequis FTP -->
+            <div class="admin-guide-bloc admin-guide-bloc--blue admin-guide-bloc--wide">
+              <div class="admin-guide-bloc-head">
+                <i class="fas fa-server"></i>
+                <strong>Prérequis — fichiers PHP à uploader une seule fois par FTP</strong>
+              </div>
+              <table class="admin-guide-table">
+                <thead>
+                  <tr><th>Fichier local</th><th>Destination O2Switch</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>public/api/admin-save.php</code></td>
+                    <td><code>public_html/api/admin-save.php</code></td>
+                    <td><span class="admin-guide-status admin-guide-status--todo">À uploader</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>public/api/radar-proxy.php</code></td>
+                    <td><code>public_html/api/radar-proxy.php</code></td>
+                    <td><span class="admin-guide-status admin-guide-status--done">Déjà fait</span></td>
+                  </tr>
+                  <tr>
+                    <td><code>public/api/strava-env.php</code></td>
+                    <td><code>public_html/api/strava-env.php</code></td>
+                    <td><span class="admin-guide-status admin-guide-status--done">Déjà fait</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="admin-guide-ftp-note">
+                <i class="fas fa-info-circle" style="color:#4db8d4"></i>
+                Ces fichiers contiennent des clés — ils ne sont pas dans le repo Git et doivent être uploadés manuellement via <strong>FileZilla</strong> ou le gestionnaire O2Switch.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
         <div class="admin-card">
           <h2><i class="fas fa-tachometer-alt"></i> Données du dashboard</h2>
           <div class="admin-form-row">
@@ -1056,6 +1164,7 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   }
 
   /* Topbar */
+  /* ── Workflow banner (mini strip — Radar Pro / Strava tabs) ── */
   .admin-workflow-banner {
     display: flex;
     align-items: center;
@@ -1069,37 +1178,153 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     font-size: 0.82rem;
   }
   .wf-icon { color: var(--accent-cyan); font-size: 0.75rem; margin-right: 0.2rem; }
-  .wf-arr { color: rgba(77,184,212,0.5); font-size: 1.1rem; line-height: 1; }
-  .wf-item {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    font-weight: 500;
-  }
-  .wf-item--key { color: var(--accent-cyan); font-weight: 700; }
+  .wf-arr  { color: rgba(77,184,212,0.5); font-size: 1.1rem; line-height: 1; }
+  .wf-item { display: flex; align-items: center; gap: 0.3rem; color: var(--text-muted); white-space: nowrap; font-weight: 500; }
+  .wf-item--key   { color: var(--accent-cyan); font-weight: 700; }
   .wf-item--reset { color: #f87171; font-weight: 700; }
   .wf-n {
-    background: rgba(77,184,212,0.18);
-    color: var(--accent-cyan);
-    font-weight: 800;
-    font-size: 0.6rem;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    background: rgba(77,184,212,0.18); color: var(--accent-cyan);
+    font-weight: 800; font-size: 0.6rem;
+    width: 15px; height: 15px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .wf-item--reset .wf-n { background: rgba(248,113,113,0.18); color: #f87171; }
-  .admin-workflow-banner code {
-    background: rgba(77,184,212,0.12);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 0.72rem;
-    color: #6ec5d6;
+  .admin-workflow-banner code { background: rgba(77,184,212,0.12); padding: 1px 5px; border-radius: 3px; font-size: 0.72rem; color: #6ec5d6; }
+
+  /* ── Workflow 2 colonnes (global, sous toolbar) ────────────── */
+  .admin-workflow-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 800px) { .admin-workflow-2col { grid-template-columns: 1fr; } }
+
+  .admin-wf-case {
+    border-radius: var(--radius-md, 8px);
+    border: 1px solid;
+    padding: 0.65rem 1rem;
+  }
+  .admin-wf-case--green  { border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.05); }
+  .admin-wf-case--orange { border-color: rgba(252,76,2,0.3);   background: rgba(252,76,2,0.05);  }
+
+  .admin-wf-case-title {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.82rem; font-weight: 700; margin-bottom: 0.45rem;
+  }
+  .admin-wf-case--green  .admin-wf-case-title { color: #22c55e; }
+  .admin-wf-case--orange .admin-wf-case-title { color: #fc4c02; }
+
+  .admin-wf-tag {
+    font-size: 0.62rem; font-weight: 600;
+    color: var(--text-muted); opacity: 0.8; margin-left: 2px;
+  }
+  .admin-wf-steps {
+    display: flex; align-items: center; gap: 0.35rem;
+    flex-wrap: wrap; font-size: 0.75rem;
+    margin-bottom: 0.35rem;
+  }
+  .wf-step { display: flex; align-items: center; gap: 0.25rem; color: var(--text-muted); white-space: nowrap; }
+  .wf-step--key { font-weight: 700; }
+  .admin-wf-case--green  .wf-step--key { color: #22c55e; }
+  .admin-wf-case--orange .wf-step--key { color: #fc4c02; }
+  .admin-wf-scope { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+
+  /* ── Guide Dashboard ────────────────────────────────────────── */
+  .admin-card--guide { border-left: 3px solid #4db8d4; }
+
+  .admin-guide-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+  @media (max-width: 800px) { .admin-guide-grid { grid-template-columns: 1fr; } }
+
+  .admin-guide-bloc {
+    border-radius: 8px;
+    border: 1px solid;
+    padding: 0.9rem 1rem;
+  }
+  .admin-guide-bloc--green  { border-color: rgba(34,197,94,0.35);  background: rgba(34,197,94,0.06); }
+  .admin-guide-bloc--orange { border-color: rgba(252,76,2,0.35);   background: rgba(252,76,2,0.06);  }
+  .admin-guide-bloc--blue   { border-color: rgba(77,184,212,0.3);  background: rgba(77,184,212,0.04); }
+  .admin-guide-bloc--wide   { grid-column: 1 / -1; }
+
+  .admin-guide-bloc-head {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.75rem;
+  }
+  .admin-guide-bloc--green  .admin-guide-bloc-head { color: #22c55e; }
+  .admin-guide-bloc--orange .admin-guide-bloc-head { color: #fc4c02; }
+  .admin-guide-bloc--blue   .admin-guide-bloc-head { color: #4db8d4; }
+
+  .admin-guide-tag {
+    font-size: 0.62rem; font-weight: 500;
+    color: var(--text-muted); opacity: 0.7; margin-left: 2px;
+  }
+
+  .admin-guide-steps {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 0.45rem;
+    font-size: 0.8rem; color: var(--text-light);
+    counter-reset: guide-step;
+  }
+  .admin-guide-steps li {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    counter-increment: guide-step;
+  }
+  .admin-guide-steps li::before {
+    content: counter(guide-step);
+    min-width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; font-weight: 800; flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .admin-guide-bloc--green  .admin-guide-steps li::before { background: rgba(34,197,94,0.2);  color: #22c55e; }
+  .admin-guide-bloc--orange .admin-guide-steps li::before { background: rgba(252,76,2,0.2);   color: #fc4c02; }
+
+  .admin-guide-highlight--green  { color: #22c55e; }
+  .admin-guide-highlight--orange { color: #fc4c02; }
+
+  .admin-guide-result {
+    margin-top: 0.75rem;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    display: inline-block;
+  }
+  .admin-guide-result--green  { background: rgba(34,197,94,0.12);  color: #22c55e; }
+  .admin-guide-result--orange { background: rgba(252,76,2,0.12);   color: #fc4c02; }
+
+  .admin-guide-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.78rem; margin-top: 0.25rem;
+  }
+  .admin-guide-table th {
+    text-align: left; padding: 5px 10px;
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted);
+    border-bottom: 1px solid rgba(77,184,212,0.15);
+  }
+  .admin-guide-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-light);
+  }
+  .admin-guide-table tr:last-child td { border-bottom: none; }
+
+  .admin-guide-status {
+    font-size: 0.65rem; font-weight: 700; padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .admin-guide-status--todo { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .admin-guide-status--done { background: rgba(34,197,94,0.12);  color: #22c55e; }
+
+  .admin-guide-ftp-note {
+    margin-top: 0.75rem; font-size: 0.75rem;
+    color: var(--text-muted); line-height: 1.5;
   }
 
   .admin-topbar {
