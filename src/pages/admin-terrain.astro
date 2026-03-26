@@ -46,33 +46,29 @@ import etapesData from '../data/terrain-etapes.json';
           <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
         </div>
         <div class="admin-topbar-actions">
-          <!-- Publier tout — bouton principal -->
+          <!-- Action principale -->
           <div class="admin-publish-wrap">
             <button id="admin-publish-btn" class="admin-btn admin-btn--publish" title="Envoie toutes les données vers /data/site-data.json sur O2Switch">
               <i class="fas fa-cloud-upload-alt"></i> Publier tout
             </button>
             <span id="admin-publish-status" class="admin-publish-status" style="display:none;"></span>
           </div>
+          <button id="admin-save-btn" class="admin-btn" title="Sauvegarder dans la mémoire du navigateur">
+            <i class="fas fa-save"></i> Sauvegarder
+          </button>
+          <!-- Séparateur -->
+          <span class="admin-topbar-sep"></span>
           <button id="admin-visibility-btn" class="admin-visibility-btn" title="Basculer la visibilité de la page Terrain">
             <span class="vis-dot"></span>
             <span class="vis-label"></span>
           </button>
-          <button id="admin-save-btn" class="admin-btn">
-            <i class="fas fa-save"></i> Sauvegarder
+          <button id="admin-export-gpx-btn" class="admin-btn" title="Télécharger le fichier GPX">
+            <i class="fas fa-route"></i> GPX
           </button>
-          <button id="export-btn" class="admin-btn admin-btn--accent" onclick="exportJson(false)">
-            <i class="fas fa-file-export"></i> Exporter &amp; Build
+          <button id="admin-import-btn" class="admin-btn" title="Importer un fichier JSON de sauvegarde">
+            <i class="fas fa-upload"></i> Importer
           </button>
-          <button id="export-deploy-btn" class="admin-btn admin-btn--deploy" onclick="exportJson(true)">
-            <i class="fas fa-rocket"></i> Build + Deploy
-          </button>
-          <button id="admin-export-gpx-btn" class="admin-btn" title="Télécharger le fichier GPX depuis la mémoire admin → placez-le dans public/gpx/">
-            <i class="fas fa-route"></i> Exporter GPX
-          </button>
-          <button id="admin-import-btn" class="admin-btn">
-            <i class="fas fa-upload"></i> Importer JSON
-          </button>
-          <button id="admin-reset-cache-btn" class="admin-btn" title="Efface le localStorage et recharge les données du dernier build">
+          <button id="admin-reset-cache-btn" class="admin-btn admin-btn--danger-light" title="Efface le localStorage et recharge les données">
             <i class="fas fa-trash-alt"></i> Réinitialiser
           </button>
           <input type="file" id="admin-import-file" accept=".json" style="display:none" />
@@ -82,39 +78,33 @@ import etapesData from '../data/terrain-etapes.json';
       <!-- Workflow banner — 2 cas -->
       <div class="admin-workflow-2col">
 
-        <div class="admin-wf-case admin-wf-case--green">
+        <div class="admin-wf-case">
           <div class="admin-wf-case-title">
-            <i class="fas fa-cloud-upload-alt"></i>
-            Données variables <span class="admin-wf-tag">fréquent · sans rebuild</span>
+            <i class="fas fa-cloud-upload-alt"></i> Données variables
+            <span class="admin-wf-tag">Dashboard · Étapes · Journal · Radar Pro · Coworking</span>
           </div>
           <div class="admin-wf-steps">
             <span class="wf-step"><span class="wf-n">1</span> Modifier un onglet</span>
             <span class="wf-arr">›</span>
             <span class="wf-step"><span class="wf-n">2</span> Sauvegarder</span>
             <span class="wf-arr">›</span>
-            <span class="wf-step wf-step--key"><span class="wf-n">3</span> <i class="fas fa-cloud-upload-alt"></i> Publier tout</span>
+            <span class="wf-step wf-step--key"><span class="wf-n">3</span> Publier tout</span>
             <span class="wf-arr">›</span>
-            <span class="wf-step">✅ Site live</span>
-          </div>
-          <div class="admin-wf-scope">
-            Concerne : Dashboard · Position · Étapes · Journal · Coworking · Radar Pro
+            <span class="wf-step">Site mis à jour</span>
           </div>
         </div>
 
-        <div class="admin-wf-case admin-wf-case--orange">
+        <div class="admin-wf-case">
           <div class="admin-wf-case-title">
-            <i class="fas fa-code"></i>
-            Code &amp; design <span class="admin-wf-tag">occasionnel · rebuild requis</span>
+            <i class="fas fa-code"></i> Code &amp; design
+            <span class="admin-wf-tag">Pages · CSS · nouvelles fonctionnalités</span>
           </div>
           <div class="admin-wf-steps">
             <span class="wf-step"><span class="wf-n">1</span> Modifier dans VS Code</span>
             <span class="wf-arr">›</span>
-            <span class="wf-step wf-step--key"><span class="wf-n">2</span> <i class="fas fa-rocket"></i> deploy.bat</span>
+            <span class="wf-step wf-step--key"><span class="wf-n">2</span> deploy.bat</span>
             <span class="wf-arr">›</span>
-            <span class="wf-step">✅ Site live</span>
-          </div>
-          <div class="admin-wf-scope">
-            Concerne : pages Astro · CSS · nouvelles fonctionnalités · textes statiques
+            <span class="wf-step">Site mis à jour</span>
           </div>
         </div>
 
@@ -165,8 +155,7 @@ import etapesData from '../data/terrain-etapes.json';
 
           <div class="admin-guide-grid">
 
-            <!-- Cas 1 -->
-            <div class="admin-guide-bloc admin-guide-bloc--green">
+            <div class="admin-guide-bloc">
               <div class="admin-guide-bloc-head">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <strong>Données variables</strong>
@@ -175,16 +164,13 @@ import etapesData from '../data/terrain-etapes.json';
               <ol class="admin-guide-steps">
                 <li>Modifier les données dans les onglets <em>(Dashboard, Étapes, Journal, Radar Pro, Coworking…)</em></li>
                 <li>Cliquer <strong>Sauvegarder</strong></li>
-                <li>Cliquer <strong class="admin-guide-highlight--green"><i class="fas fa-cloud-upload-alt"></i> Publier tout</strong> <em>(bouton vert en haut)</em></li>
+                <li>Cliquer <strong>Publier tout</strong> <em>(en haut à gauche)</em></li>
                 <li>Entrer la clé au 1er usage : <code>op-admin-save-2026-oceanphenix</code></li>
               </ol>
-              <div class="admin-guide-result admin-guide-result--green">
-                ✅ Visible immédiatement pour tous les visiteurs
-              </div>
+              <p class="admin-guide-note">Visible immédiatement pour tous les visiteurs.</p>
             </div>
 
-            <!-- Cas 2 -->
-            <div class="admin-guide-bloc admin-guide-bloc--orange">
+            <div class="admin-guide-bloc">
               <div class="admin-guide-bloc-head">
                 <i class="fas fa-code"></i>
                 <strong>Code &amp; design</strong>
@@ -192,19 +178,16 @@ import etapesData from '../data/terrain-etapes.json';
               </div>
               <ol class="admin-guide-steps">
                 <li>Modifier les fichiers dans <strong>VS Code</strong></li>
-                <li>Double-cliquer sur <strong class="admin-guide-highlight--orange"><i class="fas fa-rocket"></i> deploy.bat</strong> à la racine du projet</li>
+                <li>Double-cliquer sur <strong>deploy.bat</strong> à la racine du projet</li>
                 <li>Le script fait : <code>npm run build</code> puis upload FTP vers O2Switch</li>
               </ol>
-              <div class="admin-guide-result admin-guide-result--orange">
-                ✅ Site reconstruit et déployé automatiquement
-              </div>
+              <p class="admin-guide-note">Site reconstruit et déployé automatiquement.</p>
             </div>
 
-            <!-- Prérequis FTP -->
-            <div class="admin-guide-bloc admin-guide-bloc--blue admin-guide-bloc--wide">
+            <div class="admin-guide-bloc admin-guide-bloc--wide">
               <div class="admin-guide-bloc-head">
                 <i class="fas fa-server"></i>
-                <strong>Prérequis — fichiers PHP à uploader une seule fois par FTP</strong>
+                <strong>Fichiers PHP à uploader une seule fois par FTP</strong>
               </div>
               <table class="admin-guide-table">
                 <thead>
@@ -229,8 +212,8 @@ import etapesData from '../data/terrain-etapes.json';
                 </tbody>
               </table>
               <p class="admin-guide-ftp-note">
-                <i class="fas fa-info-circle" style="color:#4db8d4"></i>
-                Ces fichiers contiennent des clés — ils ne sont pas dans le repo Git et doivent être uploadés manuellement via <strong>FileZilla</strong> ou le gestionnaire O2Switch.
+                Ces fichiers contiennent des clés et ne sont pas dans le repo Git.
+                À uploader via <strong>FileZilla</strong> ou le gestionnaire O2Switch.
               </p>
             </div>
 
@@ -1191,7 +1174,7 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   .wf-item--reset .wf-n { background: rgba(248,113,113,0.18); color: #f87171; }
   .admin-workflow-banner code { background: rgba(77,184,212,0.12); padding: 1px 5px; border-radius: 3px; font-size: 0.72rem; color: #6ec5d6; }
 
-  /* ── Workflow 2 colonnes (global, sous toolbar) ────────────── */
+  /* ── Workflow 2 colonnes (sous toolbar) ──────────────────── */
   .admin-workflow-2col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1201,37 +1184,29 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   @media (max-width: 800px) { .admin-workflow-2col { grid-template-columns: 1fr; } }
 
   .admin-wf-case {
-    border-radius: var(--radius-md, 8px);
-    border: 1px solid;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
     padding: 0.65rem 1rem;
   }
-  .admin-wf-case--green  { border-color: rgba(34,197,94,0.3);  background: rgba(34,197,94,0.05); }
-  .admin-wf-case--orange { border-color: rgba(252,76,2,0.3);   background: rgba(252,76,2,0.05);  }
-
   .admin-wf-case-title {
     display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.82rem; font-weight: 700; margin-bottom: 0.45rem;
+    font-size: 0.8rem; font-weight: 700; margin-bottom: 0.45rem;
+    color: var(--text-light);
   }
-  .admin-wf-case--green  .admin-wf-case-title { color: #22c55e; }
-  .admin-wf-case--orange .admin-wf-case-title { color: #fc4c02; }
-
   .admin-wf-tag {
-    font-size: 0.62rem; font-weight: 600;
-    color: var(--text-muted); opacity: 0.8; margin-left: 2px;
+    font-size: 0.62rem; font-weight: 400;
+    color: var(--text-muted); margin-left: 2px;
   }
   .admin-wf-steps {
     display: flex; align-items: center; gap: 0.35rem;
     flex-wrap: wrap; font-size: 0.75rem;
-    margin-bottom: 0.35rem;
   }
   .wf-step { display: flex; align-items: center; gap: 0.25rem; color: var(--text-muted); white-space: nowrap; }
-  .wf-step--key { font-weight: 700; }
-  .admin-wf-case--green  .wf-step--key { color: #22c55e; }
-  .admin-wf-case--orange .wf-step--key { color: #fc4c02; }
-  .admin-wf-scope { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+  .wf-step--key { color: var(--accent-cyan); font-weight: 700; }
 
-  /* ── Guide Dashboard ────────────────────────────────────────── */
-  .admin-card--guide { border-left: 3px solid #4db8d4; }
+  /* ── Guide Dashboard ─────────────────────────────────────── */
+  .admin-card--guide { border-left: 3px solid rgba(255,255,255,0.12); }
 
   .admin-guide-grid {
     display: grid;
@@ -1242,26 +1217,21 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   @media (max-width: 800px) { .admin-guide-grid { grid-template-columns: 1fr; } }
 
   .admin-guide-bloc {
-    border-radius: 8px;
-    border: 1px solid;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
     padding: 0.9rem 1rem;
   }
-  .admin-guide-bloc--green  { border-color: rgba(34,197,94,0.35);  background: rgba(34,197,94,0.06); }
-  .admin-guide-bloc--orange { border-color: rgba(252,76,2,0.35);   background: rgba(252,76,2,0.06);  }
-  .admin-guide-bloc--blue   { border-color: rgba(77,184,212,0.3);  background: rgba(77,184,212,0.04); }
-  .admin-guide-bloc--wide   { grid-column: 1 / -1; }
+  .admin-guide-bloc--wide { grid-column: 1 / -1; }
 
   .admin-guide-bloc-head {
     display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.75rem;
+    font-size: 0.85rem; font-weight: 700; margin-bottom: 0.75rem;
+    color: var(--accent-cyan);
   }
-  .admin-guide-bloc--green  .admin-guide-bloc-head { color: #22c55e; }
-  .admin-guide-bloc--orange .admin-guide-bloc-head { color: #fc4c02; }
-  .admin-guide-bloc--blue   .admin-guide-bloc-head { color: #4db8d4; }
-
   .admin-guide-tag {
-    font-size: 0.62rem; font-weight: 500;
-    color: var(--text-muted); opacity: 0.7; margin-left: 2px;
+    font-size: 0.62rem; font-weight: 400;
+    color: var(--text-muted); margin-left: 2px;
   }
 
   .admin-guide-steps {
@@ -1276,27 +1246,19 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   }
   .admin-guide-steps li::before {
     content: counter(guide-step);
-    min-width: 18px; height: 18px;
+    min-width: 17px; height: 17px;
     border-radius: 50%;
+    background: rgba(77,184,212,0.15);
+    color: var(--accent-cyan);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.62rem; font-weight: 800; flex-shrink: 0;
-    margin-top: 1px;
+    font-size: 0.6rem; font-weight: 800; flex-shrink: 0;
+    margin-top: 2px;
   }
-  .admin-guide-bloc--green  .admin-guide-steps li::before { background: rgba(34,197,94,0.2);  color: #22c55e; }
-  .admin-guide-bloc--orange .admin-guide-steps li::before { background: rgba(252,76,2,0.2);   color: #fc4c02; }
 
-  .admin-guide-highlight--green  { color: #22c55e; }
-  .admin-guide-highlight--orange { color: #fc4c02; }
-
-  .admin-guide-result {
-    margin-top: 0.75rem;
-    font-size: 0.78rem; font-weight: 700;
-    padding: 0.35rem 0.75rem;
-    border-radius: 20px;
-    display: inline-block;
+  .admin-guide-note {
+    margin-top: 0.65rem; font-size: 0.75rem;
+    color: var(--text-muted); font-style: italic;
   }
-  .admin-guide-result--green  { background: rgba(34,197,94,0.12);  color: #22c55e; }
-  .admin-guide-result--orange { background: rgba(252,76,2,0.12);   color: #fc4c02; }
 
   .admin-guide-table {
     width: 100%; border-collapse: collapse;
@@ -1304,9 +1266,9 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   }
   .admin-guide-table th {
     text-align: left; padding: 5px 10px;
-    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+    font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--text-muted);
-    border-bottom: 1px solid rgba(77,184,212,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
   .admin-guide-table td {
     padding: 6px 10px;
@@ -1316,16 +1278,27 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   .admin-guide-table tr:last-child td { border-bottom: none; }
 
   .admin-guide-status {
-    font-size: 0.65rem; font-weight: 700; padding: 2px 8px;
-    border-radius: 12px;
+    font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 12px;
   }
-  .admin-guide-status--todo { background: rgba(251,191,36,0.15); color: #fbbf24; }
-  .admin-guide-status--done { background: rgba(34,197,94,0.12);  color: #22c55e; }
+  .admin-guide-status--todo { background: rgba(255,255,255,0.08); color: #fbbf24; }
+  .admin-guide-status--done { background: rgba(255,255,255,0.06); color: var(--text-muted); }
 
   .admin-guide-ftp-note {
     margin-top: 0.75rem; font-size: 0.75rem;
     color: var(--text-muted); line-height: 1.5;
   }
+
+  /* Séparateur toolbar */
+  .admin-topbar-sep {
+    width: 1px; height: 20px; background: rgba(255,255,255,0.1); flex-shrink: 0;
+  }
+
+  /* Bouton Réinitialiser discret */
+  .admin-btn--danger-light {
+    color: #9ca3af;
+    border-color: rgba(255,255,255,0.1);
+  }
+  .admin-btn--danger-light:hover { color: #f87171; border-color: rgba(248,113,113,0.4); }
 
   .admin-topbar {
     display: flex;
@@ -1737,12 +1710,12 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     gap: 2px;
   }
   .admin-btn--publish {
-    background: rgba(34, 197, 94, 0.12);
-    border: 1.5px solid rgba(34, 197, 94, 0.5);
-    color: #22c55e;
+    background: rgba(77, 184, 212, 0.12);
+    border: 1.5px solid rgba(77, 184, 212, 0.5);
+    color: var(--accent-cyan);
     font-weight: 700;
   }
-  .admin-btn--publish:hover { background: rgba(34, 197, 94, 0.22); }
+  .admin-btn--publish:hover { background: rgba(77, 184, 212, 0.22); }
   .admin-btn--publish:disabled { opacity: 0.5; cursor: wait; }
   .admin-publish-status {
     font-size: 0.65rem;
@@ -1752,7 +1725,7 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     text-overflow: ellipsis;
   }
   .admin-publish-status--loading { color: #9ab0c4; }
-  .admin-publish-status--ok  { color: #22c55e; }
+  .admin-publish-status--ok  { color: var(--accent-cyan); }
   .admin-publish-status--err { color: #ef4444; }
 
   .admin-btn--export-journal {
