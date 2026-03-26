@@ -588,6 +588,15 @@ import OceanBackground from '../components/OceanBackground.astro';
     let salonDomains      = new Set(['emploi', 'data', 'ia', 'dev', 'tech']);
     let salonFormats      = new Set(['presentiel', 'hybride', 'visio', 'autre']);
 
+    // ── Données curées admin (localStorage) ───────────────────
+    let adminProData = { entreprises: [], salons: [], events: [] };
+
+    function loadAdminProData() {
+      try { adminProData.entreprises = JSON.parse(localStorage.getItem('op-radar-entreprises') || '[]'); } catch(e) { adminProData.entreprises = []; }
+      try { adminProData.salons      = JSON.parse(localStorage.getItem('op-radar-salons')      || '[]'); } catch(e) { adminProData.salons      = []; }
+      try { adminProData.events      = JSON.parse(localStorage.getItem('op-radar-events')      || '[]'); } catch(e) { adminProData.events      = []; }
+    }
+
     // ── Mode dev : détection + mock data ──────────────────────
     const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
@@ -959,6 +968,13 @@ import OceanBackground from '../components/OceanBackground.astro';
           domaines: classifyEventDomaines(s.nom + ' ' + (s.adresse || '') + ' ' + (s.format || '')),
           format:   s.format || classifyEventFormat(s.nom),
         })).sort((a, b) => (a.dateDebut || '').localeCompare(b.dateDebut || ''));
+        // Injecter les salons curés en admin (premier)
+        const adminSalonsDev = adminProData.salons.map(s => ({
+          ...s,
+          domaines: s.domaines && s.domaines.length ? s.domaines : ['data'],
+          format:   s.format || 'autre',
+        }));
+        salonsData = [...adminSalonsDev, ...salonsData];
         salonsLoaded = true;
         renderSalons();
         if (dot)    dot.className = 'rd-dot active';
@@ -994,6 +1010,14 @@ import OceanBackground from '../components/OceanBackground.astro';
             format:   classifyEventFormat(fullText),
           };
         }).sort((a, b) => (a.dateDebut || '').localeCompare(b.dateDebut || ''));
+
+        // Injecter les salons curés en admin (premier)
+        const adminSalons = adminProData.salons.map(s => ({
+          ...s,
+          domaines: s.domaines && s.domaines.length ? s.domaines : ['data'],
+          format:   s.format || 'autre',
+        }));
+        salonsData = [...adminSalons, ...salonsData];
 
         salonsLoaded = true;
         renderSalons();
@@ -1145,7 +1169,11 @@ import OceanBackground from '../components/OceanBackground.astro';
       if (resEntreprises.status === 'rejected' && resEntreprises.reason?.name !== 'AbortError') console.warn('INSEE SIRENE:', resEntreprises.reason);
       if (resEvents.status      === 'rejected' && resEvents.reason?.name !== 'AbortError') console.warn('OpenAgenda:', resEvents.reason);
 
+      const adminEnts  = !isCyclo ? adminProData.entreprises : [];
+      const adminEvts  = !isCyclo ? adminProData.events       : [];
       const raw = [
+        ...adminEnts,
+        ...adminEvts,
         ...(resOverpass.status    === 'fulfilled' ? resOverpass.value    : []),
         ...(resCampings.status    === 'fulfilled' ? resCampings.value    : []),
         ...(resEntreprises.status === 'fulfilled' ? resEntreprises.value : []),
@@ -1395,6 +1423,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
     // ── Boot ──────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
+      loadAdminProData();
       initMap();
 
       // Tab switching

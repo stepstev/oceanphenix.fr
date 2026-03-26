@@ -110,6 +110,9 @@ import etapesData from '../data/terrain-etapes.json';
         <button class="admin-tab" data-tab="coworking">
           <i class="fas fa-building"></i> Coworking
         </button>
+        <button class="admin-tab" data-tab="radar-pro">
+          <i class="fas fa-crosshairs"></i> Radar Pro
+        </button>
         <button class="admin-tab" data-tab="strava">
           <i class="fab fa-strava"></i> Strava
         </button>
@@ -579,6 +582,212 @@ import etapesData from '../data/terrain-etapes.json';
                 <i class="fas fa-check"></i> Valider
               </button>
               <button id="cw-cancel-btn" class="admin-btn">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Radar Pro                 -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-radar-pro">
+        <p class="admin-hint" style="margin-bottom:1.5rem;">
+          <i class="fas fa-info-circle"></i>
+          Les données saisies ici sont injectées dans la Vue Pro du Radar (onglets Entreprises, Salons, Événements), en plus des résultats API.
+        </p>
+
+        <!-- Section: Entreprises -->
+        <div class="admin-card">
+          <h2><i class="fas fa-building"></i> Entreprises</h2>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="rp-ent-add-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-plus"></i> Ajouter une entreprise
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-etapes-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Ville</th>
+                  <th>Secteur</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rp-ent-tbody"></tbody>
+            </table>
+          </div>
+          <p id="rp-ent-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+          <div id="rp-ent-editor" style="display:none;margin-top:1rem;" class="admin-etape-editor">
+            <h3 id="rp-ent-editor-title">Nouvelle entreprise</h3>
+            <input type="hidden" id="rp-ent-edit-idx" value="-1" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom</label>
+                <input type="text" id="rp-ent-nom" placeholder="Nom de l'entreprise" />
+              </div>
+              <div class="admin-form-group">
+                <label>Ville</label>
+                <input type="text" id="rp-ent-ville" placeholder="Paris, Lyon…" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Site web</label>
+                <input type="url" id="rp-ent-url" placeholder="https://…" />
+              </div>
+              <div class="admin-form-group">
+                <label>Secteur</label>
+                <select id="rp-ent-secteur">
+                  <option value="data">Data</option>
+                  <option value="ia">IA</option>
+                  <option value="dev">Dev</option>
+                  <option value="tech">Tech</option>
+                  <option value="bi">BI</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-actions">
+              <button id="rp-ent-save-btn" class="admin-btn admin-btn--accent">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="rp-ent-cancel-btn" class="admin-btn">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Salons -->
+        <div class="admin-card">
+          <h2><i class="fas fa-calendar-alt"></i> Salons</h2>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="rp-sal-add-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-plus"></i> Ajouter un salon
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-etapes-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Date</th>
+                  <th>Lieu</th>
+                  <th>Format</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rp-sal-tbody"></tbody>
+            </table>
+          </div>
+          <p id="rp-sal-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+          <div id="rp-sal-editor" style="display:none;margin-top:1rem;" class="admin-etape-editor">
+            <h3 id="rp-sal-editor-title">Nouveau salon</h3>
+            <input type="hidden" id="rp-sal-edit-idx" value="-1" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom</label>
+                <input type="text" id="rp-sal-nom" placeholder="Nom du salon" />
+              </div>
+              <div class="admin-form-group">
+                <label>Date</label>
+                <input type="date" id="rp-sal-date" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Adresse / Lieu</label>
+                <input type="text" id="rp-sal-adresse" placeholder="Paris Expo, Porte de Versailles…" />
+              </div>
+              <div class="admin-form-group">
+                <label>Site web</label>
+                <input type="url" id="rp-sal-url" placeholder="https://…" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Format</label>
+                <select id="rp-sal-format">
+                  <option value="presentiel">Présentiel</option>
+                  <option value="hybride">Hybride</option>
+                  <option value="visio">Visio</option>
+                  <option value="autre">Autre</option>
+                </select>
+              </div>
+              <div class="admin-form-group">
+                <label>Domaines</label>
+                <div id="rp-sal-domaines" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;">
+                  <label><input type="checkbox" value="emploi" /> Emploi</label>
+                  <label><input type="checkbox" value="data" /> Data</label>
+                  <label><input type="checkbox" value="ia" /> IA</label>
+                  <label><input type="checkbox" value="dev" /> Dev</label>
+                  <label><input type="checkbox" value="tech" /> Tech</label>
+                </div>
+              </div>
+            </div>
+            <div class="admin-form-actions">
+              <button id="rp-sal-save-btn" class="admin-btn admin-btn--accent">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="rp-sal-cancel-btn" class="admin-btn">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Événements -->
+        <div class="admin-card">
+          <h2><i class="fas fa-star"></i> Événements</h2>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="rp-evt-add-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-plus"></i> Ajouter un événement
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-etapes-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Date</th>
+                  <th>Lieu</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rp-evt-tbody"></tbody>
+            </table>
+          </div>
+          <p id="rp-evt-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+          <div id="rp-evt-editor" style="display:none;margin-top:1rem;" class="admin-etape-editor">
+            <h3 id="rp-evt-editor-title">Nouvel événement</h3>
+            <input type="hidden" id="rp-evt-edit-idx" value="-1" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom</label>
+                <input type="text" id="rp-evt-nom" placeholder="Nom de l'événement" />
+              </div>
+              <div class="admin-form-group">
+                <label>Date</label>
+                <input type="date" id="rp-evt-date" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Adresse / Lieu</label>
+                <input type="text" id="rp-evt-adresse" placeholder="Lieu de l'événement" />
+              </div>
+              <div class="admin-form-group">
+                <label>Site web</label>
+                <input type="url" id="rp-evt-url" placeholder="https://…" />
+              </div>
+            </div>
+            <div class="admin-form-actions">
+              <button id="rp-evt-save-btn" class="admin-btn admin-btn--accent">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="rp-evt-cancel-btn" class="admin-btn">
                 <i class="fas fa-times"></i> Annuler
               </button>
             </div>
