@@ -43,7 +43,10 @@ import etapesData from '../data/terrain-etapes.json';
       <div class="admin-topbar">
         <div class="admin-topbar-left">
           <h1><i class="fas fa-cogs"></i> Admin — Terrain Data</h1>
-          <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
+          <div class="admin-topbar-meta">
+            <span id="admin-last-saved" class="admin-last-saved" style="display:none;"></span>
+            <span id="admin-last-published" class="admin-last-published" style="display:none;"></span>
+          </div>
         </div>
         <div class="admin-topbar-actions">
           <!-- Action principale -->
@@ -112,6 +115,7 @@ import etapesData from '../data/terrain-etapes.json';
 
       <!-- Tabs -->
       <div class="admin-tabs">
+        <!-- Contenu (publié via Publier tout) -->
         <button class="admin-tab admin-tab--active" data-tab="dashboard">
           <i class="fas fa-tachometer-alt"></i> Dashboard
         </button>
@@ -121,25 +125,28 @@ import etapesData from '../data/terrain-etapes.json';
         <button class="admin-tab" data-tab="journal">
           <i class="fas fa-book-open"></i> Journal
         </button>
-        <button class="admin-tab" data-tab="photos">
-          <i class="fas fa-images"></i> Photos
-        </button>
-        <button class="admin-tab" data-tab="gpx">
-          <i class="fas fa-route"></i> Parcours GPX
-        </button>
-        <button class="admin-tab" data-tab="preview">
-          <i class="fas fa-eye"></i> Aperçu
-        </button>
-        <button class="admin-tab" data-tab="villes">
-          <i class="fas fa-map-pin"></i> Villes France
-        </button>
         <button class="admin-tab" data-tab="coworking">
           <i class="fas fa-building"></i> Coworking
         </button>
         <button class="admin-tab" data-tab="radar-pro">
           <i class="fas fa-crosshairs"></i> Radar Pro
         </button>
-        <button class="admin-tab" data-tab="strava">
+        <!-- Séparateur Contenu / Outils -->
+        <span class="admin-tabs-sep" aria-hidden="true" title="Outils">›</span>
+        <!-- Outils -->
+        <button class="admin-tab admin-tab--tool" data-tab="photos">
+          <i class="fas fa-images"></i> Photos
+        </button>
+        <button class="admin-tab admin-tab--tool" data-tab="gpx">
+          <i class="fas fa-route"></i> GPX
+        </button>
+        <button class="admin-tab admin-tab--tool" data-tab="preview">
+          <i class="fas fa-eye"></i> Aperçu
+        </button>
+        <button class="admin-tab admin-tab--tool" data-tab="villes">
+          <i class="fas fa-map-pin"></i> Villes
+        </button>
+        <button class="admin-tab admin-tab--tool" data-tab="strava">
           <i class="fab fa-strava"></i> Strava
         </button>
       </div>
@@ -151,73 +158,83 @@ import etapesData from '../data/terrain-etapes.json';
 
         <!-- Guide rapide -->
         <div class="admin-card admin-card--guide">
-          <h2><i class="fas fa-map-signs"></i> Comment mettre à jour le site</h2>
+          <h2><i class="fas fa-arrows-alt-h"></i> Mettre à jour le site — 2 cas</h2>
 
-          <div class="admin-guide-grid">
+          <div class="admin-update-cases">
 
-            <div class="admin-guide-bloc">
-              <div class="admin-guide-bloc-head">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <strong>Données variables</strong>
-                <span class="admin-guide-tag">sans rebuild · ~2 sec</span>
+            <!-- CAS 1 : données -->
+            <div class="admin-update-case">
+              <div class="admin-update-case-head">
+                <i class="fas fa-database"></i>
+                <span>Données</span>
+                <em>Dashboard · Étapes · Journal · Coworking · Radar Pro</em>
               </div>
-              <ol class="admin-guide-steps">
-                <li>Modifier les données dans les onglets <em>(Dashboard, Étapes, Journal, Radar Pro, Coworking…)</em></li>
-                <li>Cliquer <strong>Sauvegarder</strong></li>
-                <li>Cliquer <strong>Publier tout</strong> <em>(en haut à gauche)</em></li>
-                <li>Entrer la clé au 1er usage : <code>op-admin-save-2026-oceanphenix</code></li>
-              </ol>
-              <p class="admin-guide-note">Visible immédiatement pour tous les visiteurs.</p>
+              <div class="admin-update-flow">
+                <div class="auf-step">
+                  <span class="auf-n">1</span>
+                  <span>Modifier dans les onglets</span>
+                </div>
+                <span class="auf-arr">›</span>
+                <div class="auf-step">
+                  <span class="auf-n">2</span>
+                  <span>Cliquer <strong>Sauvegarder</strong></span>
+                </div>
+                <span class="auf-arr">›</span>
+                <div class="auf-step auf-step--key">
+                  <span class="auf-n">3</span>
+                  <span>Cliquer <strong>Publier tout</strong></span>
+                </div>
+              </div>
+              <p class="admin-update-note">Visible immédiatement · sans rebuild</p>
+              <p class="admin-update-key"><i class="fas fa-key"></i> Clé 1er usage : <code>op-admin-save-2026-oceanphenix</code></p>
             </div>
 
-            <div class="admin-guide-bloc">
-              <div class="admin-guide-bloc-head">
+            <!-- CAS 2 : code -->
+            <div class="admin-update-case">
+              <div class="admin-update-case-head">
                 <i class="fas fa-code"></i>
-                <strong>Code &amp; design</strong>
-                <span class="admin-guide-tag">rebuild requis · ~1 min</span>
+                <span>Code &amp; design</span>
+                <em>Pages · CSS · nouvelles fonctionnalités</em>
               </div>
-              <ol class="admin-guide-steps">
-                <li>Modifier les fichiers dans <strong>VS Code</strong></li>
-                <li>Double-cliquer sur <strong>deploy.bat</strong> à la racine du projet</li>
-                <li>Le script fait : <code>npm run build</code> puis upload FTP vers O2Switch</li>
-              </ol>
-              <p class="admin-guide-note">Site reconstruit et déployé automatiquement.</p>
-            </div>
-
-            <div class="admin-guide-bloc admin-guide-bloc--wide">
-              <div class="admin-guide-bloc-head">
-                <i class="fas fa-server"></i>
-                <strong>Fichiers PHP à uploader une seule fois par FTP</strong>
+              <div class="admin-update-flow">
+                <div class="auf-step">
+                  <span class="auf-n">1</span>
+                  <span>Modifier dans <strong>VS Code</strong></span>
+                </div>
+                <span class="auf-arr">›</span>
+                <div class="auf-step auf-step--key">
+                  <span class="auf-n">2</span>
+                  <span>Double-clic sur <strong>deploy.bat</strong></span>
+                </div>
               </div>
-              <table class="admin-guide-table">
-                <thead>
-                  <tr><th>Fichier local</th><th>Destination O2Switch</th><th>Statut</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><code>public/api/admin-save.php</code></td>
-                    <td><code>public_html/api/admin-save.php</code></td>
-                    <td><span class="admin-guide-status admin-guide-status--todo">À uploader</span></td>
-                  </tr>
-                  <tr>
-                    <td><code>public/api/radar-proxy.php</code></td>
-                    <td><code>public_html/api/radar-proxy.php</code></td>
-                    <td><span class="admin-guide-status admin-guide-status--done">Déjà fait</span></td>
-                  </tr>
-                  <tr>
-                    <td><code>public/api/strava-env.php</code></td>
-                    <td><code>public_html/api/strava-env.php</code></td>
-                    <td><span class="admin-guide-status admin-guide-status--done">Déjà fait</span></td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="admin-guide-ftp-note">
-                Ces fichiers contiennent des clés et ne sont pas dans le repo Git.
-                À uploader via <strong>FileZilla</strong> ou le gestionnaire O2Switch.
-              </p>
+              <p class="admin-update-note">Build + upload FTP automatique · ~1 min</p>
             </div>
 
           </div>
+
+          <!-- Prérequis FTP -->
+          <div class="admin-update-ftp">
+            <span class="admin-update-ftp-label"><i class="fas fa-server"></i> Prérequis FTP (une seule fois)</span>
+            <span class="admin-update-ftp-row">
+              <code>public/api/admin-save.php</code>
+              <span class="auf-arrow">→</span>
+              <code>public_html/api/admin-save.php</code>
+              <span class="admin-guide-status admin-guide-status--todo">À uploader</span>
+            </span>
+            <span class="admin-update-ftp-row">
+              <code>public/api/radar-proxy.php</code>
+              <span class="auf-arrow">→</span>
+              <code>public_html/api/radar-proxy.php</code>
+              <span class="admin-guide-status admin-guide-status--done">✓ Fait</span>
+            </span>
+            <span class="admin-update-ftp-row">
+              <code>public/api/strava-env.php</code>
+              <span class="auf-arrow">→</span>
+              <code>public_html/api/strava-env.php</code>
+              <span class="admin-guide-status admin-guide-status--done">✓ Fait</span>
+            </span>
+          </div>
+
         </div>
 
         <div class="admin-card">
@@ -451,20 +468,10 @@ import etapesData from '../data/terrain-etapes.json';
             <i class="fas fa-plus"></i> Ajouter au journal
           </button>
 
-          <div class="admin-export-journal-box">
-            <div class="admin-export-journal-info">
-              <i class="fas fa-info-circle"></i>
-              Les entrées du journal sont stockées dans votre navigateur. Cliquez le bouton ci-dessous — le journal est écrit dans le source et le build se lance automatiquement. Il ne reste plus qu'à uploader <code>dist/</code> sur O2switch.
-            </div>
-            <div class="admin-export-journal-steps">
-              <span><strong>1.</strong> Cliquez le bouton</span>
-              <span style="opacity:0.4">› • • • ›</span>
-              <span><strong>4.</strong> Uploadez <code>dist/</code> sur O2switch</span>
-            </div>
-            <button id="journal-export-btn" class="admin-btn admin-btn--export-journal">
-              <i class="fas fa-file-export"></i> Exporter Journal → terrain-etapes.json
-            </button>
-          </div>
+          <p class="admin-hint" style="margin-top:1.25rem;padding:0.75rem 1rem;border-left:3px solid rgba(77,184,212,0.3);background:rgba(77,184,212,0.04);">
+            <i class="fas fa-cloud-upload-alt" style="color:var(--accent-cyan);margin-right:0.4rem;"></i>
+            Les entrées du journal sont incluses dans <strong>Publier tout</strong> — aucune action supplémentaire.
+          </p>
         </div>
       </div>
 
@@ -892,38 +899,22 @@ import etapesData from '../data/terrain-etapes.json';
           </div>
         </div>
 
-        <!-- Section: Publication serveur -->
-        <div class="admin-card">
-          <h2><i class="fas fa-cloud-upload-alt"></i> Publier sur le serveur</h2>
-          <p class="admin-hint">
-            <i class="fas fa-info-circle"></i>
-            Envoie les 3 listes vers <code>/data/radar-pro.json</code> sur O2Switch.
-            Visible immédiatement par tous les visiteurs, sans rebuild.
+        <!-- Note publication -->
+        <div class="admin-card" style="padding:1rem 1.25rem;">
+          <p style="margin:0;font-size:0.85rem;color:var(--text-muted);display:flex;align-items:center;gap:0.6rem;">
+            <i class="fas fa-cloud-upload-alt" style="color:var(--accent-cyan);"></i>
+            Les entreprises, salons et événements sont inclus dans <strong style="color:var(--text-light);">Publier tout</strong> (bouton en haut).
+            Aucune publication séparée nécessaire.
           </p>
-          <div class="admin-workflow-banner" style="margin-bottom:1rem;">
-            <i class="fas fa-pen wf-icon"></i>
-            <span class="wf-item"><span class="wf-n">1</span> Saisir les données</span>
-            <span class="wf-arr">›</span>
-            <span class="wf-item wf-item--key"><span class="wf-n">2</span> Publier</span>
-            <span class="wf-arr">›</span>
-            <span class="wf-item"><span class="wf-n">3</span> Visible sur <code>/radar</code></span>
-          </div>
-          <div class="admin-form-row">
-            <div class="admin-form-group" style="flex:1;">
-              <label>Clé d'upload <small style="opacity:.6;">(définie dans <code>radar-pro-save.php</code>)</small></label>
-              <input type="password" id="rp-upload-secret" placeholder="op-radar-pro-2026-…" autocomplete="off" />
-            </div>
-            <div class="admin-form-group" style="flex:0;align-self:flex-end;">
-              <button id="rp-publish-btn" class="admin-btn admin-btn--deploy">
+          <!-- Anchor HTML conservé pour compatibilité JS — caché -->
+          <div style="display:none;">
+            <input id="rp-upload-secret" />
+            <button id="rp-publish-btn">
                 <i class="fas fa-cloud-upload-alt"></i> Publier Radar Pro
               </button>
             </div>
           </div>
-          <div id="rp-publish-result" style="display:none;margin-top:0.75rem;" class="admin-strava-result"></div>
-          <p class="admin-hint" style="margin-top:0.75rem;">
-            <i class="fas fa-key" style="color:var(--accent-cyan)"></i>
-            &nbsp;Clé par défaut : <code>op-radar-pro-2026-oceanphenix</code> — à changer dans le PHP avant upload.
-          </p>
+          <div id="rp-publish-result" style="display:none;" class="admin-strava-result"></div>
         </div>
 
       </div>
@@ -1206,7 +1197,121 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   .wf-step--key { color: var(--accent-cyan); font-weight: 700; }
 
   /* ── Guide Dashboard ─────────────────────────────────────── */
-  .admin-card--guide { border-left: 3px solid rgba(255,255,255,0.12); }
+  .admin-card--guide { border-left: 3px solid rgba(77,184,212,0.3); }
+
+  .admin-update-cases {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0 0.75rem;
+  }
+  @media (max-width: 700px) { .admin-update-cases { grid-template-columns: 1fr; } }
+
+  .admin-update-case {
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.025);
+    padding: 0.9rem 1rem;
+  }
+
+  .admin-update-case-head {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--accent-cyan);
+  }
+  .admin-update-case-head em {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .admin-update-flow {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    margin-bottom: 0.6rem;
+  }
+  .auf-step {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .auf-step--key { color: var(--text-light); font-weight: 700; }
+  .auf-step--key .auf-n { background: rgba(77,184,212,0.25); }
+  .auf-n {
+    min-width: 17px; height: 17px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: var(--accent-cyan);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 800; flex-shrink: 0;
+  }
+  .auf-arr { color: rgba(255,255,255,0.2); font-size: 1rem; }
+  .auf-arrow { color: rgba(255,255,255,0.25); }
+
+  .admin-update-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0 0 0.4rem;
+  }
+  .admin-update-key {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .admin-update-key code {
+    background: rgba(77,184,212,0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    color: var(--accent-cyan);
+    user-select: all;
+  }
+
+  .admin-update-ftp {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(255,255,255,0.015);
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+  }
+  .admin-update-ftp-label {
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .admin-update-ftp-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    color: var(--text-muted);
+  }
+  .admin-update-ftp-row code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--text-light);
+    font-size: 0.7rem;
+  }
 
   .admin-guide-grid {
     display: grid;
@@ -1331,6 +1436,19 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     gap: 0.25rem;
   }
 
+  .admin-topbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .admin-last-published {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
   .admin-topbar-actions {
     display: flex;
     align-items: center;
@@ -1425,6 +1543,23 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   .admin-tab--active {
     color: var(--accent-cyan);
     border-bottom-color: var(--accent-cyan);
+  }
+  .admin-tab--tool {
+    opacity: 0.7;
+    font-size: 0.8rem;
+  }
+  .admin-tab--tool.admin-tab--active { opacity: 1; }
+
+  /* Séparateur Contenu / Outils dans la barre d'onglets */
+  .admin-tabs-sep {
+    display: flex;
+    align-items: center;
+    padding: 0 0.4rem;
+    color: rgba(255,255,255,0.15);
+    font-size: 1.1rem;
+    user-select: none;
+    cursor: default;
+    flex-shrink: 0;
   }
 
   .admin-tab-content {

@@ -1675,6 +1675,10 @@
           statusEl.className = 'admin-publish-status admin-publish-status--ok';
           statusEl.innerHTML = '\u2713 ' + ts + ' \u2014 ' + (d.summary || '');
         }
+        // Persister la date pour la session suivante
+        if (d.updated_at) localStorage.setItem('op-last-published', d.updated_at);
+        var lpEl = document.getElementById('admin-last-published');
+        if (lpEl && ts) { lpEl.textContent = 'Publi\u00e9 : ' + ts; lpEl.style.display = ''; }
         showToast('\u2705 Site publié sur O2Switch');
       })
       .catch(function (e) {
@@ -1695,8 +1699,13 @@
   (function () {
     var btn = document.getElementById('admin-publish-btn');
     if (btn) btn.addEventListener('click', publishAll);
-    // Restaurer le statut de la dernière publication si connue
-    // (rien à faire — le statut n'est pas persisté entre sessions)
+    // Restaurer la date de dernière publication depuis localStorage
+    var lp = localStorage.getItem('op-last-published');
+    if (lp) {
+      var lpTs = new Date(lp).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      var lpEl = document.getElementById('admin-last-published');
+      if (lpEl) { lpEl.textContent = 'Publi\u00e9 : ' + lpTs; lpEl.style.display = ''; }
+    }
   })();
 
   // ── Publication Radar Pro (ancien bouton — maintenant délégue à publishAll) ──
