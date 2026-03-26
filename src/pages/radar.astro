@@ -848,18 +848,19 @@ import OceanBackground from '../components/OceanBackground.astro';
         })
         .map(r => {
           const g = r.coordonnees_geo;
-          const lat = g.lat ?? g.coordinates?.[1];
-          const lon = g.lon ?? g.coordinates?.[0];
+          const coords = Array.isArray(g.coordinates) ? g.coordinates : [];
+          const lat = g.lat !== undefined ? g.lat : coords[1];
+          const lon = g.lon !== undefined ? g.lon : coords[0];
           return {
-          id: `atout-${r.nom_commercial}-${r.code_postal}`,
-          nom: r.nom_commercial || 'Camping',
-          type: 'camping',
-          lat: parseFloat(lat),
-          lon: parseFloat(lon),
-          adresse: [r.adresse, r.code_postal, r.commune].filter(Boolean).join(' '),
-          classement: r.classement || null,
-          nbEmplacements: r.nombre_emplacements || null,
-          source: 'Atout France',
+            id: `atout-${r.nom_commercial}-${r.code_postal}`,
+            nom: r.nom_commercial || 'Camping',
+            type: 'camping',
+            lat: parseFloat(lat),
+            lon: parseFloat(lon),
+            adresse: [r.adresse, r.code_postal, r.commune].filter(Boolean).join(' '),
+            classement: r.classement || null,
+            nbEmplacements: r.nombre_emplacements || null,
+            source: 'Atout France',
           };
         });
     }
