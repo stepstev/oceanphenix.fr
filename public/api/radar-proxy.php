@@ -186,8 +186,66 @@ switch ($type) {
         proxyFetchCached($url, "salons_nationaux_{$dateFrom}", 7200);
         break;
 
+    case 'debug':
+        // ── Diagnostic — teste la connectivité vers chaque source externe ──────
+        $report = [];
+
+        // 1. allow_url_fopen
+        $report['allow_url_fopen'] = ini_get('allow_url_fopen') ? 'ON' : 'OFF';
+
+        // 2. geo.api.gouv.fr (commune)
+        $t = microtime(true);
+        $r = httpGet('https://geo.api.gouv.fr/communes?lat=48.86&lon=2.35&fields=codeDepartement,nom&format=json', 6);
+        $report['geo_api_gouv_fr'] = [
+            'ok'   => ($r !== false && strlen($r) > 2),
+            'ms'   => round((microtime(true) - $t) * 1000),
+            'body' => $r === false ? 'timeout/erreur' : substr($r, 0, 80),
+        ];
+
+        // 3. recherche-entreprises.api.gouv.fr
+        $t = microtime(true);
+        $r = httpGet('https://recherche-entreprises.api.gouv.fr/search?activite_principale=6311Z&departement=75&per_page=1', 8);
+        $report['recherche_entreprises'] = [
+            'ok'   => ($r !== false && str_contains($r, 'results')),
+            'ms'   => round((microtime(true) - $t) * 1000),
+            'body' => $r === false ? 'timeout/erreur' : substr($r, 0, 80),
+        ];
+
+        // 4. opendatasoft (campings)
+        $t = microtime(true);
+        $r = httpGet('https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/hebergements-classes/records?limit=1', 8);
+        $report['opendatasoft'] = [
+            'ok'   => ($r !== false && str_contains($r, 'results')),
+            'ms'   => round((microtime(true) - $t) * 1000),
+            'body' => $r === false ? 'timeout/erreur' : substr($r, 0, 80),
+        ];
+
+        // 5. OpenAgenda — clé configurée ?
+        $openagendaKey = getenv('OPENAGENDA_KEY') ?: '';
+        $report['openagenda_key_set'] = !empty($openagendaKey);
+        if (!empty($openagendaKey)) {
+            $t = microtime(true);
+            $r = httpGet("https://api.openagenda.com/v2/events?key=" . urlencode($openagendaKey) . "&size=1", 8);
+            $report['openagenda_api'] = [
+                'ok'   => ($r !== false && str_contains($r, 'events')),
+                'ms'   => round((microtime(true) - $t) * 1000),
+                'body' => $r === false ? 'timeout/erreur' : substr($r, 0, 80),
+            ];
+        }
+
+        // 6. Overpass
+        $t = microtime(true);
+        $r = httpGet('https://overpass-api.de/api/status', 6);
+        $report['overpass'] = [
+            'ok'   => ($r !== false),
+            'ms'   => round((microtime(true) - $t) * 1000),
+        ];
+
+        echo json_encode(['debug' => $report, 'php_version' => PHP_VERSION], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        break;
+
     default:
-        jsonError("Type inconnu : $type. Valeurs acceptées : campings, entreprises, commune, events, salons-nationaux");
+        jsonError("Type inconnu : $type. Valeurs acceptées : campings, entreprises, commune, events, salons-nationaux, debug");
 }
 
 // ── Fonctions utilitaires ─────────────────────────────────────────────────────

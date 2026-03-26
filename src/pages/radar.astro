@@ -1741,6 +1741,9 @@ import OceanBackground from '../components/OceanBackground.astro';
           const modes = (currentTab.dataset.modes || '').split(',');
           if (!modes.includes(mode)) switchTab('carte');
         }
+
+        // 7. Relancer la recherche — les sources de données diffèrent selon le mode
+        if (currentLat !== null && currentLon !== null) search();
       }
 
       document.querySelectorAll('.rd-mode-btn').forEach(btn => {
