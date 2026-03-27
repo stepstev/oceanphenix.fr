@@ -36,3 +36,8 @@ dist-deploy.zip
 # Deploy credentials — jamais dans le repo
 deploy.env
 deploy.log
+
+# Env vars locaux — jamais dans le repo
+.env
+.env.local
+.env.*.local
