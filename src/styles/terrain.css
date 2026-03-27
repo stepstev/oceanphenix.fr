@@ -742,18 +742,18 @@
   box-shadow: 0 0 18px rgba(77, 184, 212, 0.28);
 }
 
-/* Ghost — actions secondaires (toutes cyan, même style) */
+/* Orange — actions secondaires */
 .terrain-cta--secondary,
 .terrain-cta--rdv {
-  background: transparent;
-  border: 1px solid rgba(77, 184, 212, 0.32);
-  color: var(--accent-cyan);
+  background: var(--accent-copper);
+  border: 1px solid var(--accent-copper);
+  color: #fff;
 }
 .terrain-cta--secondary:hover,
 .terrain-cta--rdv:hover {
-  background: rgba(77, 184, 212, 0.07);
-  border-color: rgba(77, 184, 212, 0.55);
-  box-shadow: 0 0 12px rgba(77, 184, 212, 0.1);
+  background: var(--accent-copper-light);
+  border-color: var(--accent-copper-light);
+  box-shadow: 0 0 16px rgba(200, 122, 74, 0.3);
 }
 
 .terrain-cta--rdv-large {
@@ -1883,13 +1883,9 @@
 
 [data-theme="light"] .terrain-cta--secondary,
 [data-theme="light"] .terrain-cta--rdv {
-  border-color: rgba(6, 182, 212, 0.4);
-  color: #0e7490;
-}
-[data-theme="light"] .terrain-cta--secondary:hover,
-[data-theme="light"] .terrain-cta--rdv:hover {
-  background: rgba(6, 182, 212, 0.07);
-  border-color: rgba(6, 182, 212, 0.6);
+  background: var(--accent-copper);
+  border-color: var(--accent-copper);
+  color: #fff;
 }
 [data-theme="light"] .terrain-cta--primary {
   color: #fff;
