@@ -595,6 +595,11 @@ import OceanBackground from '../components/OceanBackground.astro';
     let allResults = [];
     let searchAbortController = null; // Annule les requêtes en cours si nouvelle recherche
     let modeChangeTimer = null;       // Debounce changement de mode
+    const searchCache   = new Map();  // Cache mémoire session : clé → résultats
+    let lastSearchKey   = null;       // Dernière clé recherchée
+    let lastSearchTime  = 0;          // Timestamp dernière recherche (ms)
+    const SEARCH_THROTTLE_MS = 20000; // 20 s min entre deux recherches identiques
+    const OVERPASS_MAX_KM    = 15;    // Rayon max Overpass (au-delà → trop lourd)
     let leafletMap = null;
     let mapClusters = {};     // cluster group par type
     let posMarker   = null;   // marqueur position actuelle
@@ -1222,6 +1227,18 @@ import OceanBackground from '../components/OceanBackground.astro';
     async function search() {
       if (currentLat === null || currentLon === null) return;
 
+      // Clé de cache : position arrondie 2 décimales (~1 km) + rayon + mode
+      const cacheKey = `${currentLat.toFixed(2)},${currentLon.toFixed(2)},${currentRadius},${currentMode}`;
+      const now = Date.now();
+
+      // Throttle — même recherche < 20 s : servir le cache mémoire sans appel réseau
+      if (cacheKey === lastSearchKey && (now - lastSearchTime) < SEARCH_THROTTLE_MS && searchCache.has(cacheKey)) {
+        allResults = searchCache.get(cacheKey);
+        renderResults();
+        renderMapMarkers();
+        return;
+      }
+
       // Annuler toute recherche en cours
       if (searchAbortController) searchAbortController.abort();
       searchAbortController = new AbortController();
@@ -1229,7 +1246,6 @@ import OceanBackground from '../components/OceanBackground.astro';
 
       showLoading(true);
       clearMapMarkers();
-      // Show skeletons in all lists
       ['results-list', 'list-camping', 'list-coworking', 'list-entreprise', 'list-evenement', 'list-piscine', 'list-fontaine', 'list-douche', 'list-abri'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = skeletonHTML(3);
@@ -1238,7 +1254,7 @@ import OceanBackground from '../components/OceanBackground.astro';
 
       // En dev : utiliser les données mock pour avoir un rendu immédiat
       if (IS_DEV) {
-        await new Promise(r => setTimeout(r, 400)); // Simule latence réseau
+        await new Promise(r => setTimeout(r, 400));
         allResults = MOCK_RESULTS.map(r => ({
           ...r,
           dist: haversine(currentLat, currentLon, r.lat, r.lon)
@@ -1251,7 +1267,8 @@ import OceanBackground from '../components/OceanBackground.astro';
         return;
       }
 
-      const radiusM = currentRadius * 1000;
+      // Rayon Overpass plafonné à OVERPASS_MAX_KM pour éviter les timeouts
+      const radiusM = Math.min(currentRadius, OVERPASS_MAX_KM) * 1000;
       const isCyclo = currentMode === 'cyclo';
 
       // Appels conditionnels selon le mode — évite les timeouts inutiles
@@ -1303,6 +1320,12 @@ import OceanBackground from '../components/OceanBackground.astro';
           if (b.dist === null) return -1;
           return a.dist - b.dist;
         });
+
+      // Stocker en cache mémoire (max 30 entrées pour éviter la fuite mémoire)
+      if (searchCache.size >= 30) searchCache.delete(searchCache.keys().next().value);
+      searchCache.set(cacheKey, allResults);
+      lastSearchKey  = cacheKey;
+      lastSearchTime = Date.now();
 
       renderResults();
       renderMapMarkers();
