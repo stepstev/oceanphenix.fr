@@ -1640,7 +1640,7 @@
     { id: 'def-lnk-14', categorie: 'agregateur',  nom: 'Sylob Salons',             date: '',                 lieu: '',                               url: 'https://sylob.com/salons',           interet: 'IT + Industrie France 2026' },
   ];
 
-  var LIEN_CAT_LABELS = { officiel: '\ud83c\udfe6 Officiel', veille: '\ud83c\udf10 Veille', agregateur: '\ud83d\udcf0 Agr\u00e9gateur' };
+  var LIEN_CAT_LABELS = { officiel: 'Officiel', veille: 'Veille', agregateur: 'Agr\u00e9gateur' };
 
   function loadLiens() {
     try { rpLiens = JSON.parse(localStorage.getItem(LIENS_KEY) || '[]'); } catch(e) { rpLiens = []; }
@@ -1661,11 +1661,11 @@
       var urlShort = (l.url || '').replace(/^https?:\/\//, '');
       html += '<tr>';
       html += '<td style="font-weight:600;">' + (l.nom || '') + '</td>';
-      html += '<td style="color:#9ab0c4;font-size:0.82rem;">' + cat + '</td>';
-      html += '<td style="font-size:0.82rem;">';
-      if (l.url) html += '<a href="' + l.url + '" target="_blank" rel="noopener" style="color:#4db8d4;">' + urlShort + '</a>';
+      html += '<td><span class="lien-cat-pill">' + cat + '</span></td>';
+      html += '<td class="admin-cell-muted" style="font-size:0.82rem;">';
+      if (l.url) html += '<a href="' + l.url + '" target="_blank" rel="noopener" class="admin-table-link">' + urlShort + '</a>';
       html += '</td>';
-      html += '<td style="color:#9ab0c4;font-size:0.82rem;">' + (l.interet || '') + '</td>';
+      html += '<td class="admin-cell-muted" style="font-size:0.82rem;">' + (l.interet || '') + '</td>';
       html += '<td style="text-align:center;white-space:nowrap;">';
       html += '<button class="admin-btn admin-btn--sm" data-lien-edit="' + idx + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
       html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-lien-del="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';

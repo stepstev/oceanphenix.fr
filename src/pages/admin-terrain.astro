@@ -896,9 +896,9 @@ import etapesData from '../data/terrain-etapes.json';
               <div class="admin-form-group">
                 <label>Catégorie</label>
                 <select id="lien-categorie">
-                  <option value="officiel">🏛️ Organisateur officiel</option>
-                  <option value="veille">🌐 Plateforme de veille</option>
-                  <option value="agregateur">📰 Agrégateur</option>
+                  <option value="officiel">Organisateur officiel</option>
+                  <option value="veille">Plateforme de veille</option>
+                  <option value="agregateur">Agrégateur</option>
                 </select>
               </div>
             </div>
@@ -1704,6 +1704,28 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
   .admin-etapes-table tbody tr:hover {
     background: rgba(77, 184, 212, 0.06);
   }
+
+  .admin-cell-muted { color: var(--text-muted); }
+
+  .lien-cat-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    border: 1px solid rgba(77, 184, 212, 0.2);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .admin-table-link {
+    color: var(--accent-cyan);
+    text-decoration: none;
+    opacity: 0.85;
+  }
+  .admin-table-link:hover { opacity: 1; text-decoration: underline; }
 
 
 

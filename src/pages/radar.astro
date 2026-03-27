@@ -1118,9 +1118,9 @@ import OceanBackground from '../components/OceanBackground.astro';
 
     // ── Liens utiles ──────────────────────────────────────────
     const LIEN_CAT = {
-      officiel:   { label: '🏛️ Organisateurs officiels',         color: '#4db8d4' },
-      veille:     { label: '🌐 Plateformes de veille',           color: '#8b5cf6' },
-      agregateur: { label: '📰 Agrégateurs de référence',        color: '#f59e0b' },
+      officiel:   { label: 'Organisateurs officiels', icon: 'fa-calendar-alt' },
+      veille:     { label: 'Plateformes de veille',   icon: 'fa-globe'        },
+      agregateur: { label: 'Agrégateurs',             icon: 'fa-newspaper'    },
     };
 
     function renderLiensUtiles() {
@@ -1129,14 +1129,10 @@ import OceanBackground from '../components/OceanBackground.astro';
       const liens = adminProData.liens || [];
 
       if (liens.length === 0) {
-        wrap.innerHTML = `<p class="lt-empty" style="padding:1.5rem;color:#666;text-align:center;">
-          <i class="fas fa-link" style="opacity:.4"></i><br>
-          Aucun lien configuré — ajoutez des liens dans l'admin (<strong>Liens utiles</strong>).
-        </p>`;
+        wrap.innerHTML = `<p class="lt-empty"><i class="fas fa-link"></i> Aucun lien configuré — ajoutez des liens dans l'admin (<strong>Liens utiles</strong>).</p>`;
         return;
       }
 
-      // Grouper par catégorie
       const groups = {};
       liens.forEach(l => {
         const cat = l.categorie || 'autre';
@@ -1145,42 +1141,34 @@ import OceanBackground from '../components/OceanBackground.astro';
       });
 
       const catOrder = ['officiel', 'veille', 'agregateur'];
-      // Ajouter les catégories inconnues à la fin
       Object.keys(groups).forEach(c => { if (!catOrder.includes(c)) catOrder.push(c); });
 
       let html = '';
       catOrder.forEach(cat => {
         if (!groups[cat] || groups[cat].length === 0) return;
-        const cfg = LIEN_CAT[cat] || { label: cat, color: '#4db8d4' };
-        html += `<div class="lu-section" style="margin-bottom:1.25rem;">
-          <h4 class="lu-section-title" style="color:${cfg.color};font-size:0.88rem;font-weight:600;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;">
-            ${cfg.label}
-          </h4>
-          <table class="rd-link-table" style="width:100%;border-collapse:collapse;">
-            <thead>
-              <tr style="font-size:0.75rem;color:#556b83;border-bottom:1px solid rgba(77,184,212,0.12);">
-                <th style="text-align:left;padding:4px 8px;">Nom</th>
-                <th style="text-align:left;padding:4px 8px;">Date</th>
-                <th style="text-align:left;padding:4px 8px;">Lieu</th>
-                <th style="text-align:left;padding:4px 8px;">Lien</th>
-                <th style="text-align:left;padding:4px 8px;">Description</th>
-              </tr>
-            </thead>
+        const cfg = LIEN_CAT[cat] || { label: cat, icon: 'fa-link' };
+        html += `<div class="lu-section">
+          <h4 class="lu-section-title"><i class="fas ${cfg.icon}"></i>${cfg.label}</h4>
+          <div class="rd-link-table-wrap">
+          <table class="lt-table">
+            <thead><tr>
+              <th>Nom</th><th>Date</th><th>Lieu</th><th>Lien</th><th>Description</th>
+            </tr></thead>
             <tbody>`;
         groups[cat].forEach(l => {
           const urlDisplay = (l.url || '').replace(/^https?:\/\//, '');
           const urlHtml = l.url
-            ? `<a href="${escHtml(l.url)}" target="_blank" rel="noopener" class="lt-link" style="color:#4db8d4;">${escHtml(urlDisplay)} <i class="fas fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></a>`
+            ? `<a href="${escHtml(l.url)}" target="_blank" rel="noopener" class="lt-link">${escHtml(urlDisplay)}<i class="fas fa-arrow-up-right-from-square"></i></a>`
             : '—';
-          html += `<tr style="border-bottom:1px solid rgba(77,184,212,0.07);font-size:0.84rem;">
-            <td style="padding:6px 8px;font-weight:600;color:#c8dbe8;">${escHtml(l.nom || '')}</td>
-            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.date || '—')}</td>
-            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.lieu || '—')}</td>
-            <td style="padding:6px 8px;">${urlHtml}</td>
-            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.interet || '')}</td>
+          html += `<tr>
+            <td class="lt-nom">${escHtml(l.nom || '')}</td>
+            <td class="lt-date">${escHtml(l.date || '—')}</td>
+            <td class="lt-lieu">${escHtml(l.lieu || '—')}</td>
+            <td>${urlHtml}</td>
+            <td class="lt-lieu lu-desc">${escHtml(l.interet || '')}</td>
           </tr>`;
         });
-        html += `</tbody></table></div>`;
+        html += `</tbody></table></div></div>`;
       });
 
       wrap.innerHTML = html;
@@ -3147,7 +3135,7 @@ import OceanBackground from '../components/OceanBackground.astro';
     transition: opacity var(--transition-fast);
   }
   .lt-link:hover { opacity: 0.75; text-decoration: underline; }
-  .lt-link i { font-size: 0.6rem; margin-left: 3px; opacity: 0.7; }
+  .lt-link i { font-size: 0.58rem; margin-left: 4px; opacity: 0.5; vertical-align: middle; }
 
   .lt-badges {
     display: flex;
@@ -3179,6 +3167,29 @@ import OceanBackground from '../components/OceanBackground.astro';
     gap: 8px;
   }
   .lt-empty i { opacity: 0.5; }
+
+  /* ── Liens utiles sections ───────────────────────────── */
+  .lu-section { margin-bottom: 1.75rem; }
+  .lu-section:last-child { margin-bottom: 0; }
+
+  .lu-section-title {
+    margin: 0 0 0.6rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .lu-section-title i { font-size: 0.6rem; opacity: 0.5; }
+
+  .lu-desc { max-width: 220px; }
+
+  [data-theme="light"] .lu-section-title { border-bottom-color: rgba(0,0,0,0.07); }
 
   [data-theme="light"] .lt-table thead th { border-bottom-color: rgba(0,0,0,0.08); }
   [data-theme="light"] .lt-table tbody tr { border-bottom-color: rgba(0,0,0,0.05); }
