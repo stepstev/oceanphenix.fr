@@ -267,6 +267,9 @@ import OceanBackground from '../components/OceanBackground.astro';
           <i class="fas fa-flag"></i> Salons FR
           <span class="rd-tab-count" id="count-salons">—</span>
         </button>
+        <button class="rd-tab" data-tab="liens-utiles" data-modes="pro" role="tab" aria-selected="false">
+          <i class="fas fa-link"></i> Liens utiles
+        </button>
         <!-- CYCLO uniquement -->
         <button class="rd-tab rd-tab--mode-hidden" data-tab="camping" data-modes="cyclo" role="tab" aria-selected="false">
           <span class="rd-tab-dot" style="--dot-color:#10b981"></span>
@@ -480,6 +483,21 @@ import OceanBackground from '../components/OceanBackground.astro';
         </div>
       </div>
 
+      <!-- TAB: Liens utiles -->
+      <div class="rd-tab-content" id="tab-liens-utiles" role="tabpanel">
+        <div class="rd-card">
+          <div class="rd-card-header">
+            <h3><i class="fas fa-link"></i> Sources &amp; Liens utiles — Data / IA 2026</h3>
+            <span class="rd-card-hint">Organisateurs officiels · Plateformes de veille · Agrégateurs</span>
+          </div>
+          <div id="liens-utiles-content">
+            <div class="rd-list-empty" style="padding:1.5rem;color:#666;text-align:center;">
+              <i class="fas fa-spinner fa-spin"></i> Chargement…
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /.rd-container -->
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -589,13 +607,14 @@ import OceanBackground from '../components/OceanBackground.astro';
     let salonFormats      = new Set(['presentiel', 'hybride', 'visio', 'autre']);
 
     // ── Données curées admin (localStorage) ───────────────────
-    let adminProData = { entreprises: [], salons: [], events: [] };
+    let adminProData = { entreprises: [], salons: [], events: [], liens: [] };
 
     async function loadAdminProData() {
       // Fallback localStorage (données admin locales — prioritaires sur l'admin lui-même)
       try { adminProData.entreprises = JSON.parse(localStorage.getItem('op-radar-entreprises') || '[]'); } catch(e) { adminProData.entreprises = []; }
       try { adminProData.salons      = JSON.parse(localStorage.getItem('op-radar-salons')      || '[]'); } catch(e) { adminProData.salons      = []; }
       try { adminProData.events      = JSON.parse(localStorage.getItem('op-radar-events')      || '[]'); } catch(e) { adminProData.events      = []; }
+      try { adminProData.liens       = JSON.parse(localStorage.getItem('op-radar-liens')       || '[]'); } catch(e) { adminProData.liens       = []; }
 
       // Fichier serveur unifié → prioritaire pour les visiteurs publics
       // Essaie d'abord site-data.json (nouveau), puis radar-pro.json (compat)
@@ -607,6 +626,7 @@ import OceanBackground from '../components/OceanBackground.astro';
           if (Array.isArray(r.entreprises) && r.entreprises.length) adminProData.entreprises = r.entreprises;
           if (Array.isArray(r.salons)      && r.salons.length)      adminProData.salons      = r.salons;
           if (Array.isArray(r.events)      && r.events.length)      adminProData.events      = r.events;
+          if (Array.isArray(r.liens)       && r.liens.length)       adminProData.liens       = r.liens;
           return; // site-data.json OK → pas besoin de radar-pro.json
         }
       } catch(_) { /* continuer vers fallback */ }
@@ -619,6 +639,7 @@ import OceanBackground from '../components/OceanBackground.astro';
           if (Array.isArray(d.entreprises) && d.entreprises.length) adminProData.entreprises = d.entreprises;
           if (Array.isArray(d.salons)      && d.salons.length)      adminProData.salons      = d.salons;
           if (Array.isArray(d.events)      && d.events.length)      adminProData.events      = d.events;
+          if (Array.isArray(d.liens)       && d.liens.length)       adminProData.liens       = d.liens;
         }
       } catch(_) { /* localStorage conservé */ }
     }
@@ -1095,6 +1116,75 @@ import OceanBackground from '../components/OceanBackground.astro';
     const DOMAIN_CFG = { emploi: ['#10b981','EMPLOI'], data: ['#f59e0b','DATA'], ia: ['#8b5cf6','IA'], dev: ['#60a5fa','DEV'], tech: ['#94a3b8','TECH'] };
     const FMT_CFG    = { presentiel: 'Présentiel', hybride: 'Hybride', visio: 'Visio', autre: 'N/C' };
 
+    // ── Liens utiles ──────────────────────────────────────────
+    const LIEN_CAT = {
+      officiel:   { label: '🏛️ Organisateurs officiels',         color: '#4db8d4' },
+      veille:     { label: '🌐 Plateformes de veille',           color: '#8b5cf6' },
+      agregateur: { label: '📰 Agrégateurs de référence',        color: '#f59e0b' },
+    };
+
+    function renderLiensUtiles() {
+      const wrap = document.getElementById('liens-utiles-content');
+      if (!wrap) return;
+      const liens = adminProData.liens || [];
+
+      if (liens.length === 0) {
+        wrap.innerHTML = `<p class="lt-empty" style="padding:1.5rem;color:#666;text-align:center;">
+          <i class="fas fa-link" style="opacity:.4"></i><br>
+          Aucun lien configuré — ajoutez des liens dans l'admin (<strong>Liens utiles</strong>).
+        </p>`;
+        return;
+      }
+
+      // Grouper par catégorie
+      const groups = {};
+      liens.forEach(l => {
+        const cat = l.categorie || 'autre';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(l);
+      });
+
+      const catOrder = ['officiel', 'veille', 'agregateur'];
+      // Ajouter les catégories inconnues à la fin
+      Object.keys(groups).forEach(c => { if (!catOrder.includes(c)) catOrder.push(c); });
+
+      let html = '';
+      catOrder.forEach(cat => {
+        if (!groups[cat] || groups[cat].length === 0) return;
+        const cfg = LIEN_CAT[cat] || { label: cat, color: '#4db8d4' };
+        html += `<div class="lu-section" style="margin-bottom:1.25rem;">
+          <h4 class="lu-section-title" style="color:${cfg.color};font-size:0.88rem;font-weight:600;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;">
+            ${cfg.label}
+          </h4>
+          <table class="rd-link-table" style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="font-size:0.75rem;color:#556b83;border-bottom:1px solid rgba(77,184,212,0.12);">
+                <th style="text-align:left;padding:4px 8px;">Nom</th>
+                <th style="text-align:left;padding:4px 8px;">Date</th>
+                <th style="text-align:left;padding:4px 8px;">Lieu</th>
+                <th style="text-align:left;padding:4px 8px;">Lien</th>
+                <th style="text-align:left;padding:4px 8px;">Description</th>
+              </tr>
+            </thead>
+            <tbody>`;
+        groups[cat].forEach(l => {
+          const urlDisplay = (l.url || '').replace(/^https?:\/\//, '');
+          const urlHtml = l.url
+            ? `<a href="${escHtml(l.url)}" target="_blank" rel="noopener" class="lt-link" style="color:#4db8d4;">${escHtml(urlDisplay)} <i class="fas fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></a>`
+            : '—';
+          html += `<tr style="border-bottom:1px solid rgba(77,184,212,0.07);font-size:0.84rem;">
+            <td style="padding:6px 8px;font-weight:600;color:#c8dbe8;">${escHtml(l.nom || '')}</td>
+            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.date || '—')}</td>
+            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.lieu || '—')}</td>
+            <td style="padding:6px 8px;">${urlHtml}</td>
+            <td style="padding:6px 8px;color:#9ab0c4;">${escHtml(l.interet || '')}</td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      });
+
+      wrap.innerHTML = html;
+    }
 
     function renderSalons() {
       const countEl = document.getElementById('count-salons');
@@ -1444,6 +1534,10 @@ import OceanBackground from '../components/OceanBackground.astro';
       // Charger les salons nationaux au premier accès
       if (tabName === 'salons' && !salonsLoaded) {
         fetchSalonsNationaux();
+      }
+      // Rendre les liens utiles à chaque accès (données légères)
+      if (tabName === 'liens-utiles') {
+        renderLiensUtiles();
       }
     }
 

@@ -107,6 +107,9 @@ import etapesData from '../data/terrain-etapes.json';
         <button class="admin-tab" data-tab="radar-pro">
           <i class="fas fa-crosshairs"></i> Radar Pro
         </button>
+        <button class="admin-tab" data-tab="liens-utiles">
+          <i class="fas fa-link"></i> Liens utiles
+        </button>
         <!-- Séparateur Contenu / Outils -->
         <span class="admin-tabs-sep" aria-hidden="true" title="Outils">›</span>
         <!-- Outils -->
@@ -842,10 +845,100 @@ import etapesData from '../data/terrain-etapes.json';
                 <i class="fas fa-cloud-upload-alt"></i> Publier Radar Pro
               </button>
             </div>
-          </div>
           <div id="rp-publish-result" style="display:none;" class="admin-strava-result"></div>
         </div>
 
+      </div>
+
+      <!-- ============================== -->
+      <!-- TAB: Liens utiles              -->
+      <!-- ============================== -->
+      <div class="admin-tab-content" id="tab-liens-utiles">
+        <p class="admin-hint" style="margin-bottom:1.5rem;">
+          <i class="fas fa-info-circle"></i>
+          Gérez ici les liens affichés dans l'onglet <strong>Liens utiles</strong> du Radar. Organisateurs officiels, plateformes de veille, agrégateurs — publiés via <strong>Publier tout</strong>.
+        </p>
+
+        <div class="admin-card">
+          <h2><i class="fas fa-link"></i> Liens &amp; Sources utiles</h2>
+          <div class="admin-form-actions" style="margin-bottom:1rem;">
+            <button id="lien-add-btn" class="admin-btn admin-btn--accent">
+              <i class="fas fa-plus"></i> Ajouter un lien
+            </button>
+            <button id="lien-load-defaults-btn" class="admin-btn" style="border-color:#4db8d4;color:#4db8d4;" title="Préremplir avec les sources officielles 2026">
+              <i class="fas fa-database"></i> Charger données 2026
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-etapes-table">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Catégorie</th>
+                  <th>URL</th>
+                  <th>Description</th>
+                  <th style="text-align:center;width:80px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="lien-tbody"></tbody>
+            </table>
+          </div>
+          <p id="lien-count" style="margin-top:12px;color:#888;font-size:0.85rem;"></p>
+
+          <div id="lien-editor" style="display:none;margin-top:1rem;" class="admin-etape-editor">
+            <h3 id="lien-editor-title">Nouveau lien</h3>
+            <input type="hidden" id="lien-edit-idx" value="-1" />
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Nom</label>
+                <input type="text" id="lien-nom" placeholder="Ex: Big Data & AI Paris" />
+              </div>
+              <div class="admin-form-group">
+                <label>Catégorie</label>
+                <select id="lien-categorie">
+                  <option value="officiel">🏛️ Organisateur officiel</option>
+                  <option value="veille">🌐 Plateforme de veille</option>
+                  <option value="agregateur">📰 Agrégateur</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>Date / Période</label>
+                <input type="text" id="lien-date" placeholder="Ex: 15–16 sept" />
+              </div>
+              <div class="admin-form-group">
+                <label>Lieu</label>
+                <input type="text" id="lien-lieu" placeholder="Paris Porte de Versailles" />
+              </div>
+            </div>
+            <div class="admin-form-row">
+              <div class="admin-form-group">
+                <label>URL</label>
+                <input type="url" id="lien-url" placeholder="https://…" />
+              </div>
+              <div class="admin-form-group">
+                <label>Description / Intérêt</label>
+                <input type="text" id="lien-interet" placeholder="Événements pros data/IA, très à jour" />
+              </div>
+            </div>
+            <div class="admin-form-actions">
+              <button id="lien-save-btn" class="admin-btn admin-btn--accent">
+                <i class="fas fa-check"></i> Valider
+              </button>
+              <button id="lien-cancel-btn" class="admin-btn">
+                <i class="fas fa-times"></i> Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card" style="padding:1rem 1.25rem;">
+          <p style="margin:0;font-size:0.85rem;color:var(--text-muted);display:flex;align-items:center;gap:0.6rem;">
+            <i class="fas fa-cloud-upload-alt" style="color:var(--accent-cyan);"></i>
+            Les liens sont inclus dans <strong style="color:var(--text-light);">Publier tout</strong> (bouton en haut) — ils apparaissent dans l'onglet <strong style="color:var(--text-light);">Liens utiles</strong> du Radar.
+          </p>
+        </div>
       </div>
 
       <!-- ============================== -->
@@ -2077,6 +2170,8 @@ $STRAVA_CRON_SECRET   = 'op-cron-strava-2026-oceanphenix';</pre>
     line-height: 1.7;
     white-space: pre;
     overflow-x: auto;
+    max-width: 100%;
+    box-sizing: border-box;
     margin-bottom: 0.75rem;
   }
 

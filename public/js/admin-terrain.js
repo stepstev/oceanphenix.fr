@@ -256,6 +256,7 @@
     localStorage.removeItem('op-radar-entreprises');
     localStorage.removeItem('op-radar-salons');
     localStorage.removeItem('op-radar-events');
+    localStorage.removeItem('op-radar-liens');
     showToast('\u2705 Cache local réinitialisé — les données viennent maintenant du build');
     setTimeout(function() { globalThis.location.reload(); }, 1200);
   }
@@ -404,6 +405,7 @@
       if (tab.dataset.tab === 'villes' && !villesRendered) renderVilles('');
       if (tab.dataset.tab === 'coworking') renderCoworking();
       if (tab.dataset.tab === 'radar-pro') renderRadarProTab();
+      if (tab.dataset.tab === 'liens-utiles') renderLiensUtiles();
     });
   });
 
@@ -708,7 +710,8 @@
         exportJson(id === 'export-deploy-btn');
       });
     });
-    document.getElementById('journal-export-btn').addEventListener('click', function() {
+    var journalExportBtn = document.getElementById('journal-export-btn');
+    if (journalExportBtn) journalExportBtn.addEventListener('click', function() {
       exportJournalJson();
     });
     document.getElementById('admin-import-btn').addEventListener('click', function() {
@@ -1612,6 +1615,142 @@
   loadRpData();
 
   // ═══════════════════════════════════════════════════════════
+  // TAB: Liens utiles — Sources, veille, agrégateurs
+  // ═══════════════════════════════════════════════════════════
+  var LIENS_KEY = 'op-radar-liens';
+  var rpLiens   = [];
+
+  var LIENS_DEFAULT = [
+    // Organisateurs officiels
+    { id: 'def-lnk-1',  categorie: 'officiel',    nom: 'Big Data & AI Paris',      date: '15\u201316 sept',  lieu: 'Paris Porte de Versailles',      url: 'https://bigdataparis.com',           interet: 'R\u00e9f\u00e9rence Big Data & IA en France' },
+    { id: 'def-lnk-2',  categorie: 'officiel',    nom: 'VivaTech',                 date: '17\u201320 juin',  lieu: 'Paris Porte de Versailles',      url: 'https://vivatech.com',               interet: 'Innovation, IA, Startup, Data, Recrutement' },
+    { id: 'def-lnk-3',  categorie: 'officiel',    nom: 'Salon de la Data & IA',    date: '22 sept',          lieu: 'Nantes Cit\u00e9 des Congr\u00e8s', url: 'https://salondata.fr',            interet: 'Salon d\u00e9di\u00e9 Data & IA \u00e0 Nantes' },
+    { id: 'def-lnk-4',  categorie: 'officiel',    nom: 'Data & AI Leaders Summit', date: '18\u201319 nov',   lieu: 'Paris',                          url: 'https://techshowparis.fr',           interet: 'Summit d\u00e9cideurs Data & IA' },
+    { id: 'def-lnk-5',  categorie: 'officiel',    nom: 'GenAI France',             date: 'R\u00e9gulier',    lieu: 'Paris, Lyon, Nantes, Bordeaux\u2026', url: 'https://generativeai.paris',    interet: 'Meetups GenAI r\u00e9guliers en France' },
+    { id: 'def-lnk-6',  categorie: 'officiel',    nom: 'Data Days Lille',          date: '\u00c0 confirmer', lieu: 'Lille',                          url: 'https://days.data-lille.fr/2026',    interet: 'Journ\u00e9es data Lille' },
+    { id: 'def-lnk-7',  categorie: 'officiel',    nom: 'World AI Cannes Festival', date: '12\u201313 f\u00e9v', lieu: 'Cannes',                     url: 'https://worldaicannes.com',          interet: 'Festival IA \u00e0 Cannes' },
+    // Plateformes de veille
+    { id: 'def-lnk-8',  categorie: 'veille',      nom: 'LinkedIn Events',          date: '',                 lieu: '',                               url: 'https://linkedin.com/events',        interet: '\u00c9v\u00e9nements pros data/IA \u2014 tr\u00e8s \u00e0 jour, les organisateurs publient ici en premier' },
+    { id: 'def-lnk-9',  categorie: 'veille',      nom: 'Meetup.com',               date: '',                 lieu: '',                               url: 'https://meetup.com',                 interet: 'Communaut\u00e9s locales data/IA par ville' },
+    { id: 'def-lnk-10', categorie: 'veille',      nom: 'Eventbrite',               date: '',                 lieu: '',                               url: 'https://eventbrite.fr',              interet: 'Billetterie officielle de nombreux \u00e9v\u00e9nements' },
+    { id: 'def-lnk-11', categorie: 'veille',      nom: 'ADN Ouest',                date: '',                 lieu: 'Nantes, Rennes, Bretagne',       url: 'https://adnouest.org/agenda',        interet: 'Grand Ouest num\u00e9rique \u2014 agenda complet' },
+    // Agrégateurs
+    { id: 'def-lnk-12', categorie: 'agregateur',  nom: 'AVISIA',                   date: '',                 lieu: '',                               url: 'https://avisia.fr/blog',             interet: 'Calendrier S1 + S2 2026' },
+    { id: 'def-lnk-13', categorie: 'agregateur',  nom: 'Datalogy',                 date: '',                 lieu: '',                               url: 'https://datalogy-agency.com',        interet: 'Liste 2026 France + Europe' },
+    { id: 'def-lnk-14', categorie: 'agregateur',  nom: 'Sylob Salons',             date: '',                 lieu: '',                               url: 'https://sylob.com/salons',           interet: 'IT + Industrie France 2026' },
+  ];
+
+  var LIEN_CAT_LABELS = { officiel: '\ud83c\udfe6 Officiel', veille: '\ud83c\udf10 Veille', agregateur: '\ud83d\udcf0 Agr\u00e9gateur' };
+
+  function loadLiens() {
+    try { rpLiens = JSON.parse(localStorage.getItem(LIENS_KEY) || '[]'); } catch(e) { rpLiens = []; }
+  }
+
+  function renderLiensUtiles() {
+    loadLiens();
+    renderLiensTable();
+  }
+
+  function renderLiensTable() {
+    var tbody = document.getElementById('lien-tbody');
+    var count = document.getElementById('lien-count');
+    if (!tbody) return;
+    var html = '';
+    rpLiens.forEach(function(l, idx) {
+      var cat = LIEN_CAT_LABELS[l.categorie] || (l.categorie || '');
+      var urlShort = (l.url || '').replace(/^https?:\/\//, '');
+      html += '<tr>';
+      html += '<td style="font-weight:600;">' + (l.nom || '') + '</td>';
+      html += '<td style="color:#9ab0c4;font-size:0.82rem;">' + cat + '</td>';
+      html += '<td style="font-size:0.82rem;">';
+      if (l.url) html += '<a href="' + l.url + '" target="_blank" rel="noopener" style="color:#4db8d4;">' + urlShort + '</a>';
+      html += '</td>';
+      html += '<td style="color:#9ab0c4;font-size:0.82rem;">' + (l.interet || '') + '</td>';
+      html += '<td style="text-align:center;white-space:nowrap;">';
+      html += '<button class="admin-btn admin-btn--sm" data-lien-edit="' + idx + '" title="Modifier"><i class="fas fa-pen"></i></button> ';
+      html += '<button class="admin-btn admin-btn--sm admin-btn--danger" data-lien-del="' + idx + '" title="Supprimer"><i class="fas fa-trash"></i></button>';
+      html += '</td></tr>';
+    });
+    if (!html) html = '<tr><td colspan="5" style="color:#666;padding:12px;text-align:center;">Aucun lien \u2014 cliquez sur Ajouter ou Charger donn\u00e9es 2026.</td></tr>';
+    tbody.innerHTML = html;
+    if (count) count.textContent = rpLiens.length + ' lien(s)';
+    tbody.querySelectorAll('[data-lien-edit]').forEach(function(btn) {
+      btn.addEventListener('click', function() { openLienEditor(+btn.dataset.lienEdit); });
+    });
+    tbody.querySelectorAll('[data-lien-del]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx2 = +btn.dataset.lienDel;
+        if (confirm('Supprimer "' + (rpLiens[idx2] ? rpLiens[idx2].nom : '') + '" ?')) {
+          rpLiens.splice(idx2, 1);
+          localStorage.setItem(LIENS_KEY, JSON.stringify(rpLiens));
+          showToast('Lien supprim\u00e9');
+          renderLiensTable();
+        }
+      });
+    });
+  }
+
+  function openLienEditor(idx) {
+    var l = (idx >= 0 && idx < rpLiens.length) ? rpLiens[idx] : null;
+    document.getElementById('lien-edit-idx').value   = idx;
+    document.getElementById('lien-editor-title').textContent = l ? 'Modifier : ' + l.nom : 'Nouveau lien';
+    document.getElementById('lien-nom').value       = l ? (l.nom       || '') : '';
+    document.getElementById('lien-categorie').value = l ? (l.categorie || 'officiel') : 'officiel';
+    document.getElementById('lien-date').value      = l ? (l.date      || '') : '';
+    document.getElementById('lien-lieu').value      = l ? (l.lieu      || '') : '';
+    document.getElementById('lien-url').value       = l ? (l.url       || '') : '';
+    document.getElementById('lien-interet').value   = l ? (l.interet   || '') : '';
+    var ed = document.getElementById('lien-editor');
+    ed.style.display = 'block';
+    ed.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  (function() {
+    var addBtn    = document.getElementById('lien-add-btn');
+    var saveBtn   = document.getElementById('lien-save-btn');
+    var cancelBtn = document.getElementById('lien-cancel-btn');
+    var defBtn    = document.getElementById('lien-load-defaults-btn');
+
+    if (addBtn)    addBtn.addEventListener('click', function() { openLienEditor(-1); });
+    if (cancelBtn) cancelBtn.addEventListener('click', function() { document.getElementById('lien-editor').style.display = 'none'; });
+
+    if (saveBtn) saveBtn.addEventListener('click', function() {
+      var idx = +document.getElementById('lien-edit-idx').value;
+      var nom = document.getElementById('lien-nom').value.trim();
+      if (!nom) { alert('Le nom est obligatoire'); return; }
+      var existing = (idx >= 0 && idx < rpLiens.length) ? rpLiens[idx] : null;
+      var obj = {
+        id:        existing ? existing.id : 'lnk-' + Date.now(),
+        categorie: document.getElementById('lien-categorie').value,
+        nom:       nom,
+        date:      document.getElementById('lien-date').value.trim(),
+        lieu:      document.getElementById('lien-lieu').value.trim(),
+        url:       document.getElementById('lien-url').value.trim(),
+        interet:   document.getElementById('lien-interet').value.trim(),
+      };
+      if (existing) { Object.assign(rpLiens[idx], obj); showToast('Lien modifi\u00e9'); }
+      else          { rpLiens.push(obj);                 showToast('Lien ajout\u00e9'); }
+      localStorage.setItem(LIENS_KEY, JSON.stringify(rpLiens));
+      document.getElementById('lien-editor').style.display = 'none';
+      renderLiensTable();
+    });
+
+    if (defBtn) defBtn.addEventListener('click', function() {
+      var isEmpty = rpLiens.length === 0;
+      if (!isEmpty && !confirm('Des liens existent d\u00e9j\u00e0.\nVoulez-vous ajouter les donn\u00e9es 2026 en suppl\u00e9ment (sans \u00e9craser) ?')) return;
+      var added = 0;
+      LIENS_DEFAULT.forEach(function(l) {
+        if (!rpLiens.some(function(x) { return x.id === l.id; })) { rpLiens.push(Object.assign({}, l)); added++; }
+      });
+      localStorage.setItem(LIENS_KEY, JSON.stringify(rpLiens));
+      renderLiensTable();
+      showToast('\u2705 ' + added + ' lien(s) 2026 charg\u00e9(s)');
+    });
+  })();
+
+  loadLiens();
+
+  // ═══════════════════════════════════════════════════════════
   // PUBLICATION UNIFIÉE — "Publier tout" → /api/admin-save.php
   // ═══════════════════════════════════════════════════════════
   var ADMIN_SECRET_LS = 'op-admin-secret';
@@ -1639,7 +1778,8 @@
       radar: {
         entreprises: rpEnts,
         salons:      rpSalons,
-        events:      rpEvts
+        events:      rpEvts,
+        liens:       rpLiens
       }
     };
   }
